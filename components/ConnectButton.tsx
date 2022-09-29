@@ -30,8 +30,8 @@ const WEB3: {
 const RoundedButton = ({ onClick=()=>{}, text }: { onClick?: Function, text: string }) => {
   return (
     <button className={clsx(
-      'border border-black hover:border-black/75 hover:text-black/75',
-      'rounded-full text-xs sm:text-sm px-4 py-1 mx-4',
+      "border border-black hover:border-black/75 hover:text-black/75",
+      "rounded-full text-xs sm:text-sm px-4 py-1 mx-4",
     )} onClick={() => onClick()}>{ text }</button>
   )
 }
@@ -96,17 +96,17 @@ export default function ConnectButton() {
   }, [setAuthToken, connect])
 
   if (typeof window === 'undefined') {
-    return <RoundedButton text='Connect Wallet' />
+    return <RoundedButton text="Connect Wallet" />
   } else if (walletAddress) {
     return (
       <>
-        <div className='inline-block text-xs sm:text-sm py-1 mx-4'>{maskedAddress(walletAddress)}</div>
-        {!authToken && <RoundedButton onClick={signMessage} text='Verify' />}
-        <RoundedButton onClick={disconnect} text='Disconnect' />
+        <div className="inline-block text-xs sm:text-sm py-1 mx-4">{maskedAddress(walletAddress)}</div>
+        {!authToken && <RoundedButton onClick={signMessage} text="Verify" />}
+        <RoundedButton onClick={disconnect} text="Disconnect" />
       </>
     )
   } else {
-    return <RoundedButton onClick={connect} text='Connect Wallet' />
+    return <RoundedButton onClick={connect} text="Connect Wallet" />
   }
 
 }
