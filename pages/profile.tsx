@@ -12,7 +12,7 @@ const Page: NextPage = () => {
   const authToken = useRecoilValue(authTokenState)
 
   const fetcher = (...args) => fetch(...args).then(res => res.json())
-  const { data, isValidating, error } = useSWR('/api/profile/123', fetcher)
+  const { data, isValidating, error } = useSWR(`/api/profile/${walletAddress}`, fetcher)
 
   const upload = useCallback(() => {
     const payload = {
