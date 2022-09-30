@@ -1,0 +1,67 @@
+import type { NextApiRequest, NextApiResponse } from 'next'
+import { ethers } from 'ethers'
+
+export const EIP_712_AUTH = {
+  types: {
+    Auth: [
+        { name: 'intent', type: 'string' },
+        { name: 'wallet', type: 'address' },
+        { name: 'expire', type: 'uint256' },
+    ]
+  },
+  domain: {}
+}
+
+export type NextApiRequestWithAuth = NextApiRequest & {
+  user: {
+    wallet: string
+  }
+}
+
+async function authenticate(req: NextApiRequest): Promise<User> {
+  const makeError = (status: number, message: string) => {
+    const error: Error & { status: number } = new Error(message) as any
+    error.status = status
+    return error
+  }
+  const authHeader: string = req.headers['authorization'] || ''
+  if (!/Token .+/i.test(authHeader)) {
+    throw makeError(401, 'Not Authenticated')
+  }
+  const token = authHeader.substr(6)
+  const payload : {
+    value: {
+      intent: string,
+      wallet: string,
+      expire: number,
+    },
+    signature: string
+  } = JSON.parse(Buffer.from(token, 'base64').toString())
+  if (payload.value.expire < new Date().valueOf()) {
+    throw makeError(401, 'Token Expired')
+  }
+  const verifiedAddress = ethers.utils.verifyTypedData(
+    EIP_712_AUTH.domain, EIP_712_AUTH.types, payload.value, payload.signature)
+  if (verifiedAddress !== payload.value.wallet) {
+    throw makeError(401, 'Invalid Token')
+  }
+  return {
+    walletAddress: ethers.utils.getAddress(verifiedAddress)
+  }
+}
+
+export function requireAuth(handler: (req: NextApiRequestWithAuth, res: NextApiResponse) => void) {
+  return async function(req: NextApiRequest, res: NextApiResponse) {
+    const reqWithAuth: NextApiRequestWithAuth = req as any
+    try {
+      reqWithAuth.user = await authenticate(req)
+    } catch(error: any) {
+      console.log(error)
+      const status = error.status || 500
+      const message = error.message || 'Server Error'
+      res.status(status).json({ 'detail': message })
+      return
+    }
+    return handler(reqWithAuth, res)
+  }
+}

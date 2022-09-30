@@ -18,7 +18,7 @@ async function submitOrder({ tags, payload }) {
       ...tags,
     ]
   }
-  const config =  {
+  const config = {
     signer: signer,
     arseedUrl: arseedUrl,
     currency: currency,

@@ -4,7 +4,7 @@ import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import { useRecoilState } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { EIP_712_AUTH } from '@/lib/constants'
+import { EIP_712_AUTH } from '@/lib/auth'
 
 const maskedAddress = (address: string) => address.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')
 
