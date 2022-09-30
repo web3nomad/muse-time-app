@@ -3,12 +3,13 @@ import useSWR from 'swr'
 import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
 import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
+import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import { updateArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 
 const Page: NextPage = () => {
   const walletAddress = useRecoilValue(walletAddressState)
+  const authToken = useRecoilValue(authTokenState)
 
   const fetcher = (...args) => fetch(...args).then(res => res.json())
   const { data, isValidating, error } = useSWR('/api/profile/123', fetcher)
@@ -22,6 +23,8 @@ const Page: NextPage = () => {
       id: walletAddress,
       type: 'profile',
       payload: payload,
+      walletAddress: walletAddress,
+      authToken: authToken,
     }).then((res) => {
       console.log(res)
     }).catch((err) => {
