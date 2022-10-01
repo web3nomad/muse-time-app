@@ -32,7 +32,9 @@ export default async function handler(
     body: JSON.stringify({
       operationName: 'ProfileQuery',
       query: query,
-      variables: { address }
+      variables: {
+        address: address.toString()
+      }
     }),
     headers: {
       'Content-Type': 'application/json'

@@ -1,5 +1,5 @@
 import type { GetServerSideProps, NextPage } from 'next'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
@@ -13,10 +13,11 @@ import TopicForm from '@/components/TopicForm'
 
 type PageProps = {
   topicSlug: string,
-  addressSlug: ChecksumAddress,
+  addressSlug: string,
 }
 
-const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
+const Page: NextPage<PageProps> = ({ topicSlug, addressSlug: _addressSlug }) => {
+  const addressSlug = useMemo(() => getChecksumAddress(_addressSlug), [_addressSlug])
   const walletAddress = useRecoilValue(walletAddressState)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -37,7 +38,7 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
       </Head>
       <h3 className="flex items-center">
         <span>{topicSlug}</span>
-        {(walletAddress && addressSlug.toString() === walletAddress.toString()) && (
+        {addressSlug.equals(walletAddress) && (
           <span className="p-2 ml-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
             <PencilSquareIcon className="w-6 h-6" />
           </span>
@@ -50,7 +51,7 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
           <div>{topic.category}</div>
           <div>{topic.value}</div>
           <div>{topic.duration}</div>
-          {(walletAddress && addressSlug.toString() === walletAddress.toString()) && (
+          {addressSlug.equals(walletAddress) && (
             <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
               <TopicForm topic={topic} uuid={topicSlug} onSaveSuccess={() => setDialogOpen(false)} />
             </TransitionDialog>
@@ -62,13 +63,13 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  const topicSlug = (query.topic ?? '') as string
-  const addressSlug = getChecksumAddress(query.address as string)
+  const topicSlug = query.topic as string
+  const addressSlug = query.address as string
   return {
     props: {
       topicSlug,
       addressSlug,
-    } as PageProps
+    }
   }
 }
 

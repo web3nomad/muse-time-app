@@ -1,5 +1,5 @@
 import type { GetServerSidePropsContext, GetServerSideProps, NextPage } from 'next'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
@@ -12,10 +12,11 @@ import TransitionDialog from '@/components/TransitionDialog'
 import ProfileForm from '@/components/ProfileForm'
 
 type PageProps = {
-  addressSlug: ChecksumAddress
+  addressSlug: string
 }
 
-const Page: NextPage<PageProps> = ({ addressSlug }) => {
+const Page: NextPage<PageProps> = ({ addressSlug: _addressSlug }) => {
+  const addressSlug = useMemo(() => getChecksumAddress(_addressSlug), [_addressSlug])
   const walletAddress = useRecoilValue(walletAddressState)
   const [profile, setProfile] = useState<ProfileData|null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
@@ -36,7 +37,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
       </Head>
       <h3 className="flex items-center">
         <span>{addressSlug.toString()}</span>
-        {(walletAddress && addressSlug.toString() === walletAddress.toString()) && (
+        {addressSlug.equals(walletAddress) && (
           <span className="p-2 ml-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
             <PencilSquareIcon className="w-6 h-6" />
           </span>
@@ -46,7 +47,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
         <>
           <div>{profile.name}</div>
           <div>{profile.bio}</div>
-          {(walletAddress && addressSlug.toString() === walletAddress.toString()) && (
+          {addressSlug.equals(walletAddress) && (
             <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
               <ProfileForm profile={profile} onSaveSuccess={() => setDialogOpen(false)} />
             </TransitionDialog>
@@ -59,11 +60,11 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
 
 // export const getServerSideProps = async function ({ query }: GetServerSidePropsContext) {
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  const addressSlug = getChecksumAddress(query.address as string)
+  const addressSlug = query.address as string
   return {
     props: {
       addressSlug
-    } as PageProps
+    }
   }
 }
 

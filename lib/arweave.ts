@@ -72,7 +72,7 @@ export async function updateArweaveData({
   authToken: string,
 }) {
   const tags = [
-    {name: 'Resource-ID', value: resourceId},
+    {name: 'Resource-Id', value: resourceId},
     {name: 'Resource-Type', value: resourceType},
     {name: 'Resource-Owner', value: walletAddress.toString()},
   ]

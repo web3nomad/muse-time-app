@@ -11,6 +11,9 @@ class ChecksumAddressClass {
   masked(): string {
     return this._address.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')
   }
+  equals(address: ChecksumAddress|null): boolean {
+    return address !== null && this.toString() == address.toString()
+  }
 }
 
 export const getChecksumAddress = (address: string) => {

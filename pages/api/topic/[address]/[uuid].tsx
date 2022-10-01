@@ -8,8 +8,8 @@ const query = `query TopicQuery($address: String!, $uuid: String!) {
     first: 1,
     sort: HEIGHT_DESC,
     tags: [
-      { name: "Resource-Type", values: ["profile"] },
-      { name: "Resource-Id", values: ["$uuid"] },
+      { name: "Resource-Type", values: ["topic"] },
+      { name: "Resource-Id", values: [$uuid] },
       { name: "Resource-Owner", values: [$address] }
     ]
   ) {
@@ -34,7 +34,10 @@ export default async function handler(
     body: JSON.stringify({
       operationName: 'TopicQuery',
       query: query,
-      variables: { address, uuid }
+      variables: {
+        address: address.toString(),
+        uuid: uuid,
+      }
     }),
     headers: {
       'Content-Type': 'application/json'
