@@ -6,8 +6,9 @@ import { updateArweaveData, ArweaveResourceType } from '@/lib/arweave'
 import type { TopicData } from '@/lib/arweave'
 
 
-export default function TopicForm({ topic, onSaveSuccess }: {
+export default function TopicForm({ topic, uuid, onSaveSuccess }: {
   topic: TopicData,
+  uuid: string,
   onSaveSuccess: any,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
@@ -24,9 +25,12 @@ export default function TopicForm({ topic, onSaveSuccess }: {
   }, [formData, setFormData])
 
   const signAndSaveTopic = useCallback((payload: TopicData) => {
+    if (!walletAddress || !authToken) {
+      return
+    }
     setPending(true)
     updateArweaveData({
-      resourceId: walletAddress,
+      resourceId: uuid,
       resourceType: ArweaveResourceType.TOPIC,
       payload: payload,
       walletAddress: walletAddress,
@@ -38,7 +42,7 @@ export default function TopicForm({ topic, onSaveSuccess }: {
       setPending(false)
       console.log(err)
     })
-  }, [walletAddress, authToken])
+  }, [walletAddress, authToken, uuid, onSaveSuccess])
 
   const handleSubmit = (event: any) => {
     event.preventDefault()

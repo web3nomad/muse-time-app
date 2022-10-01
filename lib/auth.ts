@@ -1,5 +1,7 @@
-import type { NextApiRequest, NextApiResponse } from 'next'
 import { ethers } from 'ethers'
+import type { NextApiRequest, NextApiResponse } from 'next'
+import type { ChecksumAddress } from '@/lib/ethereum'
+import { getChecksumAddress } from '@/lib/ethereum'
 
 export const EIP_712_AUTH = {
   types: {
@@ -13,7 +15,7 @@ export const EIP_712_AUTH = {
 }
 
 type User = {
-  walletAddress: string
+  walletAddress: ChecksumAddress
 }
 
 export type NextApiRequestWithAuth = NextApiRequest & {
@@ -48,7 +50,7 @@ async function authenticate(req: NextApiRequest): Promise<User> {
     throw makeError(401, 'Invalid Token')
   }
   return {
-    walletAddress: ethers.utils.getAddress(verifiedAddress)
+    walletAddress: getChecksumAddress(verifiedAddress)
   }
 }
 

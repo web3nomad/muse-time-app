@@ -23,9 +23,12 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
   }, [formData, setFormData])
 
   const signAndSaveProfile = useCallback((payload: ProfileData) => {
+    if (!walletAddress || !authToken) {
+      return
+    }
     setPending(true)
     updateArweaveData({
-      resourceId: walletAddress,
+      resourceId: '',
       resourceType: ArweaveResourceType.PROFILE,
       payload: payload,
       walletAddress: walletAddress,
@@ -37,7 +40,7 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
       setPending(false)
       console.log(err)
     })
-  }, [walletAddress, authToken])
+  }, [walletAddress, authToken, onSaveSuccess])
 
   const handleSubmit = (event: any) => {
     event.preventDefault()

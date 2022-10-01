@@ -1,6 +1,7 @@
-import { providers } from 'ethers'
+import { ethers } from 'ethers'
 import getCurrency from 'bundlr-arseeding-client/build/web/currencies'
 import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
+import type { ChecksumAddress } from '@/lib/ethereum'
 
 export type EverpayTx = {
   'id': number,
@@ -33,7 +34,7 @@ async function submitOrder({ tags, payload }: {
   tags: ArweaveDataTag[],
   payload: ArweaveDataPayload,
 }) {
-  const provider = new providers.Web3Provider((window as any).ethereum)
+  const provider = new ethers.providers.Web3Provider((window as any).ethereum)
   await provider._ready()
   const currencyConfig = getCurrency('ethereum', provider)
   await currencyConfig.ready()
@@ -67,13 +68,13 @@ export async function updateArweaveData({
   resourceId: string,
   resourceType: ArweaveResourceType,
   payload: ArweaveDataPayload,
-  walletAddress: string,
+  walletAddress: ChecksumAddress,
   authToken: string,
 }) {
   const tags = [
     {name: 'Resource-ID', value: resourceId},
     {name: 'Resource-Type', value: resourceType},
-    {name: 'Resource-Owner', value: walletAddress},
+    {name: 'Resource-Owner', value: walletAddress.toString()},
   ]
   const order = await submitOrder({ tags, payload })
   const res = await fetch('/api/arweave/pay', {

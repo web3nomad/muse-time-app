@@ -1,6 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { TopicData } from '@/lib/arweave'
+import { getChecksumAddress } from '@/lib/ethereum'
 
 const query = `query TopicQuery($address: String!, $uuid: String!) {
   transactions(
@@ -25,7 +26,7 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<TopicData>,
 ) {
-  const address = req.query.address as string
+  const address = getChecksumAddress(req.query.address as string)
   const uuid = req.query.uuid as string
   // query last record
   const node = await fetch('https://arseed.web3infra.dev/graphql', {

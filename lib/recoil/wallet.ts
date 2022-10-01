@@ -1,11 +1,12 @@
 import { atom, selector } from 'recoil'
+import type { ChecksumAddress } from '@/lib/ethereum'
 
-export const walletAddressState = atom({
+export const walletAddressState = atom<ChecksumAddress|null>({
   key: 'walletAddress',
-  default: '',
+  default: null,
 })
 
-export const authTokenState = atom({
+export const authTokenState = atom<string|null>({
   key: 'authToken',
-  default: '',
+  default: null,
 })
