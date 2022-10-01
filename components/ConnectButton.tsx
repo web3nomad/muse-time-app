@@ -1,4 +1,5 @@
 import clsx from 'clsx'
+import Link from 'next/link'
 import { useCallback, useEffect } from 'react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
@@ -100,7 +101,9 @@ export default function ConnectButton() {
   } else if (walletAddress) {
     return (
       <>
-        <div className="inline-block text-xs sm:text-sm py-1 mx-4">{maskedAddress(walletAddress)}</div>
+        <Link href={`profile/${walletAddress}`}>
+          <a className="inline-block text-xs sm:text-sm py-1 mx-4">{maskedAddress(walletAddress)}</a>
+        </Link>
         {!authToken && <RoundedButton onClick={signMessage} text="Verify" />}
         <RoundedButton onClick={disconnect} text="Disconnect" />
       </>

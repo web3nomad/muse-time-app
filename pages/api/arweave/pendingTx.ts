@@ -8,8 +8,13 @@ const handler = async function(
 ) {
   const response = await fetch(`https://arseed.web3infra.dev/bundle/orders/${req.user.walletAddress}`)
   const txs = await response.json()
+  // const tx = txs[0]
   const tx = txs.find((tx) => tx.paymentStatus === 'paid' && tx.onChainStatus !== 'success')
-  res.status(200).json({ tx })
+  if (tx) {
+    res.status(200).json(tx)
+  } else {
+    res.status(404).end()
+  }
 }
 
 export default requireAuth(handler)

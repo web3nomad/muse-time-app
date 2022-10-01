@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useEffect, useState } from 'react'
+import useSWR from 'swr'
+// import { useEffect, useState } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
 import ConnectButton from '@/components/ConnectButton'
@@ -8,21 +9,25 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 
 
 export default function SiteHeader() {
-  const [pendingTx, setPendingTx] = useState<any|null>(null)
-  const [tick, setTick] = useState(0)
   const authToken = useRecoilValue(authTokenState)
 
-  useEffect(() => {
-    if (authToken) {
-      fetch('/api/arweave/pendingTx', {
-        headers: { 'Authorization': `Token ${authToken}` }
-      }).then(async (res) => {
-        const data = await res.json()
-        setPendingTx(data.tx)
-      }).catch((err) => console.log(err))
+  // const fetcher = (...args) => fetch(...args).then(res => res.json())
+  const fetcher = async (url) => {
+    if (!authToken) {
+      return new Promise((resolve) => { resolve(null) })
     }
-    setTimeout(() => setTick(tick + 1), 3000)
-  }, [authToken, tick])
+    const headers = { 'Authorization': `Token ${authToken}` }
+    try {
+      const res = await fetch(url, { headers })
+      return await res.json()
+    } catch(err) {
+      return null
+    }
+  }
+
+  const { data: pendingTx } = useSWR('/api/arweave/pendingTx', fetcher, {
+    refreshInterval: 5000
+  })
 
   return (
     <header className={clsx("p-4 flex items-center justify-start bg-slate-300")}>
