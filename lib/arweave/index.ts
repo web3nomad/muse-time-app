@@ -1,7 +1,7 @@
 import { ethers } from 'ethers'
 import { submitOrder } from './order'
-export { ArweaveResourceType } from './types'
-export type {
+import { ArweaveResourceType } from './types'
+import type {
   EverpayTx,
   ArweaveDataPayload,
   ArweaveDataTag,
@@ -9,6 +9,14 @@ export type {
   ProfileData,
 } from './types'
 
+export {
+  EverpayTx,
+  ArweaveDataPayload,
+  ArweaveDataTag,
+  TopicData,
+  ProfileData,
+  ArweaveResourceType,
+}
 
 export async function updateArweaveData({
   resourceId,

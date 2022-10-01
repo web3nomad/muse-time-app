@@ -1,5 +1,6 @@
 export type EverpayTx = {
   'id': number,
+  'itemId': string,
   'paymentStatus': string,
   'paymentId': string,
   'onChainStatus': string

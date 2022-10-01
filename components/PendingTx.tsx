@@ -1,31 +1,36 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import useSWR from 'swr'
+// import useSWR from 'swr'
+import { useState, useEffect, useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
-import { authTokenState } from '@/lib/recoil/wallet'
+import { authTokenState, walletAddressState } from '@/lib/recoil/wallet'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
+import type { EverpayTx } from '@/lib/arweave'
 
 
-export default function SiteHeader() {
+export default function PendingTx() {
   const authToken = useRecoilValue(authTokenState)
+  const walletAddress = useRecoilValue(walletAddressState)
+  const [pendingTx, setPendingTx] = useState<EverpayTx|null>(null)
+  const [tick, setTick] = useState(0)
 
-  // const fetcher = (...args) => fetch(...args).then(res => res.json())
-  const fetcher = async (url: string) => {
-    if (!authToken) {
-      return new Promise((resolve) => { resolve(null) })
+  useEffect(() => {
+    if (!authToken || !walletAddress) {
+      return
     }
-    const headers = { 'Authorization': `Token ${authToken}` }
-    try {
-      const res = await fetch(url, { headers })
-      return await res.json()
-    } catch(err) {
-      return null
-    }
-  }
-
-  const { data: pendingTx } = useSWR('/api/arweave/pendingTx', fetcher, {
-    refreshInterval: 5000,
-  })
+    fetch(`https://arseed.web3infra.dev/bundle/orders/${walletAddress}`, {
+      headers: { 'Authorization': `Token ${authToken}` }
+    }).then(async (res) => {
+      const txs = await res.json()
+      // const tx = txs[0]
+      const tx = txs.find((tx: EverpayTx) => tx.paymentStatus === 'paid' && tx.onChainStatus !== 'success')
+      setPendingTx(tx)
+      setTimeout(() => setTick(tick + 1), 5000)
+    }).catch((err) => {
+      console.log(err)
+      setTimeout(() => setTick(tick + 1), 5000)
+    })
+  }, [authToken, walletAddress, setPendingTx, tick, setTick])
 
   return (
     <div className={clsx(
