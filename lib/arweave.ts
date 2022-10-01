@@ -10,9 +10,23 @@ export type EverpayTx = {
 }
 export type ArweaveDataPayload = {[_key:string]: unknown}
 export type ArweaveDataTag = {name:string,value:string}
-export enum ArweaveDataType {
+
+export enum ArweaveResourceType {
   PROFILE = 'profile',
   TOPIC = 'topic',
+}
+
+export type TopicData = {
+  name: string,
+  description: string,
+  category: string,
+  value: string,
+  duration: string,
+}
+
+export type ProfileData = {
+  name: string,
+  bio: string,
 }
 
 async function submitOrder({ tags, payload }: {
@@ -44,20 +58,22 @@ async function submitOrder({ tags, payload }: {
 }
 
 export async function updateArweaveData({
-  id, type, payload,
+  resourceId,
+  resourceType,
+  payload,
   walletAddress,
   authToken,
 }: {
-  id: string,
-  type: ArweaveDataType,
+  resourceId: string,
+  resourceType: ArweaveResourceType,
   payload: ArweaveDataPayload,
   walletAddress: string,
   authToken: string,
 }) {
   const tags = [
-    {name: 'Data-ID', value: id},
-    {name: 'Data-Type', value: type},
-    {name: 'Data-Owner', value: walletAddress},
+    {name: 'Resource-ID', value: resourceId},
+    {name: 'Resource-Type', value: resourceType},
+    {name: 'Resource-Owner', value: walletAddress},
   ]
   const order = await submitOrder({ tags, payload })
   const res = await fetch('/api/arweave/pay', {

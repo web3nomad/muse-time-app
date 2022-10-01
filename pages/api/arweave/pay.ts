@@ -10,7 +10,7 @@ const KEY_FILE_ADDRESS = process.env.KEY_FILE_ADDRESS as string
 async function getDataOwner(itemId: string): Promise<string> {
   const res = await fetch(`https://arseed.web3infra.dev/bundle/tx/${itemId}`)
   const data = await res.json()
-  const tag = data.tags.find((item: ArweaveDataTag) => item.name === 'Data-Owner')
+  const tag = data.tags.find((item: ArweaveDataTag) => item.name === 'Resource-Owner')
   return tag ? ethers.utils.getAddress(tag.value) : ''
 }
 

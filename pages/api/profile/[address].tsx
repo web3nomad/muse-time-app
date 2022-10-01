@@ -1,13 +1,14 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
 import type { NextApiRequest, NextApiResponse } from 'next'
+import type { ProfileData } from '@/lib/arweave'
 
 const query = `query ProfileQuery($address: String!) {
   transactions(
     first: 1,
     sort: HEIGHT_DESC,
     tags: [
-      { name: "Data-Owner", values: [$address] },
-      { name: "Data-Type", values: ["profile"] }
+      { name: "Resource-Owner", values: [$address] },
+      { name: "Resource-Type", values: ["profile"] }
     ]
   ) {
     edges {
@@ -19,7 +20,10 @@ const query = `query ProfileQuery($address: String!) {
   }
 }`
 
-export default async function handler(req: NextApiRequest, res: NextApiResponse) {
+export default async function handler(
+  req: NextApiRequest,
+  res: NextApiResponse<ProfileData>,
+) {
   const address = req.query.address as string
   // query last record
   const node = await fetch('https://arseed.web3infra.dev/graphql', {
@@ -39,12 +43,15 @@ export default async function handler(req: NextApiRequest, res: NextApiResponse)
     console.log(err)
     return null
   })
-  if (!node) {
-    res.status(404).end()
-    return
+  const profile: ProfileData = {
+    name: '',
+    bio: '',
   }
-  // fetch data
-  const itemId = node['node']['id']
-  const data = await fetch(`https://arseed.web3infra.dev/${itemId}`).then(res => res.json())
-  res.status(200).json(data)
+  if (node) {
+    // fetch data
+    const itemId = node['node']['id']
+    const data = await fetch(`https://arseed.web3infra.dev/${itemId}`).then(res => res.json())
+    Object.assign(profile, data)
+  }
+  res.status(200).json(profile)
 }

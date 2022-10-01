@@ -1,7 +1,12 @@
 import type { GetServerSidePropsContext, NextPage } from 'next'
+import useSWR from 'swr'
+import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
-import Link from 'next/link'
+import { useRecoilValue } from 'recoil'
+import { PencilSquareIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
+import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import MainLayout from '@/components/layouts/MainLayout'
+import TransitionDialog from '@/components/TransitionDialog'
 
 const Page: NextPage<{topicSlug: string}> = ({ topicSlug }) => {
   return (
