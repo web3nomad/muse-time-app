@@ -101,7 +101,7 @@ export default function ConnectButton() {
   } else if (walletAddress) {
     return (
       <>
-        <Link href={`profile/${walletAddress}`}>
+        <Link href={`/${walletAddress}`}>
           <a className="inline-block text-xs sm:text-sm py-1 mx-4">{maskedAddress(walletAddress)}</a>
         </Link>
         {!authToken && <RoundedButton onClick={signMessage} text="Verify" />}
