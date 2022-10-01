@@ -5,9 +5,10 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import { updateArweaveData, ArweaveResourceType } from '@/lib/arweave'
 import type { ProfileData } from '@/lib/arweave'
 
+
 export default function ProfileForm({ profile, onSaveSuccess }: {
   profile: ProfileData,
-  onSaveSuccess: any,
+  onSaveSuccess: (profile: ProfileData) => void,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
   const authToken = useRecoilValue(authTokenState)
@@ -35,7 +36,7 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
       authToken: authToken,
     }).then((res) => {
       setPending(false)
-      onSaveSuccess()
+      onSaveSuccess(payload)
     }).catch((err) => {
       setPending(false)
       console.log(err)

@@ -9,7 +9,7 @@ import type { TopicData } from '@/lib/arweave'
 export default function TopicForm({ topic, uuid, onSaveSuccess }: {
   topic: TopicData,
   uuid: string,
-  onSaveSuccess: any,
+  onSaveSuccess: (topic: TopicData) => void,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
   const authToken = useRecoilValue(authTokenState)
@@ -37,7 +37,7 @@ export default function TopicForm({ topic, uuid, onSaveSuccess }: {
       authToken: authToken,
     }).then((res) => {
       setPending(false)
-      onSaveSuccess()
+      onSaveSuccess(payload)
     }).catch((err) => {
       setPending(false)
       console.log(err)

@@ -31,6 +31,11 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
     })
   }, [setTopic, addressSlug, topicSlug])
 
+  const onSaveSuccess = useCallback((data: TopicData) => {
+    setDialogOpen(false)
+    setTopic(data)
+  }, [setDialogOpen, setTopic])
+
   useEffect(() => fetchTopic(), [fetchTopic])
 
   return (
@@ -55,7 +60,7 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
           <div>{topic.duration}</div>
           {addressSlug === walletAddress && (
             <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-              <TopicForm topic={topic} uuid={topicSlug} onSaveSuccess={() => setDialogOpen(false)} />
+              <TopicForm topic={topic} uuid={topicSlug} onSaveSuccess={onSaveSuccess} />
             </TransitionDialog>
           )}
         </>

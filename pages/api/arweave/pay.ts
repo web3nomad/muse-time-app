@@ -7,9 +7,8 @@ import type { ArweaveDataTag } from '@/lib/arweave'
 const KEY_FILE_DATA = JSON.parse(process.env.ARWEAVE_KEYFILE!)
 const KEY_FILE_ADDRESS = process.env.KEY_FILE_ADDRESS as string
 
-async function getDataOwner(itemId: string): Promise<string|null> {
-  const res = await fetch(`https://arseed.web3infra.dev/bundle/tx/${itemId}`)
-  const data = await res.json()
+async function getResourceOwner(itemId: string): Promise<string|null> {
+  const data = await fetch(`https://arseed.web3infra.dev/bundle/tx/${itemId}`).then(res=>res.json())
   const tag = data.tags.find((item: ArweaveDataTag) => item.name === 'Resource-Owner')
   return tag ? ethers.utils.getAddress(tag.value) : null
 }
@@ -19,9 +18,9 @@ const handler = async function(
   res: NextApiResponse
 ) {
   const order = req.body['order']
-  const ownerAddress = await getDataOwner(order.itemId)
-  // console.log(ownerAddress, req.user.walletAddress)
-  if (!ownerAddress || req.user.walletAddress !== ownerAddress) {
+  const resourceOwner = await getResourceOwner(order.itemId)
+  // console.log(resourceOwner, req.user.walletAddress)
+  if (!resourceOwner || req.user.walletAddress !== resourceOwner) {
     res.status(403).end()
     return
   }

@@ -30,6 +30,11 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
     })
   }, [setProfile, addressSlug])
 
+  const onSaveSuccess = useCallback((data: ProfileData) => {
+    setDialogOpen(false)
+    setProfile(data)
+  }, [setDialogOpen, setProfile])
+
   useEffect(() => fetchProfile(), [fetchProfile])
 
   return (
@@ -51,7 +56,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
           <div>{profile.bio}</div>
           {addressSlug === walletAddress && (
             <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-              <ProfileForm profile={profile} onSaveSuccess={() => setDialogOpen(false)} />
+              <ProfileForm profile={profile} onSaveSuccess={onSaveSuccess} />
             </TransitionDialog>
           )}
         </>
