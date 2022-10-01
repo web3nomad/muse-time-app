@@ -60,7 +60,7 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
           <div>{topic.duration}</div>
           {addressSlug === walletAddress && (
             <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-              <TopicForm topic={topic} uuid={topicSlug} onSaveSuccess={onSaveSuccess} />
+              <TopicForm topic={topic} onSave={onSaveSuccess} />
             </TransitionDialog>
           )}
         </>

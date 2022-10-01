@@ -1,19 +1,14 @@
 import { useState, useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
-import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import { updateArweaveData, ArweaveResourceType } from '@/lib/arweave'
 import type { TopicData } from '@/lib/arweave'
 
 
-export default function TopicForm({ topic, uuid, onSaveSuccess }: {
+export default function TopicForm({ topic, onSave }: {
   topic: TopicData,
-  uuid: string,
-  onSaveSuccess: (topic: TopicData) => void,
+  onSave: (topic: TopicData) => void,
 }) {
-  const walletAddress = useRecoilValue(walletAddressState)
-  const authToken = useRecoilValue(authTokenState)
-
   const [pending, setPending] = useState(false)
   const [formData, setFormData] = useState<TopicData>(topic)
 
@@ -24,29 +19,12 @@ export default function TopicForm({ topic, uuid, onSaveSuccess }: {
     })
   }, [formData, setFormData])
 
-  const signAndSaveTopic = useCallback((payload: TopicData) => {
-    if (!walletAddress || !authToken) {
-      return
-    }
-    setPending(true)
-    updateArweaveData({
-      resourceId: uuid,
-      resourceType: ArweaveResourceType.TOPIC,
-      resourceOwner: walletAddress,
-      payload: payload,
-      authToken: authToken,
-    }).then((res) => {
-      setPending(false)
-      onSaveSuccess(payload)
-    }).catch((err) => {
-      setPending(false)
-      console.log(err)
-    })
-  }, [walletAddress, authToken, uuid, onSaveSuccess])
-
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    signAndSaveTopic({ ...formData })
+    onSave({
+      ...topic,
+      ...formData,
+    })
   }
 
   return (

@@ -1,40 +1,163 @@
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
-import { PencilSquareIcon } from '@heroicons/react/20/solid'
+import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
+import { PlusIcon, TrashIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import type { TopicData } from '@/lib/arweave'
-import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
+import { ArweaveResourceType, updateArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import TopicForm from './TopicForm'
 
+
+const makeRandomId = (n: number) => {
+  let uuidN = btoa(crypto.randomUUID()).replace(/[^a-zA-Z0-9]/g,'').substr(0, n)
+  if (uuidN.length < n) {
+    uuidN += Array(n - uuidN.length + 1).join('0')
+  }
+  return uuidN
+}
+
+function makeEmptyNewTopic(): TopicData {
+  return {
+    'id': makeRandomId(40),
+    'name': '',
+    'description': '',
+    'category': '',
+    'value': '',
+    'duration': '',
+  }
+}
+
+const pushOrMutateTopics = (topics: TopicData[], topic: TopicData) => {
+  let newTopics: TopicData[] = []
+  const index = topics.findIndex(({ id }) => topic.id === id)
+  if (index >= 0) {
+    newTopics = [
+      ...topics.slice(0, index),
+      { ...topic },
+      ...topics.slice(index + 1),
+    ]
+  } else {
+    newTopics = [ ...topics, topic ]
+  }
+  return newTopics
+}
 
 export default function TopicsList({ resourceOwner }: {
   resourceOwner: string
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
-  const [topic, setTopic] = useState<TopicData|null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
+  const authToken = useRecoilValue(authTokenState)
+
+  const [topics, setTopics] = useState<TopicData[]>([])
+  const [editingTopic, setEditingTopic] = useState<TopicData|null>(null)
+  const [pendingSync, setPendingSync] = useState(false)
+
+  const canEditTopics = useMemo(() => {
+    return resourceOwner === walletAddress
+  }, [resourceOwner, walletAddress])
 
   const fetchTopics = useCallback(() => {
     getArweaveData({
       resourceId: '',
       resourceType: ArweaveResourceType.TOPICS,
       resourceOwner: resourceOwner
-    }).then(data => {
-      setTopic(data)
+    }).then(topics => {
+      setTopics(topics || [])
     })
-  }, [setTopic, resourceOwner])
+  }, [setTopics, resourceOwner])
 
-  const onSaveSuccess = useCallback((data: TopicData) => {
-    setDialogOpen(false)
-    setTopic(data)
-  }, [setDialogOpen, setTopic])
+  const syncTopics = useCallback((newTopics: TopicData[]) => {
+    if (!walletAddress || !authToken) {
+      return
+    }
+    setPendingSync(true)
+    updateArweaveData({
+      resourceId: '',
+      resourceType: ArweaveResourceType.TOPICS,
+      resourceOwner: walletAddress,
+      payload: newTopics,
+      authToken: authToken,
+    }).then((res) => {
+      // update local state
+      setTopics(newTopics)
+      setPendingSync(false)
+    }).catch((err) => {
+      console.log(err)
+      setPendingSync(false)
+    })
+  }, [walletAddress, authToken, setPendingSync, setTopics])
+
+  const onSaveTopic = useCallback((topic: TopicData) => {
+    // TODO: validate data
+    setEditingTopic(null)
+    const newTopics = pushOrMutateTopics(topics, topic)
+    // sync on chain
+    syncTopics(newTopics)
+  }, [setEditingTopic, topics, syncTopics])
+
+  const handleNewTopic = useCallback(() => {
+    if (topics.length >= 4) {
+      return
+    }
+    const newTopic = makeEmptyNewTopic()
+    setEditingTopic(newTopic)
+  }, [topics, setEditingTopic])
+
+  const handleEditTopic = useCallback((topic: TopicData) => {
+    setEditingTopic({ ...topic })
+  }, [setEditingTopic])
+
+  const handleDeleteTopic = useCallback((topic: TopicData) => {
+    const newTopics = topics.filter(({ id }) => id !== topic.id)
+    syncTopics(newTopics)
+  }, [topics, syncTopics])
 
   useEffect(() => fetchTopics(), [fetchTopics])
 
+  const TopicItem = ({ topic }: { topic: TopicData }) => (
+    <div className="relative p-4 bg-[#AA9B7C] text-white">
+      <div className="text-xs">{topic.id}</div>
+      <div>{topic.name}</div>
+      <div>{topic.description}</div>
+      <div>{topic.category}</div>
+      <div>{topic.value}</div>
+      <div>{topic.duration}</div>
+      {canEditTopics && (
+        <div className="absolute right-1 top-1 flex items-center justify-end">
+          <span className="p-1 ml-1 cursor-pointer" onClick={() => handleEditTopic(topic)}>
+            <PencilSquareIcon className="w-4 h-4" />
+          </span>
+          <span className="p-1 ml-1 cursor-pointer" onClick={() => handleDeleteTopic(topic)}>
+            <TrashIcon className="w-4 h-4" />
+          </span>
+        </div>
+      )}
+    </div>
+  )
+
   return (
     <div>
-      {/**/}
+      <h3 className="flex items-center">
+        <span>Topics</span>
+        {canEditTopics && (
+          <span className="p-2 ml-2 cursor-pointer" onClick={() => handleNewTopic()}>
+            <PlusIcon className="w-6 h-6" />
+          </span>
+        )}
+      </h3>
+      <div className="-m-2 flex items-start justify-between flex-wrap">
+        {topics.map(topic => (
+          <div className="p-2 w-1/2" key={topic.id}>
+            <TopicItem topic={topic} />
+          </div>
+        ))}
+      </div>
+      <TransitionDialog open={!!editingTopic} onClose={() => setEditingTopic(null)}>
+        {editingTopic && <TopicForm topic={editingTopic} onSave={onSaveTopic} />}
+      </TransitionDialog>
+      <TransitionDialog open={pendingSync} onClose={() => {}}>
+        <div>Confirm in metamask</div>
+      </TransitionDialog>
     </div>
   )
 }
