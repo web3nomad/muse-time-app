@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
 import { PencilSquareIcon } from '@heroicons/react/20/solid'
 import type { ProfileData } from '@/lib/arweave'
+import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 import TransitionDialog from '@/components/TransitionDialog'
 import ProfileForm from '@/components/ProfileForm'
@@ -20,8 +21,11 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const fetchProfile = useCallback(() => {
-    fetch(`/api/profile/${addressSlug}`).then(async (res) => {
-      const data = await res.json()
+    getArweaveData({
+      resourceId: '',
+      resourceType: ArweaveResourceType.PROFILE,
+      resourceOwner: addressSlug
+    }).then(data => {
       setProfile(data)
     })
   }, [setProfile, addressSlug])

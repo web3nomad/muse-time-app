@@ -6,6 +6,7 @@ import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
 import { PencilSquareIcon } from '@heroicons/react/20/solid'
 import type { TopicData } from '@/lib/arweave'
+import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 import TransitionDialog from '@/components/TransitionDialog'
 import TopicForm from '@/components/TopicForm'
@@ -21,8 +22,11 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const fetchTopic = useCallback(() => {
-    fetch(`/api/topic/${addressSlug}/${topicSlug}`).then(async (res) => {
-      const data = await res.json()
+    getArweaveData({
+      resourceId: topicSlug,
+      resourceType: ArweaveResourceType.TOPIC,
+      resourceOwner: addressSlug
+    }).then(data => {
       setTopic(data)
     })
   }, [setTopic, addressSlug, topicSlug])

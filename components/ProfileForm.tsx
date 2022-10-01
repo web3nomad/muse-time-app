@@ -30,8 +30,8 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
     updateArweaveData({
       resourceId: '',
       resourceType: ArweaveResourceType.PROFILE,
+      resourceOwner: walletAddress,
       payload: payload,
-      walletAddress: walletAddress,
       authToken: authToken,
     }).then((res) => {
       setPending(false)

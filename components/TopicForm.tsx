@@ -32,8 +32,8 @@ export default function TopicForm({ topic, uuid, onSaveSuccess }: {
     updateArweaveData({
       resourceId: uuid,
       resourceType: ArweaveResourceType.TOPIC,
+      resourceOwner: walletAddress,
       payload: payload,
-      walletAddress: walletAddress,
       authToken: authToken,
     }).then((res) => {
       setPending(false)
