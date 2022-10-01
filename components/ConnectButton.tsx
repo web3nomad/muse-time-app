@@ -5,7 +5,6 @@ import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import { useRecoilState } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { getChecksumAddress } from '@/lib/ethereum'
 import { EIP_712_AUTH } from '@/lib/auth'
 
 const WEB3: {
@@ -45,8 +44,8 @@ export default function ConnectButton() {
     web3Modal.connect().then(async (instance: any) => {
       const provider = new ethers.providers.Web3Provider(instance)
       const signer = provider.getSigner()
-      const checksumAddress = getChecksumAddress(await signer.getAddress())
-      setWalletAddress(checksumAddress)
+      const address = ethers.utils.getAddress(await signer.getAddress())
+      setWalletAddress(address)
     }).catch((err: any) => {
       console.log(err)
     })
@@ -65,7 +64,7 @@ export default function ConnectButton() {
     const instance = await web3Modal.connect()
     const provider = new ethers.providers.Web3Provider(instance)
     const signer = provider.getSigner()
-    const address = await signer.getAddress()
+    const address = ethers.utils.getAddress(await signer.getAddress())
     const value = {
       intent: 'Verify ownership of the address',
       wallet: address,
@@ -102,7 +101,9 @@ export default function ConnectButton() {
     return (
       <>
         <Link href={`/${walletAddress}`}>
-          <a className="inline-block text-xs sm:text-sm py-1 mx-4">{walletAddress.masked()}</a>
+          <a className="inline-block text-xs sm:text-sm py-1 mx-4">
+            {walletAddress.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
+          </a>
         </Link>
         {!authToken && <RoundedButton onClick={signMessage} text="Verify" />}
         <RoundedButton onClick={disconnect} text="Disconnect" />

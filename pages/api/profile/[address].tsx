@@ -1,7 +1,7 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
+import { ethers } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import type { ProfileData } from '@/lib/arweave'
-import { getChecksumAddress } from '@/lib/ethereum'
 
 const query = `query ProfileQuery($address: String!) {
   transactions(
@@ -25,16 +25,14 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<ProfileData>,
 ) {
-  const address = getChecksumAddress(req.query.address as string)
+  const address = ethers.utils.getAddress(req.query.address as string)
   // query last record
   const node = await fetch('https://arseed.web3infra.dev/graphql', {
     method: 'POST',
     body: JSON.stringify({
       operationName: 'ProfileQuery',
       query: query,
-      variables: {
-        address: address.toString()
-      }
+      variables: { address }
     }),
     headers: {
       'Content-Type': 'application/json'

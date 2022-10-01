@@ -1,7 +1,5 @@
 import { ethers } from 'ethers'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import type { ChecksumAddress } from '@/lib/ethereum'
-import { getChecksumAddress } from '@/lib/ethereum'
 
 export const EIP_712_AUTH = {
   types: {
@@ -15,7 +13,7 @@ export const EIP_712_AUTH = {
 }
 
 type User = {
-  walletAddress: ChecksumAddress
+  walletAddress: string
 }
 
 export type NextApiRequestWithAuth = NextApiRequest & {
@@ -45,13 +43,14 @@ async function authenticate(req: NextApiRequest): Promise<User> {
     throw makeError(401, 'Token Expired')
   }
   const verifiedAddress = ethers.utils.verifyTypedData(
-    EIP_712_AUTH.domain, EIP_712_AUTH.types, payload.value, payload.signature)
-  if (verifiedAddress !== payload.value.wallet) {
+    EIP_712_AUTH.domain, EIP_712_AUTH.types, payload.value, payload.signature
+  )
+  const walletAddress = ethers.utils.getAddress(verifiedAddress)
+  const addressInToken = ethers.utils.getAddress(payload.value.wallet)
+  if (walletAddress !== addressInToken) {
     throw makeError(401, 'Invalid Token')
   }
-  return {
-    walletAddress: getChecksumAddress(verifiedAddress)
-  }
+  return { walletAddress }
 }
 
 export function requireAuth(handler: (req: NextApiRequestWithAuth, res: NextApiResponse) => void) {

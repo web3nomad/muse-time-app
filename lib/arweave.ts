@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
 import getCurrency from 'bundlr-arseeding-client/build/web/currencies'
 import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
-import type { ChecksumAddress } from '@/lib/ethereum'
 
 export type EverpayTx = {
   'id': number,
@@ -68,13 +67,13 @@ export async function updateArweaveData({
   resourceId: string,
   resourceType: ArweaveResourceType,
   payload: ArweaveDataPayload,
-  walletAddress: ChecksumAddress,
+  walletAddress: string,
   authToken: string,
 }) {
   const tags = [
     {name: 'Resource-Id', value: resourceId},
     {name: 'Resource-Type', value: resourceType},
-    {name: 'Resource-Owner', value: walletAddress.toString()},
+    {name: 'Resource-Owner', value: ethers.utils.getAddress(walletAddress)},
   ]
   const order = await submitOrder({ tags, payload })
   const res = await fetch('/api/arweave/pay', {
