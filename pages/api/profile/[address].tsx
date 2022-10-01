@@ -3,29 +3,17 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 
 const query = `query ProfileQuery($address: String!) {
   transactions(
+    first: 1,
+    sort: HEIGHT_DESC,
     tags: [
-      {
-        name: "Data-Owner",
-        values: [$address]
-      },
-      {
-        name: "Data-Type",
-        values: ["profile"]
-      }
+      { name: "Data-Owner", values: [$address] },
+      { name: "Data-Type", values: ["profile"] }
     ]
   ) {
     edges {
       node {
         id
-        recipient
-        tags {
-          name
-          value
-        }
-        owner {
-          address
-          key
-        }
+        tags { name value }
       }
     }
   }

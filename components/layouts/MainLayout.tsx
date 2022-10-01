@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react'
 import clsx from 'clsx'
 import Head from 'next/head'
 import SiteHeader from '@/components/SiteHeader'
+import PendingTx from '@/components/PendingTx'
 
 type Props = {
   children?: ReactNode
@@ -29,6 +30,7 @@ export default function MainLayout({ children }: Props) {
       )}>
         {children}
       </main>
+      <PendingTx />
     </div>
   )
 }

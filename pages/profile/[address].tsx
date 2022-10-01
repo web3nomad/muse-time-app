@@ -170,7 +170,7 @@ const Page: NextPage<{addressSlug: string}> = ({ addressSlug }) => {
   return (
     <MainLayout>
       <Head>
-        <title>Profile {addressSlug}</title>
+        <title>{'Profile ' + addressSlug}</title>
       </Head>
       <h3 className="flex items-center">
         <span>{addressSlug}</span>
