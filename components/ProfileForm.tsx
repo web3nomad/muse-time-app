@@ -13,13 +13,7 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
   const authToken = useRecoilValue(authTokenState)
 
   const [pending, setPending] = useState(false)
-
-  const [formData, setFormData] = useState<ProfileData>(
-    profile ?? {
-      name: "",
-      bio: "",
-    }
-  )
+  const [formData, setFormData] = useState<ProfileData>(profile)
 
   const onChange = useCallback((field: string, value: string) => {
     setFormData({
@@ -38,7 +32,6 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
       authToken: authToken,
     }).then((res) => {
       setPending(false)
-      console.log(res)
       onSaveSuccess()
     }).catch((err) => {
       setPending(false)
@@ -60,26 +53,26 @@ export default function ProfileForm({ profile, onSaveSuccess }: {
         </p>
       </div>
       <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Name</label>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Name</label>
         <div className="mt-1 sm:col-span-2 sm:mt-0">
           <input
             className="block w-full min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             type="text"
             autoComplete="off"
             name="name"
-            defaultValue={formData.name}
+            defaultValue={formData['name']}
             onChange={(e) => onChange('name', e.target.value)}
             disabled={pending}
           />
         </div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Bio</label>
+        <label htmlFor="bio" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Bio</label>
         <div className="mt-1 sm:col-span-2 sm:mt-0">
           <textarea
             className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             rows={3}
             autoComplete="off"
             name="bio"
-            defaultValue={formData.bio}
+            defaultValue={formData['bio']}
             onChange={(e) => onChange('bio', e.target.value)}
             disabled={pending}
           />

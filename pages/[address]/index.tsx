@@ -1,23 +1,20 @@
 import type { GetServerSidePropsContext, NextPage } from 'next'
-import useSWR from 'swr'
 import { useEffect, useState, useCallback } from 'react'
 import Head from 'next/head'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
-import { PencilSquareIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
+import { PencilSquareIcon } from '@heroicons/react/20/solid'
+import type { ProfileData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 import TransitionDialog from '@/components/TransitionDialog'
 import ProfileForm from '@/components/ProfileForm'
 
-type ProfileData = {
-  name: string,
-  bio: string,
-}
 
-const Page: NextPage<{addressSlug: string}> = ({ addressSlug }) => {
-  const [profile, setProfile] = useState<ProfileData|null>(null)
+const Page: NextPage<{addressSlug: string}> = ({
+  addressSlug
+}) => {
   const walletAddress = useRecoilValue(walletAddressState)
-
+  const [profile, setProfile] = useState<ProfileData|null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
   const fetchProfile = useCallback(() => {

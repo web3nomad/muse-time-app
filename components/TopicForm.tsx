@@ -14,13 +14,7 @@ export default function TopicForm({ topic, onSaveSuccess }: {
   const authToken = useRecoilValue(authTokenState)
 
   const [pending, setPending] = useState(false)
-
-  const [formData, setFormData] = useState<TopicData>(
-    topic ?? {
-      name: "",
-      bio: "",
-    }
-  )
+  const [formData, setFormData] = useState<TopicData>(topic)
 
   const onChange = useCallback((field: string, value: string) => {
     setFormData({
@@ -39,7 +33,6 @@ export default function TopicForm({ topic, onSaveSuccess }: {
       authToken: authToken,
     }).then((res) => {
       setPending(false)
-      console.log(res)
       onSaveSuccess()
     }).catch((err) => {
       setPending(false)
@@ -61,27 +54,63 @@ export default function TopicForm({ topic, onSaveSuccess }: {
         </p>
       </div>
       <div className="sm:grid sm:grid-cols-3 sm:items-start sm:gap-4 sm:border-t sm:border-gray-200 sm:pt-5">
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Name</label>
+        <label htmlFor="name" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Name</label>
         <div className="mt-1 sm:col-span-2 sm:mt-0">
           <input
             className="block w-full min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             type="text"
             autoComplete="off"
             name="name"
-            defaultValue={formData.name}
+            defaultValue={formData['name']}
             onChange={(e) => onChange('name', e.target.value)}
             disabled={pending}
           />
         </div>
-        <label htmlFor="username" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Bio</label>
+        <label htmlFor="description" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Description</label>
         <div className="mt-1 sm:col-span-2 sm:mt-0">
           <textarea
             className="block w-full max-w-lg rounded-md border-gray-300 shadow-sm focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
             rows={3}
             autoComplete="off"
-            name="bio"
-            defaultValue={formData.bio}
-            onChange={(e) => onChange('bio', e.target.value)}
+            name="description"
+            defaultValue={formData['description']}
+            onChange={(e) => onChange('description', e.target.value)}
+            disabled={pending}
+          />
+        </div>
+        <label htmlFor="category" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Category</label>
+        <div className="mt-1 sm:col-span-2 sm:mt-0">
+          <input
+            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            type="text"
+            autoComplete="off"
+            name="category"
+            defaultValue={formData['category']}
+            onChange={(e) => onChange('category', e.target.value)}
+            disabled={pending}
+          />
+        </div>
+        <label htmlFor="value" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Value</label>
+        <div className="mt-1 sm:col-span-2 sm:mt-0">
+          <input
+            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            type="text"
+            autoComplete="off"
+            name="value"
+            defaultValue={formData['value']}
+            onChange={(e) => onChange('value', e.target.value)}
+            disabled={pending}
+          />
+        </div>
+        <label htmlFor="duration" className="block text-sm font-medium text-gray-700 sm:mt-px sm:pt-2">Duration</label>
+        <div className="mt-1 sm:col-span-2 sm:mt-0">
+          <input
+            className="block w-full min-w-0 flex-1 rounded-md border-gray-300 focus:border-indigo-500 focus:ring-indigo-500 sm:text-sm"
+            type="text"
+            autoComplete="off"
+            name="duration"
+            defaultValue={formData['duration']}
+            onChange={(e) => onChange('duration', e.target.value)}
             disabled={pending}
           />
         </div>
