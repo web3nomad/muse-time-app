@@ -21,7 +21,7 @@ const Test: NextPage = () => {
           <ConnectButton />
         </div>
         <div className="my-16">
-          <Calendar />
+          {/*<Calendar />*/}
         </div>
       </main>
     </div>

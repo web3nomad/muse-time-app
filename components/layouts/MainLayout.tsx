@@ -18,7 +18,7 @@ export default function MainLayout({ children }: Props) {
       <SiteHeader />
       <div className="flex items-center justify-center mt-16 mb-8">
         <h2 className="text-right">
-          <span className="text-6xl inline-block mb-4">"Time is money"</span>
+          <span className="text-6xl inline-block mb-4">&quot;Time is money&quot;</span>
           <br/>
           <span className="inline-block mr-4">- Bemjamin</span>
         </h2>

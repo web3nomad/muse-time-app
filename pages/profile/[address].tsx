@@ -6,7 +6,7 @@ import { useRecoilValue } from 'recoil'
 import { Dialog, Transition } from '@headlessui/react'
 import { PencilSquareIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { updateArweaveData } from '@/lib/arweave'
+import { updateArweaveData, ArweaveDataType } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 
 type ProfileData = {
@@ -143,7 +143,7 @@ const Page: NextPage<{addressSlug: string}> = ({ addressSlug }) => {
       const data = await res.json()
       setProfile(data)
     })
-  }, [setProfile])
+  }, [setProfile, addressSlug])
 
   const signAndSaveProfile = useCallback((payload: ProfileData) => {
     // console.log(payload)
@@ -153,7 +153,7 @@ const Page: NextPage<{addressSlug: string}> = ({ addressSlug }) => {
     // }
     updateArweaveData({
       id: walletAddress,
-      type: 'profile',
+      type: ArweaveDataType.PROFILE,
       payload: payload,
       walletAddress: walletAddress,
       authToken: authToken,
@@ -163,7 +163,7 @@ const Page: NextPage<{addressSlug: string}> = ({ addressSlug }) => {
     }).catch((err) => {
       console.log(err)
     })
-  }, [walletAddress])
+  }, [walletAddress, authToken])
 
   useEffect(() => fetchProfile(), [fetchProfile])
 

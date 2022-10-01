@@ -2,7 +2,23 @@ import { providers } from 'ethers'
 import getCurrency from 'bundlr-arseeding-client/build/web/currencies'
 import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
 
-async function submitOrder({ tags, payload }) {
+export type EverpayTx = {
+  'id': number,
+  'paymentStatus': string,
+  'paymentId': string,
+  'onChainStatus': string
+}
+export type ArweaveDataPayload = {[_key:string]: unknown}
+export type ArweaveDataTag = {name:string,value:string}
+export enum ArweaveDataType {
+  PROFILE = 'profile',
+  TOPIC = 'topic',
+}
+
+async function submitOrder({ tags, payload }: {
+  tags: ArweaveDataTag[],
+  payload: ArweaveDataPayload,
+}) {
   const provider = new providers.Web3Provider((window as any).ethereum)
   await provider._ready()
   const currencyConfig = getCurrency('ethereum', provider)
@@ -31,6 +47,12 @@ export async function updateArweaveData({
   id, type, payload,
   walletAddress,
   authToken,
+}: {
+  id: string,
+  type: ArweaveDataType,
+  payload: ArweaveDataPayload,
+  walletAddress: string,
+  authToken: string,
 }) {
   const tags = [
     {name: 'Data-ID', value: id},

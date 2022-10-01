@@ -12,7 +12,7 @@ export default function SiteHeader() {
   const authToken = useRecoilValue(authTokenState)
 
   // const fetcher = (...args) => fetch(...args).then(res => res.json())
-  const fetcher = async (url) => {
+  const fetcher = async (url: string) => {
     if (!authToken) {
       return new Promise((resolve) => { resolve(null) })
     }
@@ -40,6 +40,7 @@ export default function SiteHeader() {
           <a
             href={`https://arseed.web3infra.dev/bundle/tx/${pendingTx.itemId}`}
             target="_blank"
+            rel="noreferrer"
           > Pending Tx </a>
           <ArrowPathIcon className="h-5 w-5 animate-spin ml-2" />
         </div>

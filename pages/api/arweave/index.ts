@@ -5,7 +5,7 @@ export default function handler(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const keyfile = JSON.parse(process.env.ARWEAVE_KEYFILE)
+  const keyfile = JSON.parse(process.env.ARWEAVE_KEYFILE!)
   res.status(200).json({
     // keyfile: keyfile
   })

@@ -12,10 +12,12 @@ export const EIP_712_AUTH = {
   domain: {}
 }
 
+type User = {
+  walletAddress: string
+}
+
 export type NextApiRequestWithAuth = NextApiRequest & {
-  user: {
-    wallet: string
-  }
+  user: User
 }
 
 async function authenticate(req: NextApiRequest): Promise<User> {
