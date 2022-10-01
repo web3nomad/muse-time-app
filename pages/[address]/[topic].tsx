@@ -9,7 +9,7 @@ import type { TopicData } from '@/lib/arweave'
 import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 import TransitionDialog from '@/components/TransitionDialog'
-import TopicForm from '@/components/TopicForm'
+import TopicForm from '@/components/topics/TopicForm'
 
 type PageProps = {
   topicSlug: string,

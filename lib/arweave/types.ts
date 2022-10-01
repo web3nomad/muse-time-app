@@ -11,6 +11,7 @@ export type ArweaveDataTag = {name:string,value:string}
 export enum ArweaveResourceType {
   PROFILE = 'profile',
   TOPIC = 'topic',
+  TOPICS = 'topics',
 }
 
 export type TopicData = {

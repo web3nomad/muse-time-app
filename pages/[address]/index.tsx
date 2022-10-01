@@ -1,66 +1,22 @@
 import type { GetServerSidePropsContext, GetServerSideProps, NextPage } from 'next'
-import { useEffect, useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
 import { ethers } from 'ethers'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
-import { PencilSquareIcon } from '@heroicons/react/20/solid'
-import type { ProfileData } from '@/lib/arweave'
-import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
-import TransitionDialog from '@/components/TransitionDialog'
-import ProfileForm from '@/components/ProfileForm'
+import ProfileDetail from '@/components/profile/ProfileDetail'
+import TopicsList from '@/components/topics/TopicsList'
 
 type PageProps = {
   addressSlug: string
 }
 
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
-  const walletAddress = useRecoilValue(walletAddressState)
-  const [profile, setProfile] = useState<ProfileData|null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
-
-  const fetchProfile = useCallback(() => {
-    getArweaveData({
-      resourceId: '',
-      resourceType: ArweaveResourceType.PROFILE,
-      resourceOwner: addressSlug
-    }).then(data => {
-      setProfile(data)
-    })
-  }, [setProfile, addressSlug])
-
-  const onSaveSuccess = useCallback((data: ProfileData) => {
-    setDialogOpen(false)
-    setProfile(data)
-  }, [setDialogOpen, setProfile])
-
-  useEffect(() => fetchProfile(), [fetchProfile])
-
   return (
     <MainLayout>
       <Head>
         <title>{'Profile ' + addressSlug}</title>
       </Head>
-      <h3 className="flex items-center">
-        <span>{addressSlug}</span>
-        {addressSlug === walletAddress && (
-          <span className="p-2 ml-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
-            <PencilSquareIcon className="w-6 h-6" />
-          </span>
-        )}
-      </h3>
-      {profile ? (
-        <>
-          <div>{profile.name}</div>
-          <div>{profile.bio}</div>
-          {addressSlug === walletAddress && (
-            <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-              <ProfileForm profile={profile} onSaveSuccess={onSaveSuccess} />
-            </TransitionDialog>
-          )}
-        </>
-      ) : <div>loading profile ...</div>}
+      <ProfileDetail resourceOwner={addressSlug}/>
+      <TopicsList resourceOwner={addressSlug}/>
     </MainLayout>
   )
 }
