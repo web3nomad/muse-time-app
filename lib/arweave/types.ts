@@ -25,5 +25,10 @@ export type TopicData = {
 
 export type ProfileData = {
   name: string,
-  bio: string,
+  url: string,
+  email: string,
+  avatar: string,
+  description: string,
+  'com.twitter': string,
+  'org.telegram': string,
 }

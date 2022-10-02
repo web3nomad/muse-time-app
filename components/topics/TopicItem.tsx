@@ -1,5 +1,5 @@
 import { ethers } from 'ethers'
-import { EditSquareIcon, CafeIcon, CalendarIcon } from '@/components/icons'
+import { EditSquareIcon, CoffeeIcon, CalendarIcon } from '@/components/icons'
 import { TrashIcon } from '@heroicons/react/20/solid'
 import type { TopicData } from '@/lib/arweave'
 
@@ -51,7 +51,7 @@ export default function TopicItem({
       </div>
       <div className="flex items-center justify-start">
         <div className="px-2 py-1 rounded-md border border-white/80 text-xs leading-5 flex items-center">
-          <CafeIcon className="w-4 h-4 mr-1" />
+          <CoffeeIcon className="w-4 h-4 mr-1" />
           <span>{0} Minted</span>
         </div>
         <div className="px-2 py-1 rounded-md border border-white/80 text-xs leading-5 flex items-center ml-3">

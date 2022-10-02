@@ -3,17 +3,15 @@ import Image from 'next/image'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
-import type { ProfileData } from '@/lib/arweave'
 import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
+import type { ProfileData } from '@/lib/arweave'
 import ProfileForm from './ProfileForm'
-// import { PencilSquareIcon } from '@heroicons/react/20/solid'
-import { EditSquareIcon } from '@/components/icons'
+import { EditSquareIcon, CoffeeIcon, CalendarIcon } from '@/components/icons'
 
 import IconTwitterCircle from '@/assets/images/icon-twitter-circle.svg'
 
-const Avatar = () => {
-  const twitterHandle = 'web3nomad'
+const Avatar = ({ profile }: { profile: ProfileData }) => {
   return (
     <div className={clsx(
       "absolute top-0 -left-48 w-32 hidden lg:flex",
@@ -28,9 +26,9 @@ const Avatar = () => {
         style={{backgroundImage: `url(${IconTwitterCircle.src})`}}
       >
         <a
-          href={`https://twitter.com/${twitterHandle}`}
+          href={`https://twitter.com/${profile['com.twitter']}`}
           target="_blank" rel="noreferrer"
-        >{twitterHandle}</a>
+        >{profile['com.twitter']}</a>
       </div>
     </div>
   )
@@ -57,20 +55,34 @@ export default function ProfileDetail({ resourceOwner }: {
     })
   }, [setProfile, resourceOwner])
 
-  const onSaveSuccess = useCallback((data: ProfileData) => {
+  const onClickConfirm = useCallback((data: ProfileData) => {
     setDialogOpen(false)
     setProfile(data)
   }, [setDialogOpen, setProfile])
+
+  const onClickCancel = useCallback(() => {
+    setDialogOpen(false)
+  }, [setDialogOpen])
 
   useEffect(() => fetchProfile(), [fetchProfile])
 
   return profile ? (
     // profile loaded
     <div className="relative">
-      <Avatar />
+      <Avatar profile={profile} />
       <section className="relative mb-2">
         <div className="text-2xl font-medium">{profile.name}</div>
-        <div className="text-sm text-neutral-400 mt-2 mb-4">{resourceOwner}</div>
+        <div className="text-sm text-neutral-400 my-2">{resourceOwner}</div>
+        <div className="flex items-center justify-start my-6">
+          <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center">
+            <CoffeeIcon className="w-4 h-4 mr-1" />
+            <span>{0} Minted</span>
+          </div>
+          <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center ml-3">
+            <CalendarIcon className="w-4 h-4 mr-1" />
+            <span>{0} Pending</span>
+          </div>
+        </div>
         {canEditProfile && (
           <span className="absolute top-0 right-0 p-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
             {/*<PencilSquareIcon className="w-6 h-6" />*/}
@@ -80,11 +92,11 @@ export default function ProfileDetail({ resourceOwner }: {
       </section>
       <section className="relative my-16">
         <h3 className="text-3xl font-semibold my-4">Introduction</h3>
-        <div>{profile.bio}</div>
+        <div>{profile.description}</div>
       </section>
       {resourceOwner === walletAddress && (
         <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-          <ProfileForm profile={profile} onSaveSuccess={onSaveSuccess} />
+          <ProfileForm profile={profile} onClickConfirm={onClickConfirm} onClickCancel={onClickCancel} />
         </TransitionDialog>
       )}
     </div>
