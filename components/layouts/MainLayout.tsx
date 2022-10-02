@@ -23,10 +23,10 @@ export default function MainLayout({ children }: Props) {
       <SiteHeader />
       <div className="flex flex-col items-end justify-center w-[32rem] mt-16 mb-8 mx-auto">
         <div className="relative w-full h-32">
-          <Image src={TimeIsMoney.src} layout="fill" alt="Time is money" />
+          <Image src={TimeIsMoney.src} layout="fill" alt="Time is money" priority />
         </div>
         <div className="relative w-1/3 h-6">
-          <Image src={BenjaminFranklin.src} layout="fill" alt="Benjamin Franklin" />
+          <Image src={BenjaminFranklin.src} layout="fill" alt="Benjamin Franklin" priority />
         </div>
       </div>
       <div className={clsx(

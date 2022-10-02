@@ -13,7 +13,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
   return (
     <MainLayout>
       <Head>
-        <title>{'Profile ' + addressSlug}</title>
+        <title>{'MuseTime | ' + addressSlug}</title>
       </Head>
       <main className="lg:pl-64">
         <ProfileDetail resourceOwner={addressSlug}/>

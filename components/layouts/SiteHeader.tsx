@@ -14,10 +14,10 @@ export default function SiteHeader() {
       <Link href='/'>
         <a className="block flex items-center justify-start">
           <span className="relative w-16 h-7">
-            <Image src={Logo.src} layout="fill" priority alt="MuseTime Logo" />
+            <Image src={Logo.src} layout="fill" alt="MuseTime Logo" priority />
           </span>
           <span className="relative w-32 h-7 ml-2">
-            <Image src={MuseTime.src} layout="fill" priority alt="MuseTime" />
+            <Image src={MuseTime.src} layout="fill" alt="MuseTime" priority />
           </span>
         </a>
       </Link>
