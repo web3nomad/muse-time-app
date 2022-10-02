@@ -4,9 +4,9 @@ import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import type { TopicData } from '@/lib/arweave'
 import { ArweaveResourceType, updateArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
+import { PlusCircleIcon } from '@/components/icons'
 import TopicForm from './TopicForm'
-import { EditSquareIcon, PlusCircleIcon } from '@/components/icons'
-import { TrashIcon } from '@heroicons/react/20/solid'
+import TopicItem from './TopicItem'
 
 
 const makeRandomId = (n: number) => {
@@ -115,27 +115,6 @@ export default function TopicsList({ resourceOwner }: {
 
   useEffect(() => fetchTopics(), [fetchTopics])
 
-  const TopicItem = ({ topic }: { topic: TopicData }) => (
-    <div className="relative p-4 bg-brown-grullo text-white">
-      <div>{topic.name}</div>
-      <div>{topic.description}</div>
-      <div>{topic.category}</div>
-      <div>{topic.value}</div>
-      <div>{topic.duration}</div>
-      <div className="text-xs text-ellipsis overflow-hidden">{topic.id}</div>
-      {canEditTopics && (
-        <div className="absolute right-3 top-3 flex items-center justify-end">
-          <span className="p-1 ml-1 cursor-pointer" onClick={() => handleEditTopic(topic)}>
-            <EditSquareIcon className="w-4 h-4" />
-          </span>
-          <span className="p-1 ml-1 cursor-pointer" onClick={() => handleDeleteTopic(topic)}>
-            <TrashIcon className="w-4 h-4" />
-          </span>
-        </div>
-      )}
-    </div>
-  )
-
   return (
     <section className="relative">
       <h3 className="text-3xl font-semibold my-4">Time NFTs</h3>
@@ -147,7 +126,12 @@ export default function TopicsList({ resourceOwner }: {
       <div className="-m-2 flex items-start justify-between flex-wrap">
         {topics.map(topic => (
           <div className="p-2 w-1/2" key={topic.id}>
-            <TopicItem topic={topic} />
+            <TopicItem
+              topic={topic}
+              canEditTopics={canEditTopics}
+              onClickEdit={handleEditTopic}
+              onClickDelete={handleDeleteTopic}
+            />
           </div>
         ))}
       </div>

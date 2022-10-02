@@ -16,11 +16,11 @@ const Avatar = () => {
   const twitterHandle = 'web3nomad'
   return (
     <div className={clsx(
-      "absolute top-0 -left-64 w-48 hidden lg:flex",
+      "absolute top-0 -left-48 w-32 hidden lg:flex",
       "flex-col items-center justify-start"
     )}>
       <div
-        className="w-36 h-36 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
+        className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
         style={{backgroundImage: `url("https://api.hippyghosts.io/~/storage/images/raw/524")`}}
       ></div>
       <div

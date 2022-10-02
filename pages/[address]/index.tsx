@@ -15,7 +15,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
       <Head>
         <title>{'MuseTime | ' + addressSlug}</title>
       </Head>
-      <main className="lg:pl-64">
+      <main className="lg:pl-48">
         <ProfileDetail resourceOwner={addressSlug}/>
         <TopicsList resourceOwner={addressSlug}/>
       </main>
