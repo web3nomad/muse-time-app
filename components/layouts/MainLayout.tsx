@@ -31,11 +31,11 @@ export default function MainLayout({ children }: Props) {
       </div>
       <div className={clsx(
         "relative mb-32 mx-auto",
-        "px-12 py-8 lg:px-16 lg:py-12",
-        "w-full lg:w-[1080px] min-h-[1080px]",
+        "px-8 py-8 lg:px-20 lg:py-16",
+        "w-full lg:w-[1000px] min-h-[1000px]",
         "bg-white text-neutral-900 border-black border-[7px] rounded-[40px]"
       )}>
-        <main>{children}</main>
+        {children}
         <div className="absolute top-20 -left-3 w-3">
           <div className="w-full h-8 bg-black rounded-l-md"></div>
           <div className="w-full h-16 mt-8 bg-black rounded-l-md"></div>
