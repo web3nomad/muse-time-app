@@ -115,7 +115,7 @@ export default function TopicsList({ resourceOwner }: {
   useEffect(() => fetchTopics(), [fetchTopics])
 
   const TopicItem = ({ topic }: { topic: TopicData }) => (
-    <div className="relative p-4 bg-[#AA9B7C] text-white">
+    <div className="relative p-4 bg-brown-grullo text-white">
       <div className="text-xs">{topic.id}</div>
       <div>{topic.name}</div>
       <div>{topic.description}</div>

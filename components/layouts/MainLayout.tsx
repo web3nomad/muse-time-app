@@ -14,7 +14,7 @@ type Props = {
 
 export default function MainLayout({ children }: Props) {
   return (
-    <div className="bg-[#E0DDD6] min-h-screen overflow-hidden">
+    <div className="bg-white-coffee min-h-screen overflow-hidden">
       <Head>
         <title>MuseTime</title>
         <meta name="description" content="MuseTime 是一个时间x空间的交易工具，在这个高维的世界里，时间和空间可以自由转换" />
@@ -33,7 +33,7 @@ export default function MainLayout({ children }: Props) {
         "relative mb-32 mx-auto",
         "px-12 py-8 lg:px-16 lg:py-12",
         "w-full lg:w-[1080px] min-h-[1080px]",
-        "bg-white text-[#292929] border-black border-[7px] rounded-[40px]"
+        "bg-white text-neutral-900 border-black border-[7px] rounded-[40px]"
       )}>
         <main>{children}</main>
         <div className="absolute top-20 -left-3 w-3">

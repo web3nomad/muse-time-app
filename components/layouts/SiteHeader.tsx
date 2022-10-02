@@ -10,7 +10,7 @@ import Logo from '@/assets/images/logo-w.svg'
 
 export default function SiteHeader() {
   return (
-    <header className={clsx("px-8 h-16 flex items-center justify-start bg-[#040301] text-white")}>
+    <header className={clsx("px-8 h-16 flex items-center justify-start bg-neutral-900 text-white")}>
       <Link href='/'>
         <a className="block flex items-center justify-start">
           <span className="relative w-16 h-7">
