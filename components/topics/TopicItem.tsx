@@ -40,7 +40,7 @@ export default function TopicItem({
       </div>
       <div className="my-3 flex items-center justify-start">
         <div className="px-3 py-1 rounded-full bg-blue-cadet text-neutral-900 text-xs font-medium">
-          Catchup
+          {topic.method || '-'}
         </div>
         <div className="px-3 py-1 rounded-full bg-neutral-100 text-neutral-900 text-xs font-medium ml-1">
           {topic.category || '-'}
