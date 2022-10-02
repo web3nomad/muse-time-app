@@ -11,7 +11,7 @@ export async function submitOrder(
 ) {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum)
   await provider._ready()
-  const currencyConfig = getCurrency('ethereum', provider)
+  const currencyConfig: any = getCurrency('ethereum', provider)
   // the default provider url is offline
   currencyConfig.providerUrl = PUBLIC_PROVIDERS[NETWORK.Mainnet]
   await currencyConfig.ready()

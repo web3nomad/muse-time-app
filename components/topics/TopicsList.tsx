@@ -1,11 +1,12 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { PlusIcon, TrashIcon, PencilSquareIcon } from '@heroicons/react/20/solid'
 import type { TopicData } from '@/lib/arweave'
 import { ArweaveResourceType, updateArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import TopicForm from './TopicForm'
+import { EditSquareIcon, PlusCircleIcon } from '@/components/icons'
+import { TrashIcon } from '@heroicons/react/20/solid'
 
 
 const makeRandomId = (n: number) => {
@@ -116,16 +117,16 @@ export default function TopicsList({ resourceOwner }: {
 
   const TopicItem = ({ topic }: { topic: TopicData }) => (
     <div className="relative p-4 bg-brown-grullo text-white">
-      <div className="text-xs">{topic.id}</div>
       <div>{topic.name}</div>
       <div>{topic.description}</div>
       <div>{topic.category}</div>
       <div>{topic.value}</div>
       <div>{topic.duration}</div>
+      <div className="text-xs text-ellipsis overflow-hidden">{topic.id}</div>
       {canEditTopics && (
-        <div className="absolute right-1 top-1 flex items-center justify-end">
+        <div className="absolute right-3 top-3 flex items-center justify-end">
           <span className="p-1 ml-1 cursor-pointer" onClick={() => handleEditTopic(topic)}>
-            <PencilSquareIcon className="w-4 h-4" />
+            <EditSquareIcon className="w-4 h-4" />
           </span>
           <span className="p-1 ml-1 cursor-pointer" onClick={() => handleDeleteTopic(topic)}>
             <TrashIcon className="w-4 h-4" />
@@ -136,15 +137,13 @@ export default function TopicsList({ resourceOwner }: {
   )
 
   return (
-    <div>
-      <h3 className="flex items-center">
-        <span>Topics</span>
-        {canEditTopics && (
-          <span className="p-2 ml-2 cursor-pointer" onClick={() => handleNewTopic()}>
-            <PlusIcon className="w-6 h-6" />
-          </span>
-        )}
-      </h3>
+    <section className="relative">
+      <h3 className="text-3xl font-semibold my-4">Time NFTs</h3>
+      {canEditTopics && (
+        <span className="absolute top-0 right-0 p-2 p-2 cursor-pointer" onClick={() => handleNewTopic()}>
+          <PlusCircleIcon className="w-5 h-5" />
+        </span>
+      )}
       <div className="-m-2 flex items-start justify-between flex-wrap">
         {topics.map(topic => (
           <div className="p-2 w-1/2" key={topic.id}>
@@ -158,6 +157,6 @@ export default function TopicsList({ resourceOwner }: {
       <TransitionDialog open={pendingSync} onClose={() => {}}>
         <div>Confirm in metamask</div>
       </TransitionDialog>
-    </div>
+    </section>
   )
 }

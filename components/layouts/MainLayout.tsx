@@ -21,7 +21,7 @@ export default function MainLayout({ children }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <SiteHeader />
-      <div className="flex flex-col items-end justify-center w-[32rem] mt-16 mb-8 mx-auto">
+      <div className="flex flex-col items-end justify-center w-[32rem] my-8 mx-auto">
         <div className="relative w-full h-32">
           <Image src={TimeIsMoney.src} layout="fill" alt="Time is money" priority />
         </div>

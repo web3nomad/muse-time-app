@@ -1,13 +1,14 @@
 import clsx from 'clsx'
 import Image from 'next/image'
-import { useEffect, useState, useCallback } from 'react'
+import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
-import { PencilSquareIcon } from '@heroicons/react/20/solid'
 import type { ProfileData } from '@/lib/arweave'
 import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import ProfileForm from './ProfileForm'
+// import { PencilSquareIcon } from '@heroicons/react/20/solid'
+import { EditSquareIcon } from '@/components/icons'
 
 import IconTwitterCircle from '@/assets/images/icon-twitter-circle.svg'
 
@@ -42,6 +43,10 @@ export default function ProfileDetail({ resourceOwner }: {
   const [profile, setProfile] = useState<ProfileData|null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 
+  const canEditProfile = useMemo(() => {
+    return resourceOwner === walletAddress
+  }, [resourceOwner, walletAddress])
+
   const fetchProfile = useCallback(() => {
     getArweaveData({
       resourceId: '',
@@ -59,28 +64,32 @@ export default function ProfileDetail({ resourceOwner }: {
 
   useEffect(() => fetchProfile(), [fetchProfile])
 
-  return (
+  return profile ? (
+    // profile loaded
     <div className="relative">
       <Avatar />
-      <h3 className="flex items-center">
-        <span>{resourceOwner}</span>
-        {resourceOwner === walletAddress && (
-          <span className="p-2 ml-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
-            <PencilSquareIcon className="w-6 h-6" />
+      <section className="relative mb-2">
+        <div className="text-2xl font-medium">{profile.name}</div>
+        <div className="text-sm text-neutral-400 mt-2 mb-4">{resourceOwner}</div>
+        {canEditProfile && (
+          <span className="absolute top-0 right-0 p-2 cursor-pointer" onClick={() => setDialogOpen(true)}>
+            {/*<PencilSquareIcon className="w-6 h-6" />*/}
+            <EditSquareIcon className="w-4 h-4" />
           </span>
         )}
-      </h3>
-      {profile ? (
-        <>
-          <div>{profile.name}</div>
-          <div>{profile.bio}</div>
-          {resourceOwner === walletAddress && (
-            <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-              <ProfileForm profile={profile} onSaveSuccess={onSaveSuccess} />
-            </TransitionDialog>
-          )}
-        </>
-      ) : <div>loading profile ...</div>}
+      </section>
+      <section className="relative my-16">
+        <h3 className="text-3xl font-semibold my-4">Introduction</h3>
+        <div>{profile.bio}</div>
+      </section>
+      {resourceOwner === walletAddress && (
+        <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
+          <ProfileForm profile={profile} onSaveSuccess={onSaveSuccess} />
+        </TransitionDialog>
+      )}
     </div>
+  ) : (
+    // profile not loaded
+    <div>loading profile ...</div>
   )
 }
