@@ -3,7 +3,7 @@ import { useState, useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
-import { updateArweaveData, ArweaveResourceType } from '@/lib/arweave'
+import { syncArweaveData, ArweaveResourceType } from '@/lib/arweave'
 import type { ProfileData } from '@/lib/arweave'
 
 
@@ -30,7 +30,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
       return
     }
     setPending(true)
-    updateArweaveData({
+    syncArweaveData({
       resourceId: '',
       resourceType: ArweaveResourceType.PROFILE,
       resourceOwner: walletAddress,

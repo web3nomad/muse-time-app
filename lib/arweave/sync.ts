@@ -1,10 +1,11 @@
 import { ethers } from 'ethers'
 import getCurrency from 'bundlr-arseeding-client/build/web/currencies'
 import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
+import { ArweaveResourceType } from './types'
 import type { ArweaveDataPayload, ArweaveDataTag } from './types'
 import { PUBLIC_PROVIDERS, NETWORK } from '@/lib/constants'
 
-export async function submitOrder(
+async function submitOrder(
   payload: ArweaveDataPayload,
   tags: ArweaveDataTag[],
   authToken: string,
@@ -45,5 +46,29 @@ export async function submitOrder(
     },
     body: JSON.stringify({ order })
   }).then(res => res.json())
+  return result
+}
+
+export async function syncArweaveData({
+  resourceId,
+  resourceType,
+  resourceOwner,
+  payload,
+  authToken,
+}: {
+  resourceId: string,
+  resourceType: ArweaveResourceType,
+  resourceOwner: string,
+  payload: ArweaveDataPayload,
+  authToken: string,
+}) {
+  const tags = [
+    {name: 'Content-Type', value: 'application/json'},
+    {name: 'App-Name', value: 'MuseTime'},
+    {name: 'Resource-Id', value: resourceId},
+    {name: 'Resource-Type', value: resourceType},
+    {name: 'Resource-Owner', value: ethers.utils.getAddress(resourceOwner)},
+  ]
+  const result = await submitOrder(payload, tags, authToken)
   return result
 }

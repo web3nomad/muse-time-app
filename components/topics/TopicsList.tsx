@@ -2,7 +2,7 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import type { TopicData } from '@/lib/arweave'
-import { ArweaveResourceType, updateArweaveData, getArweaveData } from '@/lib/arweave'
+import { ArweaveResourceType, syncArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import { PlusCircleIcon } from '@/components/icons'
 import TopicForm from './TopicForm'
@@ -74,7 +74,7 @@ export default function TopicsList({ resourceOwner }: {
       return
     }
     setPendingSync(true)
-    updateArweaveData({
+    syncArweaveData({
       resourceId: '',
       resourceType: ArweaveResourceType.TOPICS,
       resourceOwner: walletAddress,
