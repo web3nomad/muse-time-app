@@ -71,8 +71,12 @@ export default function ProfileDetail({ resourceOwner }: {
     <div className="relative">
       <Avatar profile={profile} />
       <section className="relative mb-2">
+        <div
+          className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
+          style={{backgroundImage: `url(${profile.avatar})`}}
+        ></div>
         <div className="text-2xl font-medium">{profile.name}</div>
-        <div className="text-sm text-neutral-400 my-2">{resourceOwner}</div>
+        <div className="text-xs sm:text-sm text-neutral-400 my-2">{resourceOwner}</div>
         <div className="flex items-center justify-start my-6">
           <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center">
             <CoffeeIcon className="w-4 h-4 mr-1" />

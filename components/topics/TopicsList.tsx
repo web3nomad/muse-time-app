@@ -127,7 +127,7 @@ export default function TopicsList({ resourceOwner }: {
       )}
       <div className="-m-2 flex items-start justify-between flex-wrap">
         {topics.map(topic => (
-          <div className="p-2 w-1/2" key={topic.id}>
+          <div className="p-2 w-full sm:w-1/2" key={topic.id}>
             <TopicItem
               topic={topic}
               canEditTopics={canEditTopics}

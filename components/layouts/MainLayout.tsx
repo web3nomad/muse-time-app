@@ -21,19 +21,19 @@ export default function MainLayout({ children }: Props) {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <SiteHeader />
-      <div className="flex flex-col items-end justify-center w-[32rem] my-8 mx-auto">
-        <div className="relative w-full h-32">
+      <div className="flex flex-col items-end justify-center w-[18rem] sm:w-[32rem] my-8 mx-auto">
+        <div className="relative w-full h-20 sm:h-32">
           <Image src={TimeIsMoney.src} layout="fill" alt="Time is money" />
         </div>
-        <div className="relative w-1/3 h-6">
+        <div className="relative w-1/3 h-4 sm:h-6">
           <Image src={BenjaminFranklin.src} layout="fill" alt="Benjamin Franklin" />
         </div>
       </div>
       <div className={clsx(
         "relative mb-32 mx-auto",
-        "px-8 py-8 lg:px-20 lg:py-16",
+        "px-5 py-5 sm:px-8 sm:py-8 lg:px-20 lg:py-16",
         "w-full lg:w-[1000px] min-h-[1000px]",
-        "bg-white text-neutral-900 border-black border-[7px] rounded-[40px]"
+        "bg-white text-neutral-900 border-black border-[3px] lg:border-[7px] rounded-[40px]"
       )}>
         {children}
         <div className="absolute top-20 -left-3 w-3">
