@@ -8,10 +8,14 @@ export type EverpayTx = {
 export type ArweaveDataPayload = {[_key:string]: unknown} | Array<{[_key:string]: unknown}>
 export type ArweaveDataTag = {name:string,value:string}
 
-export enum ArweaveResourceType {
-  PROFILE = 'profile',
-  TOPIC = 'topic',
-  TOPICS = 'topics',
+export type ArweaveMetadata = {
+  'id': string,
+  'tags': ArweaveDataTag[],
+  'owner': string,
+  'target': string,
+  'anchor': string,
+  'signature': string,
+  'signatureType': number,
 }
 
 export type TopicData = {
@@ -33,4 +37,10 @@ export type ProfileData = {
   description: string,
   'com.twitter': string,
   'org.telegram': string,
+}
+
+export enum ArweaveResourceType {
+  PROFILE = 'profile',
+  TOPIC = 'topic',
+  TOPICS = 'topics',
 }

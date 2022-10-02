@@ -1,5 +1,43 @@
 import { ethers } from 'ethers'
 import { ArweaveResourceType } from './types'
+import type { EverpayTx, ArweaveMetadata } from './types'
+
+type QueryParams = {
+  resourceId: string,
+  resourceType: ArweaveResourceType,
+  resourceOwner: string,
+}
+
+async function queryPendingItemId({ resourceId, resourceType, resourceOwner }: QueryParams) {
+  const url = `https://arseed.web3infra.dev/bundle/orders/${resourceOwner}`
+  const txs: EverpayTx[] = await fetch(url).then(async (res) => {
+    const txs: EverpayTx[] = await res.json()
+    // return txs.filter((tx) => tx.paymentStatus === 'paid')
+    return txs.filter((tx) => tx.paymentStatus === 'paid' && tx.onChainStatus !== 'success')
+  }).catch((err) => {
+    console.log(err)
+    return []
+  })
+  const promises: Promise<ArweaveMetadata>[] = txs.map(async (tx) => {
+    const url = `https://arseed.web3infra.dev/bundle/tx/${tx.itemId}`
+    return fetch(url).then(res => res.json())
+  })
+  const metadataList = await Promise.all(promises)
+  const filteredMetadataList = metadataList.filter(({ tags }) => {
+    const tagsMap: {[_key:string]:string} = {}
+    tags.forEach((tag) => tagsMap[tag.name] = tag.value)
+    return (
+      tagsMap['Resource-Id'] == resourceId &&
+      tagsMap['Resource-Type'] == resourceType &&
+      tagsMap['Resource-Owner'] == resourceOwner
+    )
+  })
+  if (filteredMetadataList.length) {
+    return filteredMetadataList[0]['id']
+  } else {
+    return null
+  }
+}
 
 const ARWEAVE_QUERY = `query Query($resourceId: String!, $resourceType: String!, $resourceOwner: String!) {
   transactions(
@@ -20,15 +58,7 @@ const ARWEAVE_QUERY = `query Query($resourceId: String!, $resourceType: String!,
   }
 }`
 
-export async function getArweaveData({
-  resourceId,
-  resourceType,
-  resourceOwner,
-}: {
-  resourceId: string,
-  resourceType: ArweaveResourceType,
-  resourceOwner: string,
-}) {
+async function queryOnChainItemId({ resourceId, resourceType, resourceOwner }: QueryParams) {
   const node = await fetch('https://arseed.web3infra.dev/graphql', {
     method: 'POST',
     body: JSON.stringify({
@@ -52,8 +82,20 @@ export async function getArweaveData({
     return null
   })
   if (node) {
-    // fetch data
-    const itemId = node['id']
+    return node['id']
+  } else {
+    return null
+  }
+}
+
+export async function getArweaveData({ resourceId, resourceType, resourceOwner }: QueryParams) {
+  const [pendingItemId, onChainItemId] = await Promise.all([
+    queryPendingItemId({ resourceId, resourceType, resourceOwner }),
+    queryOnChainItemId({ resourceId, resourceType, resourceOwner }),
+  ])
+  const itemId = pendingItemId || onChainItemId || null
+  // console.log(itemId, pendingItemId, onChainItemId)
+  if (itemId) {
     const data = await fetch(`https://arseed.web3infra.dev/${itemId}`).then(res => res.json())
     return data
   } else {

@@ -18,9 +18,8 @@ export default function PendingTx() {
     if (!authToken || !walletAddress) {
       return
     }
-    fetch(`https://arseed.web3infra.dev/bundle/orders/${walletAddress}`, {
-      headers: { 'Authorization': `Token ${authToken}` }
-    }).then(async (res) => {
+    const url = `https://arseed.web3infra.dev/bundle/orders/${walletAddress}`
+    fetch(url).then(async (res) => {
       const txs = await res.json()
       // const tx = txs[0]
       const tx = txs.find((tx: EverpayTx) => tx.paymentStatus === 'paid' && tx.onChainStatus !== 'success')
