@@ -19,6 +19,8 @@ export type TopicData = {
   name: string,
   description: string,
   category: string,
+  method: string,
+  availability: string,
   value: string,
   duration: string,
 }

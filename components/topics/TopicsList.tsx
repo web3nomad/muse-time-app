@@ -23,6 +23,8 @@ function makeEmptyNewTopic(): TopicData {
     'name': '',
     'description': '',
     'category': '',
+    'method': '',
+    'availability': '',
     'value': '',
     'duration': '',
   }
@@ -88,7 +90,7 @@ export default function TopicsList({ resourceOwner }: {
     })
   }, [walletAddress, authToken, setPendingSync, setTopics])
 
-  const onSaveTopic = useCallback((topic: TopicData) => {
+  const handleSyncTopic = useCallback((topic: TopicData) => {
     // TODO: validate data
     setEditingTopic(null)
     const newTopics = pushOrMutateTopics(topics, topic)
@@ -136,7 +138,8 @@ export default function TopicsList({ resourceOwner }: {
         ))}
       </div>
       <TransitionDialog open={!!editingTopic} onClose={() => setEditingTopic(null)}>
-        {editingTopic && <TopicForm topic={editingTopic} onSave={onSaveTopic} />}
+        {editingTopic && <TopicForm topic={editingTopic}
+          onSubmit={handleSyncTopic} onCancel={() => setEditingTopic(null)} />}
       </TransitionDialog>
       <TransitionDialog open={pendingSync} onClose={() => {}}>
         <div>Confirm in metamask</div>

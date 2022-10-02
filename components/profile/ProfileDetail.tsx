@@ -17,10 +17,14 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
       "absolute top-0 -left-48 w-32 hidden lg:flex",
       "flex-col items-center justify-start"
     )}>
-      <div
-        className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
-        style={{backgroundImage: `url("https://api.hippyghosts.io/~/storage/images/raw/524")`}}
-      ></div>
+      {profile.avatar ? (
+        <div
+          className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
+          style={{backgroundImage: `url(${profile.avatar})`}}
+        ></div>
+      ) : (
+        <div className="w-32 h-32 bg-neutral-100 rounded-full"></div>
+      )}
       <div
         className="flex items-center h-5 pl-6 my-3 bg-no-repeat bg-contain bg-left text-sm font-medium"
         style={{backgroundImage: `url(${IconTwitterCircle.src})`}}
@@ -28,7 +32,7 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
         <a
           href={`https://twitter.com/${profile['com.twitter']}`}
           target="_blank" rel="noreferrer"
-        >{profile['com.twitter']}</a>
+        >{profile['com.twitter'] || '-'}</a>
       </div>
     </div>
   )
@@ -55,14 +59,10 @@ export default function ProfileDetail({ resourceOwner }: {
     })
   }, [setProfile, resourceOwner])
 
-  const onClickConfirm = useCallback((data: ProfileData) => {
+  const handleFormSubmit = useCallback((data: ProfileData) => {
     setDialogOpen(false)
     setProfile(data)
   }, [setDialogOpen, setProfile])
-
-  const onClickCancel = useCallback(() => {
-    setDialogOpen(false)
-  }, [setDialogOpen])
 
   useEffect(() => fetchProfile(), [fetchProfile])
 
@@ -96,7 +96,8 @@ export default function ProfileDetail({ resourceOwner }: {
       </section>
       {resourceOwner === walletAddress && (
         <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
-          <ProfileForm profile={profile} onClickConfirm={onClickConfirm} onClickCancel={onClickCancel} />
+          <ProfileForm profile={profile}
+            onSubmit={handleFormSubmit} onCancel={() => setDialogOpen(false)} />
         </TransitionDialog>
       )}
     </div>

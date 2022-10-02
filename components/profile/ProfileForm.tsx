@@ -7,10 +7,10 @@ import { updateArweaveData, ArweaveResourceType } from '@/lib/arweave'
 import type { ProfileData } from '@/lib/arweave'
 
 
-export default function ProfileForm({ profile, onClickConfirm, onClickCancel }: {
+export default function ProfileForm({ profile, onSubmit, onCancel }: {
   profile: ProfileData,
-  onClickConfirm: (profile: ProfileData) => void,
-  onClickCancel: () => void,
+  onSubmit: (profile: ProfileData) => void,
+  onCancel: () => void,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
   const authToken = useRecoilValue(authTokenState)
@@ -38,12 +38,12 @@ export default function ProfileForm({ profile, onClickConfirm, onClickCancel }: 
       authToken: authToken,
     }).then((res) => {
       setPending(false)
-      onClickConfirm(payload)
+      onSubmit(payload)
     }).catch((err) => {
       setPending(false)
       console.log(err)
     })
-  }, [walletAddress, authToken, onClickConfirm])
+  }, [walletAddress, authToken, onSubmit])
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
@@ -101,7 +101,7 @@ export default function ProfileForm({ profile, onClickConfirm, onClickCancel }: 
       </section>
       <div className="mt-4 flex items-center justify-end">
         <button
-          type="button" disabled={pending} onClick={() => onClickCancel()}
+          type="button" disabled={pending} onClick={() => onCancel()}
           className={clsx(
             "w-24 rounded-md leading-6 py-1 px-4 text-sm text-neutral-900 shadow-sm",
             "bg-white/90 hover:bg-white/80 mr-4",
