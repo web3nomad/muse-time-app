@@ -29,7 +29,7 @@ const WEB3: {
 const RoundedButton = ({ onClick=()=>{}, text }: { onClick?: Function, text: string }) => {
   return (
     <button className={clsx(
-      "border border-black hover:border-black/75 hover:text-black/75",
+      "border border-white hover:border-white/75 hover:text-white/75",
       "rounded-full text-xs sm:text-sm px-4 py-1 mx-4",
     )} onClick={() => onClick()}>{ text }</button>
   )
