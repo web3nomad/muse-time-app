@@ -38,8 +38,9 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
   )
 }
 
-export default function ProfileDetail({ resourceOwner }: {
-  resourceOwner: string
+export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
+  resourceOwner: string,
+  arOwnerAddress: string,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
   const [profile, setProfile] = useState<ProfileData|null>(null)
@@ -51,13 +52,14 @@ export default function ProfileDetail({ resourceOwner }: {
 
   const fetchProfile = useCallback(() => {
     getArweaveData({
+      arOwnerAddress: arOwnerAddress,
       resourceId: '',
       resourceType: ArweaveResourceType.PROFILE,
       resourceOwner: resourceOwner
     }).then(data => {
       setProfile(data)
     })
-  }, [setProfile, resourceOwner])
+  }, [setProfile, resourceOwner, arOwnerAddress])
 
   const handleFormSubmit = useCallback((data: ProfileData) => {
     setDialogOpen(false)

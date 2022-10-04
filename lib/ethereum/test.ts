@@ -7,8 +7,9 @@ import { AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
 
 
 /**
+ * NOTICE: this hook is used to get arweave owner address of **current logged in user**
  * not usefull for the moment
- * const [ownerKey, ownerAddress] = useArOwner()
+ * const [ownerAddress, ownerKey] = useArOwner()
  */
 export function useArOwner(): [string?, string?] {
   function getValueFromAuthToken(authToken: string|null): AuthTokenPayload {
@@ -22,7 +23,7 @@ export function useArOwner(): [string?, string?] {
 
   const authToken = useRecoilValue(authTokenState)
 
-  const [ownerKey, ownerAddress] = useMemo(() => {
+  const [ownerAddress, ownerKey] = useMemo(() => {
     const { value, signature } = getValueFromAuthToken(authToken)
     if (!value || !signature) {
       return []
@@ -44,8 +45,8 @@ export function useArOwner(): [string?, string?] {
      */
     const publicKeyHash = Buffer.from(ethers.utils.arrayify(ethers.utils.sha256(publicKeyBuffer)))
     const ownerAddress = base64url.encode(publicKeyHash)
-    return [ownerKey, ownerAddress]
+    return [ownerAddress, ownerKey]
   }, [authToken])
 
-  return [ownerKey, ownerAddress]
+  return [ownerAddress, ownerKey]
 }

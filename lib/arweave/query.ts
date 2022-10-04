@@ -3,12 +3,17 @@ import { ArweaveResourceType } from './types'
 import type { EverpayTx, ArweaveMetadata } from './types'
 
 type QueryParams = {
+  arOwnerAddress: string,  // arweave owner address
   resourceId: string,
   resourceType: ArweaveResourceType,
-  resourceOwner: string,
+  resourceOwner: string,  // ethereum address
 }
 
-async function queryPendingItemId({ resourceId, resourceType, resourceOwner }: QueryParams) {
+async function queryPendingItemId({
+  resourceId,
+  resourceType,
+  resourceOwner,
+}: Omit<QueryParams, 'arOwnerAddress'>) {
   const url = `https://arseed.web3infra.dev/bundle/orders/${resourceOwner}`
   const txs: EverpayTx[] = await fetch(url).then(async (res) => {
     const txs: EverpayTx[] = await res.json()
@@ -39,10 +44,16 @@ async function queryPendingItemId({ resourceId, resourceType, resourceOwner }: Q
   }
 }
 
-const ARWEAVE_QUERY = `query Query($resourceId: String!, $resourceType: String!, $resourceOwner: String!) {
+const ARWEAVE_QUERY = `query Query(
+  $arOwnerAddress: String!,
+  $resourceId: String!,
+  $resourceType: String!,
+  $resourceOwner: String!
+) {
   transactions(
     first: 1,
     sort: HEIGHT_DESC,
+    owners: [$arOwnerAddress]
     tags: [
       { name: "Resource-Id", values: [$resourceId] },
       { name: "Resource-Type", values: [$resourceType] },
@@ -58,13 +69,19 @@ const ARWEAVE_QUERY = `query Query($resourceId: String!, $resourceType: String!,
   }
 }`
 
-async function queryOnChainItemId({ resourceId, resourceType, resourceOwner }: QueryParams) {
+async function queryOnChainItemId({
+  arOwnerAddress,
+  resourceId,
+  resourceType,
+  resourceOwner,
+}: QueryParams) {
   const node = await fetch('https://arseed.web3infra.dev/graphql', {
     method: 'POST',
     body: JSON.stringify({
       operationName: 'Query',
       query: ARWEAVE_QUERY,
       variables: {
+        arOwnerAddress: arOwnerAddress,
         resourceId: resourceId,
         resourceType: resourceType,
         resourceOwner: ethers.utils.getAddress(resourceOwner),
@@ -88,10 +105,15 @@ async function queryOnChainItemId({ resourceId, resourceType, resourceOwner }: Q
   }
 }
 
-export async function getArweaveData({ resourceId, resourceType, resourceOwner }: QueryParams) {
+export async function getArweaveData({
+  arOwnerAddress,
+  resourceId,
+  resourceType,
+  resourceOwner,
+}: QueryParams) {
   const [pendingItemId, onChainItemId] = await Promise.all([
     queryPendingItemId({ resourceId, resourceType, resourceOwner }),
-    queryOnChainItemId({ resourceId, resourceType, resourceOwner }),
+    queryOnChainItemId({ arOwnerAddress, resourceId, resourceType, resourceOwner }),
   ])
   const itemId = pendingItemId || onChainItemId || null
   // console.log(itemId, pendingItemId, onChainItemId)

@@ -16,33 +16,53 @@ type PageProps = {
 
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
   const walletAddress = useRecoilValue(walletAddressState)
-  const [timeTrove, createTimeTrove] = useTimeTrove(addressSlug)
+  const { timeTrove, createTimeTrove, isValidating } = useTimeTrove(addressSlug)
   // console.log('timeTrove', timeTrove)
 
   const handleCreateTimeTrove = useCallback(() => {
     createTimeTrove()
   }, [createTimeTrove])
 
+  const Loading = () => (
+    <main>loading</main>
+  )
+
+  const NotFound = () => (
+    <main>404</main>
+  )
+
+  const CallToCreateTimeTrove = () => (
+    <main>
+      <button className={clsx(
+        "border border-current",
+        "rounded text-xs sm:text-sm px-4 py-1 mx-2",
+      )} onClick={() => handleCreateTimeTrove()}>Create Time Trove</button>
+    </main>
+  )
+
+  const FullDetail = () => (
+    <main className="lg:pl-48">
+      <ProfileDetail resourceOwner={addressSlug} arOwnerAddress={timeTrove.addressAR} />
+      <TopicsList resourceOwner={addressSlug} arOwnerAddress={timeTrove.addressAR} />
+    </main>
+  )
+
   return (
     <MainLayout>
       <Head>
         <title>{'MuseTime | ' + addressSlug}</title>
       </Head>
-      {!timeTrove.addressAR && addressSlug !== walletAddress && (
-        <div>404</div>
-      )}
-      {!timeTrove.addressAR && addressSlug === walletAddress && (
-        <button className={clsx(
-          "border border-current",
-          "rounded text-xs sm:text-sm px-4 py-1 mx-2",
-        )} onClick={() => handleCreateTimeTrove()}>Create Time Trove</button>
-      )}
-      {timeTrove.addressAR && (
-        <main className="lg:pl-48">
-          <ProfileDetail resourceOwner={addressSlug}/>
-          <TopicsList resourceOwner={addressSlug}/>
-        </main>
-      )}
+      {(() => {
+        if (isValidating) {
+          return <Loading />
+        } else if (!timeTrove.addressAR && addressSlug !== walletAddress) {
+          return <NotFound />
+        } else if (!timeTrove.addressAR && addressSlug === walletAddress) {
+          return <CallToCreateTimeTrove />
+        } else {
+          return <FullDetail />
+        }
+      })()}
     </MainLayout>
   )
 }

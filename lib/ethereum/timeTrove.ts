@@ -15,7 +15,11 @@ const controller = new ethers.Contract(process.env.NEXT_PUBLIC_CONTROLLER_ADDRES
   'function initTimeTrove(string addressAR, bytes signature)'
 ], new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL!))
 
-export function useTimeTrove(topicOwner: string): [TimeTrove, (() => void)] {
+export function useTimeTrove(topicOwner: string): {
+  timeTrove: TimeTrove,
+  createTimeTrove: (() => void),
+  isValidating: boolean
+} {
   const authToken = useRecoilValue(authTokenState)
 
   /**
@@ -51,8 +55,9 @@ export function useTimeTrove(topicOwner: string): [TimeTrove, (() => void)] {
     isValidating
   } = useSWR(topicOwner, fetcher)
 
-  return [
-    timeTrove ?? { addressAR: '', balance: 0 },
-    createTimeTrove
-  ]
+  return {
+    timeTrove: timeTrove ?? { addressAR: '', balance: 0 },
+    createTimeTrove: createTimeTrove,
+    isValidating: isValidating,
+  }
 }

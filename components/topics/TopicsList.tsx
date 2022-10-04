@@ -45,8 +45,9 @@ const pushOrMutateTopics = (topics: TopicData[], topic: TopicData) => {
   return newTopics
 }
 
-export default function TopicsList({ resourceOwner }: {
-  resourceOwner: string
+export default function TopicsList({ resourceOwner, arOwnerAddress }: {
+  resourceOwner: string,
+  arOwnerAddress: string,
 }) {
   const walletAddress = useRecoilValue(walletAddressState)
   const authToken = useRecoilValue(authTokenState)
@@ -61,13 +62,14 @@ export default function TopicsList({ resourceOwner }: {
 
   const fetchTopics = useCallback(() => {
     getArweaveData({
+      arOwnerAddress: arOwnerAddress,
       resourceId: '',
       resourceType: ArweaveResourceType.TOPICS,
       resourceOwner: resourceOwner
     }).then(topics => {
       setTopics(topics || [])
     })
-  }, [setTopics, resourceOwner])
+  }, [setTopics, resourceOwner, arOwnerAddress])
 
   const syncTopics = useCallback((newTopics: TopicData[]) => {
     if (!walletAddress || !authToken) {
