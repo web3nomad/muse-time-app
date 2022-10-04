@@ -3,8 +3,8 @@ import { useEffect, useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
 import { ethers } from 'ethers'
 import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
 import type { TopicData } from '@/lib/arweave'
+import { useTimeTrove } from '@/lib/ethereum/timeTrove'
 import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import MainLayout from '@/components/layouts/MainLayout'
 
@@ -14,24 +14,24 @@ type PageProps = {
 }
 
 const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
-  const walletAddress = useRecoilValue(walletAddressState)
+  const { timeTrove } = useTimeTrove(addressSlug)
   const [topic, setTopic] = useState<TopicData|null>(null)
-  const [dialogOpen, setDialogOpen] = useState(false)
 
   const fetchTopic = useCallback(() => {
+    if (!timeTrove.addressAR) {
+      setTopic(null)
+      return
+    }
     getArweaveData({
-      resourceId: topicSlug,
-      resourceType: ArweaveResourceType.TOPIC,
+      arOwnerAddress: timeTrove.addressAR,
+      resourceId: '',
+      resourceType: ArweaveResourceType.TOPICS,
       resourceOwner: addressSlug
-    }).then(data => {
-      setTopic(data)
+    }).then((topicsList: TopicData[]) => {
+      const topicItem = topicsList.find(({ id }) => id === topicSlug)
+      setTopic(topicItem ?? null)
     })
-  }, [setTopic, addressSlug, topicSlug])
-
-  const onSaveSuccess = useCallback((data: TopicData) => {
-    setDialogOpen(false)
-    setTopic(data)
-  }, [setDialogOpen, setTopic])
+  }, [setTopic, addressSlug, topicSlug, timeTrove])
 
   useEffect(() => fetchTopic(), [fetchTopic])
 

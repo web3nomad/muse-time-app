@@ -1,4 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
+import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import type { TopicData } from '@/lib/arweave'
@@ -49,6 +50,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
   resourceOwner: string,
   arOwnerAddress: string,
 }) {
+  const router = useRouter()
   const walletAddress = useRecoilValue(walletAddressState)
   const authToken = useRecoilValue(authTokenState)
 
@@ -117,6 +119,10 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     syncTopics(newTopics)
   }, [topics, syncTopics])
 
+  const handleClickTopic = useCallback((topic: TopicData) => {
+    router.push(`${resourceOwner}/${topic.id}`)
+  }, [router, resourceOwner])
+
   useEffect(() => fetchTopics(), [fetchTopics])
 
   return (
@@ -133,8 +139,9 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
             <TopicItem
               topic={topic}
               canEditTopics={canEditTopics}
-              onClickEdit={handleEditTopic}
-              onClickDelete={handleDeleteTopic}
+              onClick={() => handleClickTopic(topic)}
+              onClickEdit={() => handleEditTopic(topic)}
+              onClickDelete={() => handleDeleteTopic(topic)}
             />
           </div>
         ))}

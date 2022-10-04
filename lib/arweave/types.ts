@@ -41,6 +41,6 @@ export type ProfileData = {
 
 export enum ArweaveResourceType {
   PROFILE = 'profile',
-  TOPIC = 'topic',
+  // TOPIC = 'topic',
   TOPICS = 'topics',
 }
