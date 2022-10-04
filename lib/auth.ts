@@ -25,6 +25,7 @@ export type AuthTokenPayload = {
 
 type User = {
   walletAddress: string
+  auth: AuthTokenPayload
 }
 
 export type NextApiRequestWithAuth = NextApiRequest & {
@@ -61,7 +62,10 @@ async function authenticate(req: NextApiRequest): Promise<User> {
   if (walletAddress !== addressInToken) {
     throw makeError(401, 'Invalid Token')
   }
-  return { walletAddress }
+  return {
+    walletAddress,
+    auth: payload,
+  }
 }
 
 export function requireAuth(handler: (req: NextApiRequestWithAuth, res: NextApiResponse) => void) {
