@@ -5,7 +5,8 @@ import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import { useRecoilState } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { useArOwner, EIP_712_AUTH } from '@/lib/auth'
+import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
+import { useArOwner } from '@/lib/ethereum/test'
 import TransitionDialog from '@/components/TransitionDialog'
 
 const WEB3: {
@@ -61,15 +62,15 @@ export default function ConnectButton() {
       const provider = new ethers.providers.Web3Provider(instance)
       const signer = provider.getSigner()
       const address = ethers.utils.getAddress(await signer.getAddress())
-      const value = {
+      const value: SignatureMessageData = {
         intent: 'Verify ownership of the address',
         wallet: address,
         expire: new Date().valueOf() + 86400 * 1000 * 7  // 7 days
       }
       const signature = await signer._signTypedData(EIP_712_AUTH.domain, EIP_712_AUTH.types, value)
       // ethers.utils.verifyTypedData(IP_712_AUTH.domain, EIP_712_AUTH.types, value, signature)
-      const authTokenData = { value, signature }
-      const authToken = btoa(JSON.stringify(authTokenData))
+      const authTokenPayload: AuthTokenPayload = { value, signature }
+      const authToken = btoa(JSON.stringify(authTokenPayload))
       window.localStorage.setItem('auth-token', authToken)
       setAuthToken(authToken)
     }
