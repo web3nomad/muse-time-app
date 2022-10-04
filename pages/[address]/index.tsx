@@ -4,12 +4,15 @@ import { ethers } from 'ethers'
 import MainLayout from '@/components/layouts/MainLayout'
 import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
+import { useTimeTrove } from '@/lib/ethereum/timeTrove'
 
 type PageProps = {
   addressSlug: string
 }
 
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
+  const timeTrove = useTimeTrove(addressSlug)
+  // console.log('timeTrove', timeTrove)
   return (
     <MainLayout>
       <Head>
