@@ -10,6 +10,7 @@ specifiers:
   '@types/react-dom': 18.0.6
   arseeding-js: ^0.0.16
   autoprefixer: ^10.4.12
+  base64url: ^3.0.1
   bundlr-arseeding-client: ^0.7.14
   clsx: ^1.2.1
   eslint: 8.24.0
@@ -50,6 +51,7 @@ devDependencies:
   '@types/node': 18.7.20
   '@types/react': 18.0.21
   '@types/react-dom': 18.0.6
+  base64url: 3.0.1
   eslint: 8.24.0
   eslint-config-next: 12.3.1_7ilbxdl5iguzcjriqqcg2m5cku
   typescript: 4.8.3
@@ -1406,7 +1408,6 @@ packages:
   /base64url/3.0.1:
     resolution: {integrity: sha512-ir1UPr3dkwexU7FdV8qBBbNDRUhMmIekYMFZfi+C/sLNnRESKPl23nB9b2pltqfOQNnGzsDdId90AEtG5tCx4A==}
     engines: {node: '>=6.0.0'}
-    dev: false
 
   /bech32/1.1.4:
     resolution: {integrity: sha512-s0IrSOzLlbvX7yp4WBfPITzpAU8sqQcpsmwXDiKwrG4r491vwCO/XpejasRNl0piBMe/DvP4Tz0mIS/X1DPJBQ==}

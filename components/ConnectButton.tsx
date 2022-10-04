@@ -5,7 +5,7 @@ import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
 import { useRecoilState } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
-import { EIP_712_AUTH } from '@/lib/auth'
+import { useArOwner, EIP_712_AUTH } from '@/lib/auth'
 import TransitionDialog from '@/components/TransitionDialog'
 
 const WEB3: {
@@ -28,6 +28,8 @@ const WEB3: {
 }
 
 export default function ConnectButton() {
+  const [ownerKey, ownerAddress] = useArOwner()  // not usefull for the moment
+
   const [walletAddress, setWalletAddress] = useRecoilState(walletAddressState)
   const [authToken, setAuthToken] = useRecoilState(authTokenState)
   const [connecting, setConnecting] = useState(false)
