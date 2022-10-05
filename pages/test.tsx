@@ -9,7 +9,7 @@ const Test: NextPage = () => {
     <div className={styles.container}>
       <Head>
         <title>MuseTime</title>
-        <meta name="description" content="MuseTime 是一个时间x空间的交易工具，在这个高维的世界里，时间和空间可以自由转换" />
+        <meta name="description" content="" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 

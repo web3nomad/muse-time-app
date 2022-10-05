@@ -17,7 +17,7 @@ export default function MainLayout({ children }: Props) {
     <div className="bg-white-coffee min-h-screen overflow-hidden">
       <Head>
         <title>MuseTime</title>
-        <meta name="description" content="MuseTime 是一个时间x空间的交易工具，在这个高维的世界里，时间和空间可以自由转换" />
+        <meta name="description" content="MuseTime is a time x space trading tool built on Arweave and Ethereum. In this high-dimensional world, time and space can be freely transformed." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <SiteHeader />
