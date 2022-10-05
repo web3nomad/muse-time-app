@@ -75,7 +75,7 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
       <section className="relative mb-2">
         <div
           className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
-          style={{backgroundImage: `url(${profile.avatar})`}}
+          style={profile.avatar ? {backgroundImage: `url(${profile.avatar})`} : {}}
         ></div>
         <div className="text-2xl font-medium">{profile.name}</div>
         <div className="text-xs sm:text-sm text-neutral-400 my-2">{resourceOwner}</div>

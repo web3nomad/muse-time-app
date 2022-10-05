@@ -4,7 +4,7 @@ import { EditSquareIcon, CoffeeIcon, CalendarIcon } from '@/components/icons'
 import { TrashIcon } from '@heroicons/react/20/solid'
 import type { TopicData } from '@/lib/arweave'
 
-const formatEthersValue = (value: string) => {
+export const formatEthersValue = (value: string) => {
   const [val, unit] = value.split(' ')
   try {
     const wei = ethers.utils.parseUnits(val, unit)
