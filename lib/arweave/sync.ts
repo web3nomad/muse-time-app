@@ -68,6 +68,11 @@ export async function syncArweaveData({
     {name: 'Resource-Id', value: resourceId},
     {name: 'Resource-Type', value: resourceType},
     {name: 'Resource-Owner', value: ethers.utils.getAddress(resourceOwner)},
+    {name: 'Resource-Timestamp', value: Date.now().toString()},
+    /* add Resource-Timestamp, so that every item is always diffrent from previous ones,
+    for example, after removing a topic (4 topics -> 3 topics), the topics list data may be same with a
+    previous list if no topic is edited, the same ItemId(tx) will be generated (by Web3Infra in ANS-104 bundle).
+    As a result, the 3-topics data's block is always lower than 4-topics data's block. */
   ]
   const result = await submitOrder(payload, tags, authToken)
   return result

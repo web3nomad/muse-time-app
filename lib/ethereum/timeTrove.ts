@@ -53,7 +53,9 @@ export function useTimeTrove(topicOwner: string): {
   const {
     data: timeTrove,
     isValidating
-  } = useSWR(topicOwner, fetcher)
+  } = useSWR(topicOwner, fetcher, {
+    revalidateOnFocus: false,
+  })
 
   return {
     timeTrove: timeTrove ?? { addressAR: '', balance: 0 },

@@ -102,7 +102,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     syncTopics(newTopics)
   }, [setEditingTopic, topics, syncTopics])
 
-  const handleNewTopic = useCallback(() => {
+  const showNewTopicDialog = useCallback(() => {
     if (topics.length >= 4) {
       return
     }
@@ -110,7 +110,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     setEditingTopic(newTopic)
   }, [topics, setEditingTopic])
 
-  const handleEditTopic = useCallback((topic: TopicData) => {
+  const showEditTopicDialog = useCallback((topic: TopicData) => {
     setEditingTopic({ ...topic })
   }, [setEditingTopic])
 
@@ -119,7 +119,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     syncTopics(newTopics)
   }, [topics, syncTopics])
 
-  const handleClickTopic = useCallback((topic: TopicData) => {
+  const goToTopicDetail = useCallback((topic: TopicData) => {
     router.push(`${resourceOwner}/${topic.id}`)
   }, [router, resourceOwner])
 
@@ -129,7 +129,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     <section className="relative">
       <h3 className="text-3xl font-bold my-4">Time NFTs</h3>
       {canEditTopics && (
-        <span className="absolute top-0 right-0 p-2 p-2 cursor-pointer" onClick={() => handleNewTopic()}>
+        <span className="absolute top-0 right-0 p-2 p-2 cursor-pointer" onClick={() => showNewTopicDialog()}>
           <PlusCircleIcon className="w-5 h-5" />
         </span>
       )}
@@ -139,8 +139,8 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
             <TopicItem
               topic={topic}
               canEditTopics={canEditTopics}
-              onClick={() => handleClickTopic(topic)}
-              onClickEdit={() => handleEditTopic(topic)}
+              onClick={() => goToTopicDetail(topic)}
+              onClickEdit={() => showEditTopicDialog(topic)}
               onClickDelete={() => handleDeleteTopic(topic)}
             />
           </div>
