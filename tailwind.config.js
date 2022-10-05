@@ -12,6 +12,10 @@ module.exports = {
         'blue-cadet': '#A6BBCC',
         'orange-tangelo': '#D25F29'
       },
+      fontFamily: {
+        'din-alternate': ['"DIN Alternate"', 'Helvetica', 'sans-serif'],
+        'din-pro': ['DINPro', 'Helvetica', 'sans-serif'],
+      }
     },
   },
   plugins: [

@@ -104,7 +104,7 @@ export default function ConnectButton() {
     return (
       <>
         <Link href={`/${walletAddress}`}>
-          <a className="inline-block text-xs sm:text-sm py-1 mx-4">
+          <a className="inline-block text-xs sm:text-sm py-1 mx-4 font-din-alternate">
             {walletAddress.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
           </a>
         </Link>

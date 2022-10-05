@@ -64,17 +64,17 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
           className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
           style={profile.avatar ? {backgroundImage:`url(${profile.avatar})`} : {}}
         ></div>
-        <div className="text-center font-medium mt-2">{profile.name}</div>
-        <div className="text-xs text-neutral-400">
+        <div className="text-center font-din-alternate mt-2">{profile.name}</div>
+        <div className="text-xs text-neutral-400 font-din-alternate">
           {addressSlug.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
         </div>
-        <div className="flex items-center text-sm my-2">
+        <div className="flex items-center text-sm my-2 font-din-alternate">
           <TwitterIcon className="w-4 h-4 mr-1" />
           <a href={`https://twitter.com/${profile['com.twitter']}`} target="_blank" rel="noreferrer">{profile['com.twitter'] || '-'}</a>
         </div>
         <div className="w-full my-2">
           <button className={clsx(
-            "p-1 text-sm leading-6 w-full rounded",
+            "p-2 text-sm w-full rounded",
             "text-white bg-orange-tangelo hover:bg-orange-tangelo/90"
           )}>Mint Now</button>
         </div>
@@ -91,34 +91,34 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
             className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
             style={profile.avatar ? {backgroundImage: `url(${profile.avatar})`} : {}}
           ></div>
-          <div className="text-4xl font-medium mb-6">{topic.name}</div>
+          <div className="text-5xl font-bold mb-6">{topic.name}</div>
           {/*<div className="text-xs sm:text-sm text-neutral-400 my-2">{resourceOwner}</div>*/}
-          <div className="flex items-center justify-start my-3">
-            <div className="text-2xl font-medium text-brown-grullo">{formatEthersValue(topic.value)}</div>
-            <div className="ml-1 text-xs opacity-70">(approx. {topic.duration || '-'})</div>
+          <div className="flex items-center justify-start my-3 font-din-alternate">
+            <div className="text-2xl text-brown-grullo">{formatEthersValue(topic.value)}</div>
+            <div className="ml-1 text-sm text-neutral-400">(approx. {topic.duration || '-'})</div>
             <div className="ml-auto"></div>
-            <div className="px-3 py-1 rounded-full bg-blue-cadet text-neutral-900 text-xs font-medium">
+            <div className="px-3 py-1 rounded-full bg-blue-cadet text-neutral-900 text-xs">
               {topic.method || '-'}
             </div>
-            <div className="px-3 py-1 rounded-full bg-neutral-200 text-neutral-900 text-xs font-medium ml-1">
+            <div className="px-3 py-1 rounded-full bg-neutral-200 text-neutral-900 text-xs ml-1">
               {topic.category || '-'}
             </div>
           </div>
-          <div className="flex items-center justify-start my-3">
-            <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center">
+          <div className="flex items-center justify-start my-3 font-din-alternate">
+            <div className="px-2 py-1 rounded-md border border-current text-sm flex items-center">
               <CoffeeIcon className="w-4 h-4 mr-1" />
               <span>{0} Minted</span>
             </div>
-            <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center ml-3">
+            <div className="px-2 py-1 rounded-md border border-current text-sm flex items-center ml-3">
               <CalendarIcon className="w-4 h-4 mr-1" />
               <span>{0} Pending</span>
             </div>
           </div>
-          <div className="mt-16">{topic.description}</div>
+          <div className="mt-16 font-din-pro">{topic.description}</div>
         </section>
         <section className="relative my-16">
-          <h3 className="text-3xl font-semibold my-4">Profile</h3>
-          <div>{profile.description}</div>
+          <h3 className="text-3xl font-bold my-4">About Me</h3>
+          <div className="font-din-pro">{profile.description}</div>
         </section>
       </div>
     </main>

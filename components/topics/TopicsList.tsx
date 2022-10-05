@@ -127,7 +127,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
 
   return (
     <section className="relative">
-      <h3 className="text-3xl font-semibold my-4">Time NFTs</h3>
+      <h3 className="text-3xl font-bold my-4">Time NFTs</h3>
       {canEditTopics && (
         <span className="absolute top-0 right-0 p-2 p-2 cursor-pointer" onClick={() => handleNewTopic()}>
           <PlusCircleIcon className="w-5 h-5" />

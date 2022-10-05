@@ -26,7 +26,7 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
         <div className="w-32 h-32 bg-neutral-100 rounded-full"></div>
       )}
       <div
-        className="flex items-center h-5 pl-6 my-3 bg-no-repeat bg-contain bg-left text-sm font-medium"
+        className="flex items-center h-5 pl-6 my-3 bg-no-repeat bg-contain bg-left text-sm font-din-alternate"
         style={{backgroundImage: `url(${IconTwitterCircle.src})`}}
       >
         <a
@@ -77,14 +77,14 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
           className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
           style={profile.avatar ? {backgroundImage: `url(${profile.avatar})`} : {}}
         ></div>
-        <div className="text-2xl font-medium">{profile.name}</div>
-        <div className="text-xs sm:text-sm text-neutral-400 my-2">{resourceOwner}</div>
-        <div className="flex items-center justify-start my-6">
-          <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center">
+        <div className="text-2xl font-din-alternate">{profile.name}</div>
+        <div className="text-xs text-neutral-400 my-2 font-din-alternate">{resourceOwner}</div>
+        <div className="flex items-center justify-start my-6 font-din-alternate">
+          <div className="px-2 py-1 rounded-md border border-current text-sm flex items-center">
             <CoffeeIcon className="w-4 h-4 mr-1" />
             <span>{0} Minted</span>
           </div>
-          <div className="px-2 py-1 rounded-md border border-current text-xs leading-5 flex items-center ml-3">
+          <div className="px-2 py-1 rounded-md border border-current text-sm flex items-center ml-3">
             <CalendarIcon className="w-4 h-4 mr-1" />
             <span>{0} Pending</span>
           </div>
@@ -97,8 +97,8 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
         )}
       </section>
       <section className="relative my-16">
-        <h3 className="text-3xl font-semibold my-4">Introduction</h3>
-        <div>{profile.description}</div>
+        <h3 className="text-3xl font-bold my-4">Introduction</h3>
+        <div className="font-din-pro">{profile.description}</div>
       </section>
       {resourceOwner === walletAddress && (
         <TransitionDialog open={dialogOpen} onClose={() => setDialogOpen(false)}>
