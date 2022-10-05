@@ -30,6 +30,18 @@ a {
   }
 }
 
+/**
+ *  NProgress
+ */
+
+#nprogress .bar.bar {
+  background: #A6BBCC;
+}
+
+/**
+ *  Fonts
+ */
+
 /*@font-face {
   font-family: "DIN Alternate";
   src: url("../assets/fonts/DIN Alternate Regular.otf");
