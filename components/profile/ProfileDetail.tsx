@@ -7,9 +7,7 @@ import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import type { ProfileData } from '@/lib/arweave'
 import ProfileForm from './ProfileForm'
-import { EditSquareIcon, CoffeeIcon, CalendarIcon } from '@/components/icons'
-
-import IconTwitterCircle from '@/assets/images/icon-twitter-circle.svg'
+import { EditSquareIcon, CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 
 const Avatar = ({ profile }: { profile: ProfileData }) => {
   return (
@@ -25,14 +23,9 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
       ) : (
         <div className="w-32 h-32 bg-neutral-100 rounded-full"></div>
       )}
-      <div
-        className="flex items-center h-5 pl-6 my-3 bg-no-repeat bg-contain bg-left text-sm font-din-alternate"
-        style={{backgroundImage: `url(${IconTwitterCircle.src})`}}
-      >
-        <a
-          href={`https://twitter.com/${profile['com.twitter']}`}
-          target="_blank" rel="noreferrer"
-        >{profile['com.twitter'] || '-'}</a>
+      <div className="flex items-center text-sm my-3 font-din-alternate">
+        <TwitterIcon className="w-6 h-6 mr-2" />
+        <a href={`https://twitter.com/${profile['com.twitter']}`} target="_blank" rel="noreferrer">{profile['com.twitter'] || '-'}</a>
       </div>
     </div>
   )
