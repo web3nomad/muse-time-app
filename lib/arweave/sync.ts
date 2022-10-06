@@ -3,7 +3,7 @@ import getCurrency from 'bundlr-arseeding-client/build/web/currencies'
 import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
 import { ArweaveResourceType } from './types'
 import type { ArweaveDataPayload, ArweaveDataTag } from './types'
-import { PUBLIC_PROVIDERS, NETWORK } from '@/lib/constants'
+import { publicProvider } from '@/lib/ethereum/public'
 
 async function submitOrder(
   payload: ArweaveDataPayload,
@@ -14,7 +14,7 @@ async function submitOrder(
   await provider._ready()
   const currencyConfig: any = getCurrency('ethereum', provider)
   // the default provider url is offline
-  currencyConfig.providerUrl = PUBLIC_PROVIDERS[NETWORK.Mainnet]
+  currencyConfig.providerUrl = publicProvider.connection.url
   await currencyConfig.ready()
   // {
   //   // window.currencyConfig = currencyConfig

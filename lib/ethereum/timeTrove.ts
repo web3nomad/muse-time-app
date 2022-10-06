@@ -3,17 +3,12 @@ import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumSigner, publicProvider, controllerContract } from '@/lib/ethereum/public'
 
 export type TimeTrove = {
   addressAR: string,
   balance: ethers.BigNumberish
 }
-
-// const provider = new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL)
-const controller = new ethers.Contract(process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS!, [
-  'function timeTroveOf(address topicOwner) view returns (tuple(string, uint256))',
-  'function createTimeTrove(string addressAR, bytes signature)'
-], new ethers.providers.JsonRpcProvider(process.env.NEXT_PUBLIC_RPC_URL!))
 
 export function useTimeTrove(topicOwner: string): {
   timeTrove: TimeTrove,
@@ -21,6 +16,7 @@ export function useTimeTrove(topicOwner: string): {
   isValidating: boolean
 } {
   const authToken = useRecoilValue(authTokenState)
+  const ethereumSigner = useEthereumSigner()
 
   /**
    * create time trove
@@ -33,21 +29,18 @@ export function useTimeTrove(topicOwner: string): {
       },
     }).then(async (res) => {
       const { addressAR, signature } = (await res.json()) as { addressAR: string, signature: string }
-      // TODO 优化这一段
-      const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-      const signer = await provider.getSigner()
-      const tx = await controller.connect(signer).createTimeTrove(addressAR, signature)
+      const tx = await controllerContract.connect(ethereumSigner).createTimeTrove(addressAR, signature)
       await tx.wait()
     }).catch((err) => {
       console.log(err)
     })
-  }, [authToken])
+  }, [authToken, ethereumSigner])
 
   /**
    * get time trove
    */
   const fetcher = async (topicOwner: string) => {
-    const [addressAR, balance] = await controller.timeTroveOf(topicOwner)
+    const [addressAR, balance] = await controllerContract.timeTroveOf(topicOwner)
     return { addressAR, balance } as TimeTrove
   }
   const {
