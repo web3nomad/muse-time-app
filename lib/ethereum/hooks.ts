@@ -1,6 +1,6 @@
 import useSWR from 'swr'
 import { ethers } from 'ethers'
-import { useCallback } from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
 import {
@@ -22,7 +22,7 @@ export const useEthereumSigner = () => {
   return signer
 }
 
-export type TimeTrove = {
+type TimeTrove = {
   arOwnerAddress: string,
   balance: ethers.BigNumberish
 }
@@ -74,17 +74,46 @@ export function useTimeTrove(topicOwner: string): {
   }
 }
 
+type TimeToken = {
+  tokenId: number,
+  tokenOwner: string,
+}
 
-export function useTimeToken(topicOwner: string, topicSlug: string): {
+export function useTimeToken(topicOwner: string, topicSlug?: string): {
   mintTimeToken: (() => void),
+  mintedTimeTokens: TimeToken[],
 } {
   const authToken = useRecoilValue(authTokenState)
   const ethereumSigner = useEthereumSigner()
 
+  const [mintedTimeTokens, setMintedTimeTokens] = useState<TimeToken[]>([])
+
   /**
-   * create time trove
+   *  list time token mint
+   */
+  const listTimeTokenMinted = useCallback(() => {
+    const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicSlug ?? null, null)
+    controllerContract.queryFilter(event, 15537393).then(async (logs) => {
+      const tokens = logs.map((log: any) => ({
+        tokenId: +log.args.tokenId,
+        tokenOwner: log.args.tokenOwner,
+      }))
+      setMintedTimeTokens(tokens)
+    })
+  }, [topicOwner, topicSlug, setMintedTimeTokens])
+
+  useEffect(() => {
+    listTimeTokenMinted()
+  }, [listTimeTokenMinted])
+
+  /**
+   * mint time token
    */
   const mintTimeToken = useCallback(() => {
+    if (!topicSlug) {
+      console.log('topicSlug not set')
+      return
+    }
     fetch('/api/ethereum/mintParams', {
       method: 'POST',
       body: JSON.stringify({
@@ -115,5 +144,6 @@ export function useTimeToken(topicOwner: string, topicSlug: string): {
 
   return {
     mintTimeToken: mintTimeToken,
+    mintedTimeTokens: mintedTimeTokens,
   }
 }

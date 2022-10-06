@@ -25,6 +25,10 @@ export const controllerContract = new ethers.Contract(_controllerAddress, [
    * }
    */
   'function timeTroveOf(address topicOwner) view returns (tuple(string, uint256))',
+  'function ownerOf(uint256 id) view returns (address owner)',
   'function mintTimeToken(uint256 valueInWei, address topicOwner, string topicSlug, string arId, bytes signature) payable',
-  'function createTimeTrove(string arOwnerAddress, bytes signature)'
+  'function createTimeTrove(string arOwnerAddress, bytes signature)',
+  'event Transfer(address indexed from, address indexed to, uint256 indexed id)',
+  'event TimeTroveCreated(address indexed topicOwner)',
+  'event TimeTokenMinted(address indexed topicOwner, string indexed topicSlug, address indexed tokenOwner, uint256 tokenId)',
 ], publicProvider)

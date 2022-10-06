@@ -10,6 +10,8 @@ type PageProps = {
 }
 
 const Page: NextPage<PageProps> = ({ tokenId }) => {
+  // TODO: call museTimeContract.tokenURI instead of call controllerContract
+
   const fetcher = async (tokenId: string) => {
     const [tokenURI, timeToken] = await Promise.all([
       controllerContract.tokenURI(+tokenId),

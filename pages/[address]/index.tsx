@@ -9,6 +9,7 @@ import TopicsList from '@/components/topics/TopicsList'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
 import { useTimeTrove } from '@/lib/ethereum/hooks'
+import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 
 type PageProps = {
   addressSlug: string
@@ -41,9 +42,10 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
   )
 
   const FullDetail = () => (
-    <main className="lg:pl-48">
+    <main className="overflow-hidden lg:pl-48">
       <ProfileDetail resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
       <TopicsList resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
+      <MintedTimeTokens addressSlug={addressSlug} />
     </main>
   )
 

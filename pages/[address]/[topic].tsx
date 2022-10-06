@@ -10,6 +10,7 @@ import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import MainLayout from '@/components/layouts/MainLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
+import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 
 type PageProps = {
   addressSlug: string,
@@ -88,10 +89,10 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
   }
 
   const TopicDetail = ({ profile, topic } : { profile: ProfileData, topic: TopicData }) => (
-    <main className="lg:pl-48">
-      <div className="relative">
+    <main className="overflow-hidden lg:pl-48">
+      <section className="relative">
         <Avatar profile={profile} />
-        <section className="relative mb-2">
+        <div className="relative mb-2">
           <div
             className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
             style={profile.avatar ? {backgroundImage: `url(${profile.avatar})`} : {}}
@@ -120,12 +121,14 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
             </div>
           </div>
           <div className="mt-16 font-din-pro">{topic.description}</div>
-        </section>
-        <section className="relative my-16">
-          <h3 className="text-3xl font-bold my-4">About Me</h3>
-          <div className="font-din-pro">{profile.description}</div>
-        </section>
-      </div>
+        </div>
+      </section>
+      <section className="relative my-16">
+        <h3 className="text-3xl font-bold my-4">About Me</h3>
+        <div className="font-din-pro">{profile.description}</div>
+      </section>
+      {/* MintedTimeTokens */}
+      <MintedTimeTokens addressSlug={addressSlug} topicSlug={topicSlug} />
     </main>
   )
 
@@ -136,14 +139,9 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
       </Head>
       {(topic && profile) ? (
         <TopicDetail profile={profile} topic={topic} />
-      ) : <div>loading topic ...</div>}
-      {/*<>
-        <div>{topic.name}</div>
-        <div>{topic.description}</div>
-        <div>{topic.category}</div>
-        <div>{topic.value}</div>
-        <div>{topic.duration}</div>
-      </>*/}
+      ) : (
+        <div>loading topic ...</div>
+      )}
     </MainLayout>
   )
 }
