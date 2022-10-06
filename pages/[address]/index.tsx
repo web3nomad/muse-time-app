@@ -8,7 +8,7 @@ import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
-import { useTimeTrove } from '@/lib/ethereum/timeTrove'
+import { useTimeTrove } from '@/lib/ethereum/hooks'
 
 type PageProps = {
   addressSlug: string

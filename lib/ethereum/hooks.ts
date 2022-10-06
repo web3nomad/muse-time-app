@@ -3,7 +3,24 @@ import { ethers } from 'ethers'
 import { useCallback } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
-import { useEthereumSigner, publicProvider, controllerContract } from '@/lib/ethereum/public'
+import {
+  chainId,
+  publicProvider,
+  controllerContract
+} from '@/lib/ethereum/public'
+
+export const useEthereumSigner = () => {
+  if (typeof window === 'undefined' || typeof (window as any).ethereum === 'undefined') {
+    return new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
+  }
+  if (+chainId !== +(window as any).ethereum.chainId) {
+    console.log(new Error('Wrong chainId'))
+    return new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
+  }
+  const provider = new ethers.providers.Web3Provider((window as any).ethereum)
+  const signer = provider.getSigner()
+  return signer
+}
 
 export type TimeTrove = {
   addressAR: string,
