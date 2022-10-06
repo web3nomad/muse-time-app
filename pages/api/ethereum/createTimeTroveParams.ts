@@ -5,6 +5,7 @@ import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } f
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
 
 export async function _signControllerParams(types: string[], fields: any[]) {
+  // TODO: chainId must be included in signature !!!
   const privateKey = process.env.VERIFICATION_ADDRESS_PRIVATE_KEY
   if (!privateKey) {
     throw new Error('VERIFICATION_ADDRESS_PRIVATE_KEY not set')

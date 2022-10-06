@@ -10,4 +10,4 @@ export { ArweaveResourceType } from './types'
 
 export { syncArweaveData } from './sync'
 
-export { getArweaveData } from './query'
+export { queryOnChainItemId, queryPendingItemId, getArweaveData } from './query'

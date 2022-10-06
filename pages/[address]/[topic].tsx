@@ -5,25 +5,26 @@ import Head from 'next/head'
 import { ethers } from 'ethers'
 import { useRecoilValue } from 'recoil'
 import type { TopicData, ProfileData } from '@/lib/arweave'
-import { useTimeTrove } from '@/lib/ethereum/hooks'
+import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
 import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
 import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import MainLayout from '@/components/layouts/MainLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
 
 type PageProps = {
-  topicSlug: string,
   addressSlug: string,
+  topicSlug: string,
 }
 
-const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
+const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
   const { timeTrove } = useTimeTrove(addressSlug)  // topicOwner === addressSlug
+  const { mintTimeToken } = useTimeToken(addressSlug, topicSlug)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
 
   const handleMint = useCallback(() => {
-
-  }, [])
+    mintTimeToken()
+  }, [mintTimeToken])
 
   const fetchProfile = useCallback(() => {
     if (!timeTrove.arOwnerAddress) {
@@ -148,12 +149,12 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  const topicSlug = query.topic as string
   const addressSlug = ethers.utils.getAddress(query.address as string)
+  const topicSlug = query.topic as string
   return {
     props: {
-      topicSlug,
       addressSlug,
+      topicSlug,
     }
   }
 }

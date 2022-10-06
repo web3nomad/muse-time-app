@@ -73,3 +73,47 @@ export function useTimeTrove(topicOwner: string): {
     isValidating: isValidating,
   }
 }
+
+
+export function useTimeToken(topicOwner: string, topicSlug: string): {
+  mintTimeToken: (() => void),
+} {
+  const authToken = useRecoilValue(authTokenState)
+  const ethereumSigner = useEthereumSigner()
+
+  /**
+   * create time trove
+   */
+  const mintTimeToken = useCallback(() => {
+    fetch('/api/ethereum/mintParams', {
+      method: 'POST',
+      body: JSON.stringify({
+        topicOwner,
+        topicSlug,
+      }),
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Token ${authToken}`,
+      },
+    }).then(async (res) => {
+      const { valueInWei, topicOwner, topicSlug, arId, signature } = (await res.json()) as {
+        valueInWei: string,
+        topicOwner: string,
+        topicSlug: string,
+        arId: string,
+        signature: string,
+      }
+      // const _valueInWei = ethers.BigNumber.from(valueInWei)
+      const tx = await controllerContract
+        .connect(ethereumSigner)
+        .mintTimeToken(valueInWei, topicOwner, topicSlug, arId, signature, { value: valueInWei })
+      await tx.wait()
+    }).catch((err) => {
+      console.log(err)
+    })
+  }, [authToken, ethereumSigner, topicOwner, topicSlug])
+
+  return {
+    mintTimeToken: mintTimeToken,
+  }
+}

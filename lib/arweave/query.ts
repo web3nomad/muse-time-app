@@ -9,7 +9,7 @@ type QueryParams = {
   resourceOwner: string,  // ethereum address
 }
 
-async function queryPendingItemId({
+export async function queryPendingItemId({
   resourceId,
   resourceType,
   resourceOwner,
@@ -69,7 +69,7 @@ const ARWEAVE_QUERY = `query Query(
   }
 }`
 
-async function queryOnChainItemId({
+export async function queryOnChainItemId({
   arOwnerAddress,
   resourceId,
   resourceType,

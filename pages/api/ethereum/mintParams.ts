@@ -3,22 +3,52 @@ import base64url from 'base64url'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } from '@/lib/auth'
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
+import { queryOnChainItemId, ArweaveResourceType } from '@/lib/arweave'
+import type { TopicData } from '@/lib/arweave'
 import { _signControllerParams } from './createTimeTroveParams'
 
-const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
-  const { auth, walletAddress } = req.user
-  const { resourceOwner, topicId } = req.body
-  // 要先获取 arOwnerAddress, 通过 resourceOwner
+const findTopic = async (topicOwner: string, topicSlug: string): Promise<{
+  arId: string,
+  topic: TopicData|null,
+}> => {
+  const [arOwnerAddress]: [arOwnerAddress: string] = await controllerContract.timeTroveOf(topicOwner)
+  const arId = await queryOnChainItemId({
+    arOwnerAddress: arOwnerAddress,
+    resourceId: '',
+    resourceType: ArweaveResourceType.TOPICS,
+    resourceOwner: topicOwner,
+  })
+  // if (!arId) {}
+  const topicsList: TopicData[] = await fetch(`https://arseed.web3infra.dev/${arId}`).then(res => res.json())
+  const topic = topicsList.find(({ id }) => id === topicSlug) ?? null
+  return { arId, topic }
+}
 
-  const valueInWei = ethers.utils.parseUnits('1', 'ether')
-  const topicOwner = '0x0000000000000000000000000000000000000000'
-  const topicSlug = '/x/y'
+const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
+  const { walletAddress } = req.user
+  const { topicOwner, topicSlug } = req.body
+
+  const { arId, topic } = await findTopic(topicOwner, topicSlug)
+  if (!topic) {
+    res.status(400).json({ 'detail': 'invalid topic' })
+    return
+  }
+
+  const [val, unit] = topic['value'].split(' ')
+  const valueInWei = ethers.utils.parseUnits(val, unit).toString()
+  // toString is necessary, _signControllerParams won't do this automatically
+
   const signature = await _signControllerParams(
-    ['address', 'uint256', 'address', 'string', 'address'],
-    [walletAddress, valueInWei, topicOwner, topicSlug, controllerContract.address],
+    ['address', 'uint256', 'address', 'string', 'string', 'address'],
+    [walletAddress, valueInWei, topicOwner, topicSlug, arId, controllerContract.address],
   )
+
   res.status(200).json({
-    signature: signature,
+    valueInWei,
+    topicOwner,
+    topicSlug,
+    arId,
+    signature,
   })
 }
 
