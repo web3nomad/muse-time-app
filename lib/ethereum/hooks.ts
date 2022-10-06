@@ -23,7 +23,7 @@ export const useEthereumSigner = () => {
 }
 
 export type TimeTrove = {
-  addressAR: string,
+  arOwnerAddress: string,
   balance: ethers.BigNumberish
 }
 
@@ -45,8 +45,8 @@ export function useTimeTrove(topicOwner: string): {
         'Authorization': `Token ${authToken}`,
       },
     }).then(async (res) => {
-      const { addressAR, signature } = (await res.json()) as { addressAR: string, signature: string }
-      const tx = await controllerContract.connect(ethereumSigner).createTimeTrove(addressAR, signature)
+      const { arOwnerAddress, signature } = (await res.json()) as { arOwnerAddress: string, signature: string }
+      const tx = await controllerContract.connect(ethereumSigner).createTimeTrove(arOwnerAddress, signature)
       await tx.wait()
     }).catch((err) => {
       console.log(err)
@@ -57,8 +57,8 @@ export function useTimeTrove(topicOwner: string): {
    * get time trove
    */
   const fetcher = async (topicOwner: string) => {
-    const [addressAR, balance] = await controllerContract.timeTroveOf(topicOwner)
-    return { addressAR, balance } as TimeTrove
+    const [arOwnerAddress, balance] = await controllerContract.timeTroveOf(topicOwner)
+    return { arOwnerAddress, balance } as TimeTrove
   }
   const {
     data: timeTrove,
@@ -68,7 +68,7 @@ export function useTimeTrove(topicOwner: string): {
   })
 
   return {
-    timeTrove: timeTrove ?? { addressAR: '', balance: 0 },
+    timeTrove: timeTrove ?? { arOwnerAddress: '', balance: 0 },
     createTimeTrove: createTimeTrove,
     isValidating: isValidating,
   }

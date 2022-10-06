@@ -8,5 +8,5 @@ export const publicProvider = new ethers.providers.JsonRpcProvider(_publicRpcUrl
 const _controllerAddress = process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS ?? '0x0000000000000000000000000000000000000000'
 export const controllerContract = new ethers.Contract(_controllerAddress, [
   'function timeTroveOf(address topicOwner) view returns (tuple(string, uint256))',
-  'function createTimeTrove(string addressAR, bytes signature)'
+  'function createTimeTrove(string arOwnerAddress, bytes signature)'
 ], publicProvider)

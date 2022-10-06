@@ -42,8 +42,8 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
 
   const FullDetail = () => (
     <main className="lg:pl-48">
-      <ProfileDetail resourceOwner={addressSlug} arOwnerAddress={timeTrove.addressAR} />
-      <TopicsList resourceOwner={addressSlug} arOwnerAddress={timeTrove.addressAR} />
+      <ProfileDetail resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
+      <TopicsList resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
     </main>
   )
 
@@ -55,9 +55,9 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
       {(() => {
         if (isValidating) {
           return <Loading />
-        } else if (!timeTrove.addressAR && addressSlug !== walletAddress) {
+        } else if (!timeTrove.arOwnerAddress && addressSlug !== walletAddress) {
           return <NotFound />
-        } else if (!timeTrove.addressAR && addressSlug === walletAddress) {
+        } else if (!timeTrove.arOwnerAddress && addressSlug === walletAddress) {
           return <CallToCreateTimeTrove />
         } else {
           return <FullDetail />

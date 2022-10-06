@@ -17,17 +17,21 @@ type PageProps = {
 }
 
 const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
-  const { timeTrove } = useTimeTrove(addressSlug)
+  const { timeTrove } = useTimeTrove(addressSlug)  // topicOwner === addressSlug
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
 
+  const handleMint = useCallback(() => {
+
+  }, [])
+
   const fetchProfile = useCallback(() => {
-    if (!timeTrove.addressAR) {
+    if (!timeTrove.arOwnerAddress) {
       setProfile(null)
       return
     }
     getArweaveData({
-      arOwnerAddress: timeTrove.addressAR,
+      arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
       resourceType: ArweaveResourceType.PROFILE,
       resourceOwner: addressSlug
@@ -37,12 +41,12 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
   }, [setProfile, addressSlug, timeTrove])
 
   const fetchTopic = useCallback(() => {
-    if (!timeTrove.addressAR) {
+    if (!timeTrove.arOwnerAddress) {
       setTopic(null)
       return
     }
     getArweaveData({
-      arOwnerAddress: timeTrove.addressAR,
+      arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
       resourceType: ArweaveResourceType.TOPICS,
       resourceOwner: addressSlug
@@ -76,7 +80,7 @@ const Page: NextPage<PageProps> = ({ topicSlug, addressSlug }) => {
           <button className={clsx(
             "p-2 text-sm w-full rounded",
             "text-white bg-orange-tangelo hover:bg-orange-tangelo/90"
-          )}>Mint Now</button>
+          )} onClick={() => handleMint()}>Mint Now</button>
         </div>
       </div>
     )

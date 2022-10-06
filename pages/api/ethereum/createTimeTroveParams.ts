@@ -24,14 +24,14 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const recoveredKey = ethers.utils.recoverPublicKey(ethers.utils.arrayify(hash), auth.signature)
   const publicKeyBuffer = Buffer.from(ethers.utils.arrayify(recoveredKey))
   const publicKeyHash = Buffer.from(ethers.utils.arrayify(ethers.utils.sha256(publicKeyBuffer)))
-  const addressAR = base64url.encode(publicKeyHash)
+  const arOwnerAddress = base64url.encode(publicKeyHash)
   const signature = await _signControllerParams(
     ['address', 'string', 'address'],
-    [walletAddress, addressAR, controllerContract.address],
+    [walletAddress, arOwnerAddress, controllerContract.address],
   )
   res.status(200).json({
     // user: req.user,
-    addressAR: addressAR,
+    arOwnerAddress: arOwnerAddress,
     signature: signature,
   })
 }
