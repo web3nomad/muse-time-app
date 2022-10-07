@@ -3,8 +3,7 @@ import Link from 'next/link'
 import { useCallback, useEffect, useState, useMemo } from 'react'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
-import { useRecoilState } from 'recoil'
-import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
 import TransitionDialog from '@/components/TransitionDialog'
 
@@ -28,36 +27,37 @@ const WEB3: {
 }
 
 export default function ConnectButton() {
-  const [walletAddress, setWalletAddress] = useRecoilState(walletAddressState)
-  const [authToken, setAuthToken] = useRecoilState(authTokenState)
-  const [connecting, setConnecting] = useState(false)
+  const [signer, setSigner] = useState<ethers.Signer|null>(null)
+  const [connectDialogOpen, setConnectDialogOpen] = useState(false)
+  const {
+    walletAddress,
+    authToken,
+    setSignerAndAuth,
+    clearSignerAndAuth,
+  } = useEthereumContext()
 
   const connect = useCallback(() => {
     const web3Modal = WEB3.getModal()
     web3Modal.connect().then(async (instance: any) => {
       const provider = new ethers.providers.Web3Provider(instance)
-      const signer = provider.getSigner()
-      const address = ethers.utils.getAddress(await signer.getAddress())
-      setWalletAddress(address)
+      setSigner(provider.getSigner())
     }).catch((err: any) => {
       console.log(err)
     })
-  }, [setWalletAddress])
+  }, [setSigner])
 
   const disconnect = useCallback(() => {
     const web3Modal = WEB3.getModal()
     web3Modal.clearCachedProvider()
     window.localStorage.removeItem('auth-token')
-    setWalletAddress(null)
-    setAuthToken(null)
-  }, [setWalletAddress, setAuthToken])
+    clearSignerAndAuth()
+  }, [clearSignerAndAuth])
 
   const signMessage = useCallback(() => {
+    if (!signer) {
+      throw new Error('signer should not be null')
+    }
     const dispatch = async () => {
-      const web3Modal = WEB3.getModal()
-      const instance = await web3Modal.connect()
-      const provider = new ethers.providers.Web3Provider(instance)
-      const signer = provider.getSigner()
       const address = ethers.utils.getAddress(await signer.getAddress())
       const value: SignatureMessageData = {
         intent: 'Verify ownership of the address',
@@ -68,37 +68,43 @@ export default function ConnectButton() {
       // ethers.utils.verifyTypedData(IP_712_AUTH.domain, EIP_712_AUTH.types, value, signature)
       const authTokenPayload: AuthTokenPayload = { value, signature }
       const authToken = btoa(JSON.stringify(authTokenPayload))
+      // save context
       window.localStorage.setItem('auth-token', authToken)
-      setAuthToken(authToken)
+      setSignerAndAuth(signer, authToken)
+      setConnectDialogOpen(false)
     }
     dispatch().catch(err => {
       console.log(err)
     })
-  }, [setAuthToken])
+  }, [signer, setSignerAndAuth])
 
-  const connectStep = useMemo(() => {
-    if (!connecting) {
-      return 0
-    } else if (!walletAddress && !authToken) {
-      return 1
-    } else if (walletAddress && !authToken) {
-      return 2
-    }
-  }, [connecting, walletAddress, authToken])
-
-  useEffect(function() {
-    const web3Modal = WEB3.getModal()
-    if (web3Modal.cachedProvider) {
-      connect()
-    }
-    const authToken = window.localStorage.getItem('auth-token')
-    if (authToken) {
+  const loadSignerAndAuthFromClient = useCallback(() => {
+    // load auth and signer
+    let authToken = null
+    try {
+      authToken = window.localStorage.getItem('auth-token')
       const payload = JSON.parse(atob(authToken))
-      if (payload.value.expire > new Date().valueOf()) {
-        setAuthToken(authToken)
+      if (payload.value.expire <= new Date().valueOf()) {
+        throw new Error('token expired')
       }
+    } catch(err) {
+      authToken = null
+      window.localStorage.removeItem('auth-token')
     }
-  }, [setAuthToken, connect])
+    const web3Modal = WEB3.getModal()
+    if (authToken && web3Modal.cachedProvider) {
+      web3Modal.connect().then(async (instance: any) => {
+        const provider = new ethers.providers.Web3Provider(instance)
+        setSignerAndAuth(provider.getSigner(), authToken)
+      }).catch((err: any) => {
+        console.log(err)
+      })
+    }
+  }, [setSignerAndAuth])
+
+  useEffect(() => {
+    loadSignerAndAuthFromClient()
+  }, [loadSignerAndAuthFromClient])
 
   if (walletAddress && authToken) {
     return (
@@ -120,28 +126,31 @@ export default function ConnectButton() {
         <button className={clsx(
           "border border-white hover:border-white/75 hover:text-white/75",
           "rounded-full text-xs sm:text-sm px-4 py-1 mx-4",
-        )} onClick={() => setConnecting(true)}>Login</button>
-        <TransitionDialog open={connecting} onClose={() => setConnecting(false)}>
-          {connectStep === 1 && <div className="flex flex-col items-center">
-            <div className="text-2xl font-medium">Step 1</div>
-            <div className="text-center my-8 text-neutral-500">
-              Connect your wallet
+        )} onClick={() => setConnectDialogOpen(true)}>Login</button>
+        <TransitionDialog open={connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
+          {!signer ? (
+            <div className="flex flex-col items-center">
+              <div className="text-2xl font-medium">Step 1</div>
+              <div className="text-center my-8 text-neutral-500">
+                Connect your wallet
+              </div>
+              <button className={clsx(
+                "rounded-md py-2 px-8 text-sm text-white",
+                "bg-neutral-900 hover:bg-neutral-800",
+              )} onClick={() => connect()}>Connect</button>
             </div>
-            <button className={clsx(
-              "rounded-md py-2 px-8 text-sm text-white",
-              "bg-neutral-900 hover:bg-neutral-800",
-            )} onClick={() => connect()}>Connect</button>
-          </div>}
-          {connectStep === 2 && <div className="flex flex-col items-center">
-            <div className="text-2xl font-medium">Step 2</div>
-            <div className="text-center my-8 text-neutral-500">
-              Sign a message with your wallet {walletAddress}
+          ) : (
+            <div className="flex flex-col items-center">
+              <div className="text-2xl font-medium">Step 2</div>
+              <div className="text-center my-8 text-neutral-500">
+                Sign a message with your wallet
+              </div>
+              <button className={clsx(
+                "rounded-md py-2 px-8 text-sm text-white",
+                "bg-neutral-900 hover:bg-neutral-800",
+              )} onClick={() => signMessage()}>Sign Message</button>
             </div>
-            <button className={clsx(
-              "rounded-md py-2 px-8 text-sm text-white",
-              "bg-neutral-900 hover:bg-neutral-800",
-            )} onClick={() => signMessage()}>Sign Message</button>
-          </div>}
+          )}
         </TransitionDialog>
       </>
     )

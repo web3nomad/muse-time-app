@@ -1,13 +1,26 @@
-import React, { createContext, ReactChild, useContext, useState } from 'react'
+import { ethers } from 'ethers'
+
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useState,
+  ReactChild,
+} from 'react'
 
 type EthereumProviderState = {
-  walletAddress: string,
-  authToken: string,
+  signer: ethers.Signer|null,
+  walletAddress: string|null,
+  authToken: string|null,
+  setSignerAndAuth: () => void,
+  clearSignerAndAuth: () => void,
 }
 
 const EthereumContext = createContext<EthereumProviderState>({
-  walletAddress: '',
-  authToken: '',
+  walletAddress: null,
+  authToken: null,
+  setSignerAndAuth: () => {},
+  clearSignerAndAuth: () => {},
 })
 
 interface Props {
@@ -15,13 +28,31 @@ interface Props {
 }
 
 export const EthereumContextProvider = ({ children }: Props) => {
-  const [walletAddress, setWalletAddress] = useState<string>('abc---')
+  const [walletAddress, setWalletAddress] = useState<string|null>(null)
+  const [authToken, setAuthToken] = useState<string|null>(null)
+
+  const setSignerAndAuth = useCallback((signer: ethers.Signer, authToken: string) => {
+    signer.getAddress().then((address) => {
+      const walletAddress = ethers.utils.getAddress(address)
+      setWalletAddress(walletAddress)
+      setAuthToken(authToken)
+    })
+  }, [setWalletAddress, setAuthToken])
+
+  const clearSignerAndAuth = useCallback(() => {
+    setWalletAddress(null)
+    setAuthToken(null)
+  }, [setWalletAddress, setAuthToken])
+
+  const value = {
+    walletAddress,
+    authToken,
+    setSignerAndAuth,
+    clearSignerAndAuth,
+  }
 
   return (
-    <EthereumContext.Provider value={{
-      walletAddress: walletAddress,
-      authToken: '',
-    }}>
+    <EthereumContext.Provider value={value}>
       {children}
     </EthereumContext.Provider>
   )
