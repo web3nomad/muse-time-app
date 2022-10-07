@@ -71,8 +71,11 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
           {addressSlug.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
         </div>
         <div className="flex items-center text-sm my-2 font-din-alternate">
-          <TwitterIcon className="w-4 h-4 mr-1" />
-          <a href={`https://twitter.com/${profile['com.twitter']}`} target="_blank" rel="noreferrer">{profile['com.twitter'] || '-'}</a>
+          <TwitterIcon className="w-4 h-4" />
+          {profile['com.twitter'] && <a
+            href={`https://twitter.com/${profile['com.twitter']}`}
+            target="_blank" rel="noreferrer" className="ml-1"
+          >{profile['com.twitter']}</a>}
         </div>
         <div className="w-full my-2">
           <button
@@ -139,7 +142,9 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
       {(topic && profile) ? (
         <TopicDetail profile={profile} topic={topic} />
       ) : (
-        <div>loading topic ...</div>
+        <main className="flex justify-center">
+          <ArrowPathIcon className="h-8 w-8 animate-spin duration-1000" />
+        </main>
       )}
     </MainLayout>
   )

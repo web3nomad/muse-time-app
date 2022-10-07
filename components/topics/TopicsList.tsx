@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
 import { useEthereumContext } from '@/lib/ethereum/context'
@@ -7,6 +8,7 @@ import TransitionDialog from '@/components/TransitionDialog'
 import { PlusCircleIcon } from '@/components/icons'
 import TopicForm from './TopicForm'
 import TopicItem from './TopicItem'
+import CoffeeImage from '@/assets/images/coffee.svg'
 
 
 const makeRandomId = (n: number) => {
@@ -144,6 +146,11 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
           </div>
         ))}
       </div>
+      {!topics.length && (
+        <div className="relative w-20 h-20 mt-6">
+          <Image src={CoffeeImage.src} layout="fill" alt="coffee" />
+        </div>
+      )}
       <TransitionDialog open={!!editingTopic} onClose={() => setEditingTopic(null)}>
         {editingTopic && <TopicForm topic={editingTopic}
           onSubmit={handleSyncTopic} onCancel={() => setEditingTopic(null)} />}

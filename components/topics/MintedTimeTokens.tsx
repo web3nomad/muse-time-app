@@ -7,8 +7,7 @@ import { useTimeToken } from '@/lib/ethereum/hooks'
 import { controllerContract } from '@/lib/ethereum/public'
 import type { TimeTokenData } from '@/lib/ethereum/types'
 import type { TopicData } from '@/lib/arweave'
-
-import Clock from '@/assets/images/clock.svg'
+import ClockImage from '@/assets/images/clock.svg'
 
 function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: number }) {
   const [token, setToken] = useState<(TimeTokenData & { topic: TopicData })|null>(null)
@@ -53,14 +52,14 @@ export default function MintedTimeTokens({ addressSlug, topicSlug }: {
   }, [router])
 
   return (
-    <section className={clsx({'hidden': !timeTokenMintedLogs.length}, "my-16")}>
+    <section className="my-16">
       <h3 className="text-3xl font-bold my-4">Time NFTs Minted</h3>
       <div className="relative pl-8">
         {timeTokenMintedLogs.map(({tokenId, tokenOwner}) => (
           <div key={tokenId} className="relative rounded-md bg-neutral-100 mb-4 py-3 pl-20 pr-6">
             <div key={tokenId} onClick={() => goToTokenDetail(tokenId)} className="cursor-pointer">
               <div className="absolute left-5 top-0 h-full w-12">
-                <Image src={Clock.src} layout="fill" alt="Clock Icon" />
+                <Image src={ClockImage.src} layout="fill" alt="clock" />
               </div>
               <TimeTokenItem tokenId={tokenId} tokenOwner={tokenOwner} />
             </div>
@@ -69,10 +68,17 @@ export default function MintedTimeTokens({ addressSlug, topicSlug }: {
           </div>
         ))}
         <div className={clsx(
+          {'hidden': !timeTokenMintedLogs.length},
           "absolute left-2 top-0 w-[19px] h-[19px] -ml-[9px]",
           "bg-white rounded-full border-[7px] border-neutral-900"
         )}></div>
       </div>
+      {!timeTokenMintedLogs.length && <>
+        <div className="relative w-20 h-20 my-6">
+          <Image src={ClockImage.src} layout="fill" alt="coffee" />
+        </div>
+        <div className="font-light text-sm">Time NFTs minted will show up here.</div>
+      </>}
     </section>
   )
 }

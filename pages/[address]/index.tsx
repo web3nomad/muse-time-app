@@ -25,17 +25,21 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
   } = useTimeTrove(addressSlug)
 
   const Loading = () => (
-    <main>loading</main>
+    <main className="flex justify-center">
+      <ArrowPathIcon className="h-8 w-8 animate-spin duration-1000" />
+    </main>
   )
 
   const NotFound = () => (
-    <main>404</main>
+    <main className="flex justify-center">
+      <div className="my-6 text-2xl">Profile not found</div>
+    </main>
   )
 
   const CallToCreateTimeTrove = () => (
-    <main>
+    <main className="flex justify-center">
       <button
-        className="border border-current rounded text-xs sm:text-sm px-4 py-1 mx-2 flex items-center justify-center"
+        className="rounded-lg px-6 py-2 my-6 text-white bg-orange-tangelo hover:bg-orange-tangelo/90 flex items-center justify-center"
         disabled={isCreating} onClick={() => createTimeTrove()}
       >
         <span>Create Time Trove</span>
