@@ -3,6 +3,7 @@ import base64url from 'base64url'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } from '@/lib/auth'
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
+import type { TimeTrove } from '@/lib/ethereum/types'
 import { queryOnChainItemId, ArweaveResourceType } from '@/lib/arweave'
 import type { TopicData } from '@/lib/arweave'
 import { _signControllerParams } from './createTimeTroveParams'
@@ -11,7 +12,8 @@ const findTopic = async (topicOwner: string, topicSlug: string): Promise<{
   arId: string,
   topic: TopicData|null,
 }> => {
-  const [arOwnerAddress]: [arOwnerAddress: string] = await controllerContract.timeTroveOf(topicOwner)
+  const timeTrove: TimeTrove = await controllerContract.timeTroveOf(topicOwner)
+  const { arOwnerAddress } = timeTrove
   const arId = await queryOnChainItemId({
     arOwnerAddress: arOwnerAddress,
     resourceId: '',

@@ -49,13 +49,13 @@ export function useTimeTrove(topicOwner: string): {
    * get time trove
    */
   const fetcher = async (topicOwner: string) => {
-    const [arOwnerAddress, balance] = await controllerContract.timeTroveOf(topicOwner)
-    return { arOwnerAddress, balance } as TimeTrove
+    const timeTrove: TimeTrove = await controllerContract.timeTroveOf(topicOwner)
+    return timeTrove
   }
   const {
     data: timeTrove,
     isValidating
-  } = useSWR(topicOwner, fetcher, {
+  } = useSWR<TimeTrove>(topicOwner, fetcher, {
     revalidateOnFocus: false,
   })
 

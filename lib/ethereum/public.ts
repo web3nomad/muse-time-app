@@ -6,29 +6,5 @@ const _publicRpcUrl = process.env.NEXT_PUBLIC_RPC_URL ?? 'http://localhost:8545'
 export const publicProvider = new ethers.providers.JsonRpcProvider(_publicRpcUrl)
 
 const _controllerAddress = process.env.NEXT_PUBLIC_CONTROLLER_ADDRESS ?? '0x0000000000000000000000000000000000000000'
-export const controllerContract = new ethers.Contract(_controllerAddress, [
-  'function tokenURI(uint256 tokenId) view returns (string)',
-  /**
-   * struct TimeToken {
-   *     uint256 valueInWei;
-   *     address topicOwner;
-   *     string topicSlug;
-   *     string arId;
-   *     TimeTokenStatus status;
-   * }
-   */
-  'function timeTokenOf(uint256 tokenId) view returns (tuple(uint256, address, string, string, uint256))',
-  /**
-   * struct TimeTrove {
-   *     string arOwnerAddress;
-   *     uint256 balance;
-   * }
-   */
-  'function timeTroveOf(address topicOwner) view returns (tuple(string, uint256))',
-  'function ownerOf(uint256 id) view returns (address owner)',
-  'function mintTimeToken(uint256 valueInWei, address topicOwner, string topicSlug, string arId, bytes signature) payable',
-  'function createTimeTrove(string arOwnerAddress, bytes signature)',
-  'event Transfer(address indexed from, address indexed to, uint256 indexed id)',
-  'event TimeTroveCreated(address indexed topicOwner)',
-  'event TimeTokenMinted(address indexed topicOwner, string indexed topicSlug, address indexed tokenOwner, uint256 tokenId)',
-], publicProvider)
+const _controllerABI = [{"inputs":[{"internalType":"address","name":"museTimeNFT_","type":"address"},{"internalType":"string","name":"baseURI_","type":"string"},{"internalType":"address","name":"verificationAddress_","type":"address"}],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":true,"internalType":"address","name":"newOwner","type":"address"}],"name":"OwnerUpdated","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"topicOwner","type":"address"},{"indexed":true,"internalType":"string","name":"topicSlug","type":"string"},{"indexed":true,"internalType":"address","name":"owner","type":"address"},{"indexed":false,"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"TimeTokenMinted","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"topicOwner","type":"address"}],"name":"TimeTroveCreated","type":"event"},{"inputs":[],"name":"baseURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"arOwnerAddress","type":"string"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"createTimeTrove","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"mintIndex","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"valueInWei","type":"uint256"},{"internalType":"address","name":"topicOwner","type":"address"},{"internalType":"string","name":"topicSlug","type":"string"},{"internalType":"string","name":"arId","type":"string"},{"internalType":"bytes","name":"signature","type":"bytes"}],"name":"mintTimeToken","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[],"name":"museTimeNFT","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"string","name":"baseURI_","type":"string"}],"name":"setBaseURI","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"newOwner","type":"address"}],"name":"setOwner","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"verificationAddress_","type":"address"}],"name":"setVerificationAddress","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"timeTokenOf","outputs":[{"components":[{"internalType":"uint256","name":"valueInWei","type":"uint256"},{"internalType":"address","name":"topicOwner","type":"address"},{"internalType":"string","name":"topicSlug","type":"string"},{"internalType":"string","name":"arId","type":"string"},{"internalType":"enum MuseTimeController.TimeTokenStatus","name":"status","type":"uint8"}],"internalType":"struct MuseTimeController.TimeToken","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"topicOwner","type":"address"}],"name":"timeTroveOf","outputs":[{"components":[{"internalType":"string","name":"arOwnerAddress","type":"string"},{"internalType":"uint256","name":"balance","type":"uint256"}],"internalType":"struct MuseTimeController.TimeTrove","name":"","type":"tuple"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"uint256","name":"tokenId","type":"uint256"}],"name":"tokenURI","outputs":[{"internalType":"string","name":"","type":"string"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"verificationAddress","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"contract IERC20","name":"token","type":"address"}],"name":"withdrawERC20","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[],"name":"withdrawETH","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}]
+export const controllerContract = new ethers.Contract(_controllerAddress, _controllerABI, publicProvider)

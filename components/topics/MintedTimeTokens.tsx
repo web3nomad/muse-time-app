@@ -14,17 +14,17 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
   const [token, setToken] = useState<(TimeToken & { topic: TopicData })|null>(null)
 
   useEffect(() => {
-    controllerContract.timeTokenOf(tokenId).then(async (timeToken: any) => {
-      const [valueInWei, topicOwner, topicSlug, arId, status] = timeToken
+    controllerContract.timeTokenOf(tokenId).then(async (timeToken: TimeToken) => {
+      const { valueInWei, topicOwner, topicSlug, arId, status } = timeToken
       const topics: TopicData[] = await fetch(`https://arseed.web3infra.dev/${arId}`).then(res => res.json())
       const topic = topics.find(({ id }) => id === topicSlug)
       setToken({
         topic: topic!,
-        valueInWei: valueInWei.toString(),
-        topicOwner: topicOwner,
-        topicSlug: topicSlug,
-        arId: arId,
-        status: +status,
+        valueInWei,
+        topicOwner,
+        topicSlug,
+        arId,
+        status,
       })
     })
   }, [tokenId])

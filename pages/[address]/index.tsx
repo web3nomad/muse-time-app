@@ -18,7 +18,6 @@ type PageProps = {
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
   const walletAddress = useRecoilValue(walletAddressState)
   const { timeTrove, createTimeTrove, isValidating } = useTimeTrove(addressSlug)
-  // console.log('timeTrove', timeTrove)
 
   const handleCreateTimeTrove = useCallback(() => {
     createTimeTrove()

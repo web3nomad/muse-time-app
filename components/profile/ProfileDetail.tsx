@@ -50,7 +50,15 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
       resourceType: ArweaveResourceType.PROFILE,
       resourceOwner: resourceOwner
     }).then(data => {
-      setProfile(data)
+      setProfile(data ?? {
+        'name': '',
+        'url': '',
+        'email': '',
+        'avatar': '',
+        'description': '',
+        'com.twitter': '',
+        'org.telegram': '',
+      })
     })
   }, [setProfile, resourceOwner, arOwnerAddress])
 
