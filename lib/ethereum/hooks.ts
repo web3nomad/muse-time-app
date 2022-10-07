@@ -5,26 +5,12 @@ import { useEthereumContext } from '@/lib/ethereum/context'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 
-export const useEthereumSigner = () => {
-  if (typeof window === 'undefined' || typeof (window as any).ethereum === 'undefined') {
-    return new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
-  }
-  if (+chainId !== +(window as any).ethereum.chainId) {
-    console.log(new Error('Wrong chainId'))
-    return new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
-  }
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-  const signer = provider.getSigner()
-  return signer
-}
-
 export function useTimeTrove(topicOwner: string): {
   timeTrove: TimeTroveData,
   createTimeTrove: (() => void),
   isValidating: boolean
 } {
-  const { authToken } = useEthereumContext()
-  const ethereumSigner = useEthereumSigner()
+  const { authToken, signer } = useEthereumContext()
 
   /**
    * create time trove
@@ -37,12 +23,12 @@ export function useTimeTrove(topicOwner: string): {
       },
     }).then(async (res) => {
       const { arOwnerAddress, signature } = (await res.json()) as { arOwnerAddress: string, signature: string }
-      const tx = await controllerContract.connect(ethereumSigner).createTimeTrove(arOwnerAddress, signature)
+      const tx = await controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
       await tx.wait()
     }).catch((err) => {
       console.log(err)
     })
-  }, [authToken, ethereumSigner])
+  }, [authToken, signer])
 
   /**
    * get time trove
@@ -76,8 +62,7 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
   mintTimeToken: (() => void),
   timeTokenMintedLogs: TimeTokenMintedLog[],
 } {
-  const { authToken } = useEthereumContext()
-  const ethereumSigner = useEthereumSigner()
+  const { authToken, signer } = useEthereumContext()
 
   const [timeTokenMintedLogs, setTimeTokenMintedLogs] = useState<TimeTokenMintedLog[]>([])
 
@@ -129,13 +114,13 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
       }
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const tx = await controllerContract
-        .connect(ethereumSigner)
+        .connect(signer)
         .mintTimeToken(valueInWei, topicOwner, topicSlug, arId, signature, { value: valueInWei })
       await tx.wait()
     }).catch((err) => {
       console.log(err)
     })
-  }, [authToken, ethereumSigner, topicOwner, topicSlug])
+  }, [authToken, signer, topicOwner, topicSlug])
 
   return {
     mintTimeToken: mintTimeToken,
