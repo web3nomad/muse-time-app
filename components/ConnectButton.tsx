@@ -27,7 +27,7 @@ const WEB3: {
 }
 
 export default function ConnectButton() {
-  const [signer, setSigner] = useState<ethers.Signer|null>(null)
+  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner|null>(null)
   const [connectDialogOpen, setConnectDialogOpen] = useState(false)
   const {
     walletAddress,
@@ -81,10 +81,10 @@ export default function ConnectButton() {
 
   const loadSignerAndAuthFromClient = useCallback(() => {
     // load auth and signer
-    let authToken = null
+    let authToken: string|null = null
     try {
       authToken = window.localStorage.getItem('auth-token')
-      const payload = JSON.parse(atob(authToken))
+      const payload = JSON.parse(atob(authToken as string))
       if (payload.value.expire <= new Date().valueOf()) {
         throw new Error('token expired')
       }
@@ -96,7 +96,7 @@ export default function ConnectButton() {
     if (authToken && web3Modal.cachedProvider) {
       web3Modal.connect().then(async (instance: any) => {
         const provider = new ethers.providers.Web3Provider(instance)
-        setSignerAndAuth(provider.getSigner(), authToken)
+        setSignerAndAuth(provider.getSigner(), authToken!)
       }).catch((err: any) => {
         console.log(err)
       })

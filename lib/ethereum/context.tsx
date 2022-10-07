@@ -9,17 +9,19 @@ import React, {
   ReactChild,
 } from 'react'
 
+const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
+
 type EthereumProviderState = {
-  signer: ethers.Signer|null,
-  walletAddress: string|null,
-  authToken: string|null,
-  setSignerAndAuth: () => void,
-  clearSignerAndAuth: () => void,
-  errorMessage: string|null,
+  signer: ethers.Signer
+  walletAddress: string|null
+  authToken: string|null
+  setSignerAndAuth: (signer: ethers.Signer, authToken: string) => void
+  clearSignerAndAuth: () => void
+  errorMessage: string|null
 }
 
 const EthereumContext = createContext<EthereumProviderState>({
-  signer: null,
+  signer: VOID_SIGNER,
   walletAddress: null,
   authToken: null,
   setSignerAndAuth: () => {},
@@ -33,7 +35,7 @@ interface Props {
 
 export const EthereumContextProvider = ({ children }: Props) => {
   const [errorMessage, setErrorMessage] = useState<string|null>(null)
-  const [signer, setSigner] = useState<ethers.Signer|null>(null)
+  const [signer, setSigner] = useState<ethers.Signer>(VOID_SIGNER)
   const [walletAddress, setWalletAddress] = useState<string|null>(null)
   const [authToken, setAuthToken] = useState<string|null>(null)
 
@@ -57,7 +59,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
   }, [setSigner, setWalletAddress, setAuthToken])
 
   const clearSignerAndAuth = useCallback(() => {
-    setSigner(null)
+    setSigner(VOID_SIGNER)
     setWalletAddress(null)
     setAuthToken(null)
     setErrorMessage(null)

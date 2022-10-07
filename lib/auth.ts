@@ -13,13 +13,13 @@ export const EIP_712_AUTH = {
 }
 
 export type SignatureMessageData = {
-  intent: string,
-  wallet: string,
-  expire: number,
+  intent: string
+  wallet: string
+  expire: number
 }
 
 export type AuthTokenPayload = {
-  value: SignatureMessageData,
+  value: SignatureMessageData
   signature: string
 }
 

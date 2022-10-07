@@ -52,10 +52,10 @@ export function useTimeTrove(topicOwner: string): {
 }
 
 export type TimeTokenMintedLog = {
-  topicOwner: string,
-  topicSlug: string,
-  tokenId: number,
-  tokenOwner: string,
+  topicOwner: string
+  topicSlug: string
+  tokenId: number
+  tokenOwner: string
 }
 
 export function useTimeToken(topicOwner: string, topicSlug?: string): {
