@@ -10,6 +10,7 @@ import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import MainLayout from '@/components/layouts/MainLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
+import { ArrowPathIcon } from '@heroicons/react/20/solid'
 
 type PageProps = {
   addressSlug: string,
@@ -18,13 +19,9 @@ type PageProps = {
 
 const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
   const { timeTrove } = useTimeTrove(addressSlug)  // topicOwner === addressSlug
-  const { mintTimeToken } = useTimeToken(addressSlug, topicSlug)
+  const { mintTimeToken, isMinting } = useTimeToken(addressSlug, topicSlug)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
-
-  const handleMint = useCallback(() => {
-    mintTimeToken()
-  }, [mintTimeToken])
 
   const fetchProfile = useCallback(() => {
     if (!timeTrove.arOwnerAddress) {
@@ -78,10 +75,13 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
           <a href={`https://twitter.com/${profile['com.twitter']}`} target="_blank" rel="noreferrer">{profile['com.twitter'] || '-'}</a>
         </div>
         <div className="w-full my-2">
-          <button className={clsx(
-            "p-2 text-sm w-full rounded",
-            "text-white bg-orange-tangelo hover:bg-orange-tangelo/90"
-          )} onClick={() => handleMint()}>Mint Now</button>
+          <button
+            className="p-2 text-sm w-full rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90 flex items-center justify-center"
+            disabled={isMinting} onClick={() => mintTimeToken()}
+          >
+            <span>Mint Now</span>
+            {isMinting && <ArrowPathIcon className="h-5 w-5 animate-spin ml-2" />}
+          </button>
         </div>
       </div>
     )

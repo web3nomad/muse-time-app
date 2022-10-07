@@ -7,15 +7,18 @@ import type { TimeTroveData } from '@/lib/ethereum/types'
 
 export function useTimeTrove(topicOwner: string): {
   timeTrove: TimeTroveData,
+  isFetching: boolean,
   createTimeTrove: (() => void),
-  isValidating: boolean
+  isCreating: boolean,
 } {
-  const { authToken, signer } = useEthereumContext()
+  const { authToken, signer, sendTransaction } = useEthereumContext()
 
   /**
    * create time trove
    */
+  const [isCreating, setIsCreating] = useState<boolean>(false)
   const createTimeTrove = useCallback(() => {
+    setIsCreating(true)
     fetch('/api/ethereum/createTimeTroveParams', {
       headers: {
         'Content-Type': 'application/json',
@@ -23,12 +26,16 @@ export function useTimeTrove(topicOwner: string): {
       },
     }).then(async (res) => {
       const { arOwnerAddress, signature } = (await res.json()) as { arOwnerAddress: string, signature: string }
-      const tx = await controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
-      await tx.wait()
+      const method = controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
+      sendTransaction(method)
+      setIsCreating(false)  // !!! should set after transaction is confirmed
+      // const tx = await controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
+      // await tx.wait()
     }).catch((err) => {
       console.log(err)
+      setIsCreating(false)
     })
-  }, [authToken, signer])
+  }, [authToken, signer, sendTransaction, setIsCreating])
 
   /**
    * get time trove
@@ -39,15 +46,16 @@ export function useTimeTrove(topicOwner: string): {
   }
   const {
     data: timeTrove,
-    isValidating
+    isValidating: isFetching,
   } = useSWR<TimeTroveData>(topicOwner, fetcher, {
     revalidateOnFocus: false,
   })
 
   return {
     timeTrove: timeTrove ?? { arOwnerAddress: '', balance: 0 },
+    isFetching: isFetching,
     createTimeTrove: createTimeTrove,
-    isValidating: isValidating,
+    isCreating: isCreating,
   }
 }
 
@@ -59,10 +67,11 @@ export type TimeTokenMintedLog = {
 }
 
 export function useTimeToken(topicOwner: string, topicSlug?: string): {
-  mintTimeToken: (() => void),
   timeTokenMintedLogs: TimeTokenMintedLog[],
+  mintTimeToken: (() => void),
+  isMinting: boolean,
 } {
-  const { authToken, signer } = useEthereumContext()
+  const { authToken, signer, sendTransaction } = useEthereumContext()
 
   const [timeTokenMintedLogs, setTimeTokenMintedLogs] = useState<TimeTokenMintedLog[]>([])
 
@@ -89,11 +98,13 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
   /**
    * mint time token
    */
+  const [isMinting, setIsMinting] = useState<boolean>(false)
   const mintTimeToken = useCallback(() => {
     if (!topicSlug) {
       console.log('topicSlug not set')
       return
     }
+    setIsMinting(true)
     fetch('/api/ethereum/mintParams', {
       method: 'POST',
       body: JSON.stringify({
@@ -113,17 +124,21 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
         signature: string,
       }
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
-      const tx = await controllerContract
-        .connect(signer)
-        .mintTimeToken(valueInWei, topicOwner, topicSlug, arId, signature, { value: valueInWei })
-      await tx.wait()
+      const method = controllerContract.connect(signer).mintTimeToken(
+        valueInWei, topicOwner, topicSlug, arId, signature,
+        { value: valueInWei }
+      )
+      sendTransaction(method)
+      setIsMinting(false)
     }).catch((err) => {
       console.log(err)
+      setIsMinting(false)
     })
-  }, [authToken, signer, topicOwner, topicSlug])
+  }, [authToken, signer, sendTransaction, topicOwner, topicSlug, setIsMinting])
 
   return {
-    mintTimeToken: mintTimeToken,
     timeTokenMintedLogs: timeTokenMintedLogs,
+    mintTimeToken: mintTimeToken,
+    isMinting: isMinting,
   }
 }

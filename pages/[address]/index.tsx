@@ -9,6 +9,7 @@ import TopicsList from '@/components/topics/TopicsList'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { useTimeTrove } from '@/lib/ethereum/hooks'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
+import { ArrowPathIcon } from '@heroicons/react/20/solid'
 
 type PageProps = {
   addressSlug: string
@@ -16,11 +17,12 @@ type PageProps = {
 
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
   const { walletAddress } = useEthereumContext()
-  const { timeTrove, createTimeTrove, isValidating } = useTimeTrove(addressSlug)
-
-  const handleCreateTimeTrove = useCallback(() => {
-    createTimeTrove()
-  }, [createTimeTrove])
+  const {
+    timeTrove,
+    isFetching,
+    createTimeTrove,
+    isCreating,
+  } = useTimeTrove(addressSlug)
 
   const Loading = () => (
     <main>loading</main>
@@ -32,10 +34,13 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
 
   const CallToCreateTimeTrove = () => (
     <main>
-      <button className={clsx(
-        "border border-current",
-        "rounded text-xs sm:text-sm px-4 py-1 mx-2",
-      )} onClick={() => handleCreateTimeTrove()}>Create Time Trove</button>
+      <button
+        className="border border-current rounded text-xs sm:text-sm px-4 py-1 mx-2 flex items-center justify-center"
+        disabled={isCreating} onClick={() => createTimeTrove()}
+      >
+        <span>Create Time Trove</span>
+        {isCreating && <ArrowPathIcon className="h-5 w-5 animate-spin ml-2" />}
+      </button>
     </main>
   )
 
@@ -53,7 +58,7 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
         <title>{'MuseTime | ' + addressSlug}</title>
       </Head>
       {(() => {
-        if (isValidating) {
+        if (isFetching) {
           return <Loading />
         } else if (!timeTrove.arOwnerAddress && addressSlug !== walletAddress) {
           return <NotFound />

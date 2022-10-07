@@ -34,7 +34,7 @@ export default function ConnectButton() {
     authToken,
     setSignerAndAuth,
     clearSignerAndAuth,
-    errorMessage,
+    signerErrorMessage,
   } = useEthereumContext()
 
   const connect = useCallback(() => {
@@ -107,8 +107,8 @@ export default function ConnectButton() {
     loadSignerAndAuthFromClient()
   }, [loadSignerAndAuthFromClient])
 
-  if (errorMessage) {
-    return <div className="text-amber-400 font-bold">{errorMessage}</div>
+  if (signerErrorMessage) {
+    return <div className="text-amber-400 font-bold">{signerErrorMessage}</div>
   } else if (walletAddress && authToken) {
     return (
       <>
