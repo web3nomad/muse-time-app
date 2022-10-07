@@ -120,7 +120,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
   }, [topics, syncTopics])
 
   const goToTopicDetail = useCallback((topic: TopicData) => {
-    router.push(`${resourceOwner}/${topic.id}`)
+    router.push(`/${resourceOwner}/${topic.id}`)
   }, [router, resourceOwner])
 
   useEffect(() => fetchTopics(), [fetchTopics])

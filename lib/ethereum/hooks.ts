@@ -3,11 +3,8 @@ import { ethers } from 'ethers'
 import { useCallback, useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
-import {
-  chainId,
-  publicProvider,
-  controllerContract
-} from '@/lib/ethereum/public'
+import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
+import type { TimeTrove } from '@/lib/ethereum/types'
 
 export const useEthereumSigner = () => {
   if (typeof window === 'undefined' || typeof (window as any).ethereum === 'undefined') {
@@ -20,11 +17,6 @@ export const useEthereumSigner = () => {
   const provider = new ethers.providers.Web3Provider((window as any).ethereum)
   const signer = provider.getSigner()
   return signer
-}
-
-type TimeTrove = {
-  arOwnerAddress: string,
-  balance: ethers.BigNumberish
 }
 
 export function useTimeTrove(topicOwner: string): {
@@ -74,19 +66,21 @@ export function useTimeTrove(topicOwner: string): {
   }
 }
 
-type TimeToken = {
+export type TimeTokenMintedLog = {
+  topicOwner: string,
+  topicSlug: string,
   tokenId: number,
   tokenOwner: string,
 }
 
 export function useTimeToken(topicOwner: string, topicSlug?: string): {
   mintTimeToken: (() => void),
-  mintedTimeTokens: TimeToken[],
+  timeTokenMintedLogs: TimeTokenMintedLog[],
 } {
   const authToken = useRecoilValue(authTokenState)
   const ethereumSigner = useEthereumSigner()
 
-  const [mintedTimeTokens, setMintedTimeTokens] = useState<TimeToken[]>([])
+  const [timeTokenMintedLogs, setTimeTokenMintedLogs] = useState<TimeTokenMintedLog[]>([])
 
   /**
    *  list time token mint
@@ -95,12 +89,14 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
     const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicSlug ?? null, null)
     controllerContract.queryFilter(event, 15537393).then(async (logs) => {
       const tokens = logs.map((log: any) => ({
+        topicOwner: log.args.topicOwner,
+        topicSlug: log.args.topicSlug,
         tokenId: +log.args.tokenId,
         tokenOwner: log.args.tokenOwner,
       }))
-      setMintedTimeTokens(tokens)
+      setTimeTokenMintedLogs(tokens)
     })
-  }, [topicOwner, topicSlug, setMintedTimeTokens])
+  }, [topicOwner, topicSlug, setTimeTokenMintedLogs])
 
   useEffect(() => {
     listTimeTokenMinted()
@@ -144,6 +140,6 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
 
   return {
     mintTimeToken: mintTimeToken,
-    mintedTimeTokens: mintedTimeTokens,
+    timeTokenMintedLogs: timeTokenMintedLogs,
   }
 }
