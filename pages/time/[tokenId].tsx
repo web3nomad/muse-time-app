@@ -3,7 +3,7 @@ import type { GetServerSideProps, NextPage } from 'next'
 import Head from 'next/head'
 import Link from 'next/link'
 import MainLayout from '@/components/layouts/MainLayout'
-import { controllerContract } from '@/lib/ethereum/public'
+import { controllerContract, nftContract } from '@/lib/ethereum/public'
 import type { TimeToken } from '@/lib/ethereum/types'
 
 type PageProps = {
@@ -15,7 +15,7 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
 
   const fetcher = async (tokenId: string) => {
     const [tokenURI, timeToken]: [string, TimeToken] = await Promise.all([
-      controllerContract.tokenURI(+tokenId),
+      nftContract.tokenURI(+tokenId),
       controllerContract.timeTokenOf(+tokenId),
     ])
     return {
@@ -23,11 +23,20 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
       ...timeToken,
     }
   }
-  const { data, isValidating } = useSWR<TimeToken & {tokenURI: string}>(tokenId.toString(), fetcher, {
+  const { data, error } = useSWR<TimeToken & {tokenURI: string}>(tokenId.toString(), fetcher, {
     revalidateOnFocus: false,
   })
-
   const { tokenURI, valueInWei, topicOwner, topicSlug, arId, status } = data ?? {}
+
+  const fetcher2 = async (tokenURI: string) => {
+    const url = tokenURI.replace(/^https:\/\/musetime\.xyz/, '')
+    const metadata = fetch(url).then(res => res.json())
+    return metadata
+  }
+
+  const { data: tokenMetadata } = useSWR<{image:string}>(tokenURI, fetcher2, {
+    revalidateOnFocus: false,
+  })
 
   return (
     <MainLayout>
@@ -37,12 +46,16 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
         <link rel="icon" href="/favicon.ico" />
       </Head>
       <main>
+        {error && <div>{error.toString()}</div>}
         <div>tokenURI: {tokenURI}</div>
         <div>valueInWei: {+(valueInWei??'0').toString()}</div>
         <div>topicOwner: {topicOwner}</div>
         <div>topicSlug: {topicSlug}</div>
         <div>arId: {arId}</div>
         <div>status: {status}</div>
+        {tokenMetadata && <picture className="block w-[600px]">
+          <img src={tokenMetadata.image} alt="" />
+        </picture>}
       </main>
     </MainLayout>
   )
