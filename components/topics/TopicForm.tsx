@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { ethers } from 'ethers'
 import { useState, useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
 import type { TopicData } from '@/lib/arweave'
 
 type FormData = {

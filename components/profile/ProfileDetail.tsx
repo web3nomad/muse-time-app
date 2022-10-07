@@ -1,8 +1,7 @@
 import clsx from 'clsx'
 import Image from 'next/image'
 import { useEffect, useState, useCallback, useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { ResourceTypes, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import type { ProfileData } from '@/lib/arweave'
@@ -35,7 +34,7 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
   resourceOwner: string,
   arOwnerAddress: string,
 }) {
-  const walletAddress = useRecoilValue(walletAddressState)
+  const { walletAddress } = useEthereumContext()
   const [profile, setProfile] = useState<ProfileData|null>(null)
   const [dialogOpen, setDialogOpen] = useState(false)
 

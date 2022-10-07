@@ -1,7 +1,6 @@
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import type { TopicData } from '@/lib/arweave'
 import { ResourceTypes, syncArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
@@ -51,8 +50,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
   arOwnerAddress: string,
 }) {
   const router = useRouter()
-  const walletAddress = useRecoilValue(walletAddressState)
-  const authToken = useRecoilValue(authTokenState)
+  const { walletAddress, authToken } = useEthereumContext()
 
   const [topics, setTopics] = useState<TopicData[]>([])
   const [editingTopic, setEditingTopic] = useState<TopicData|null>(null)

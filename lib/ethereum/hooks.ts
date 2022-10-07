@@ -1,8 +1,7 @@
 import useSWR from 'swr'
 import { ethers } from 'ethers'
 import { useCallback, useState, useEffect } from 'react'
-import { useRecoilValue } from 'recoil'
-import { authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 
@@ -24,7 +23,7 @@ export function useTimeTrove(topicOwner: string): {
   createTimeTrove: (() => void),
   isValidating: boolean
 } {
-  const authToken = useRecoilValue(authTokenState)
+  const { authToken } = useEthereumContext()
   const ethereumSigner = useEthereumSigner()
 
   /**
@@ -77,7 +76,7 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
   mintTimeToken: (() => void),
   timeTokenMintedLogs: TimeTokenMintedLog[],
 } {
-  const authToken = useRecoilValue(authTokenState)
+  const { authToken } = useEthereumContext()
   const ethereumSigner = useEthereumSigner()
 
   const [timeTokenMintedLogs, setTimeTokenMintedLogs] = useState<TimeTokenMintedLog[]>([])

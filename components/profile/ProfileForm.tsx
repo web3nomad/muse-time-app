@@ -1,7 +1,6 @@
 import clsx from 'clsx'
 import { useState, useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import { syncArweaveData, ResourceTypes } from '@/lib/arweave'
 import type { ProfileData } from '@/lib/arweave'
@@ -12,8 +11,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
   onSubmit: (profile: ProfileData) => void,
   onCancel: () => void,
 }) {
-  const walletAddress = useRecoilValue(walletAddressState)
-  const authToken = useRecoilValue(authTokenState)
+  const { walletAddress, authToken } = useEthereumContext()
 
   const [pending, setPending] = useState(false)
   const [formData, setFormData] = useState<ProfileData>(profile)

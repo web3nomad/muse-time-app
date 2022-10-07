@@ -1,6 +1,5 @@
 import '../styles/globals.css'
 import type { AppProps } from 'next/app'
-import { RecoilRoot } from 'recoil'
 import { EthereumContextProvider } from '@/lib/ethereum/context'
 import Router from 'next/router'
 import NProgress from 'nprogress'
@@ -13,11 +12,9 @@ Router.events.on('routeChangeError', () => NProgress.done())
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <RecoilRoot>
-      <EthereumContextProvider>
-        <Component {...pageProps} />
-      </EthereumContextProvider>
-    </RecoilRoot>
+    <EthereumContextProvider>
+      <Component {...pageProps} />
+    </EthereumContextProvider>
   )
 }
 

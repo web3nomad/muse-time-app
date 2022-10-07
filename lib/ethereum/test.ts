@@ -1,8 +1,7 @@
 import { ethers } from 'ethers'
 import base64url from 'base64url'
 import { useMemo } from 'react'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
 
 
@@ -21,7 +20,7 @@ export function useArOwner(): [string?, string?] {
     }
   }
 
-  const authToken = useRecoilValue(authTokenState)
+  const { authToken } = useEthereumContext()
 
   const [ownerAddress, ownerKey] = useMemo(() => {
     const { value, signature } = getValueFromAuthToken(authToken)

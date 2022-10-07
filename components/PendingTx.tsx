@@ -2,15 +2,13 @@ import clsx from 'clsx'
 import Link from 'next/link'
 // import useSWR from 'swr'
 import { useState, useEffect, useCallback } from 'react'
-import { useRecoilValue } from 'recoil'
-import { authTokenState, walletAddressState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import type { EverpayTx } from '@/lib/arweave'
 
 
 export default function PendingTx() {
-  const authToken = useRecoilValue(authTokenState)
-  const walletAddress = useRecoilValue(walletAddressState)
+  const { walletAddress, authToken } = useEthereumContext()
   const [pendingTx, setPendingTx] = useState<EverpayTx|null>(null)
   const [tick, setTick] = useState(0)
 

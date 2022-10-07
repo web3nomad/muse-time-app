@@ -6,8 +6,7 @@ import { ethers } from 'ethers'
 import MainLayout from '@/components/layouts/MainLayout'
 import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
-import { useRecoilValue } from 'recoil'
-import { walletAddressState } from '@/lib/recoil/wallet'
+import { useEthereumContext } from '@/lib/ethereum/context'
 import { useTimeTrove } from '@/lib/ethereum/hooks'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 
@@ -16,7 +15,7 @@ type PageProps = {
 }
 
 const Page: NextPage<PageProps> = ({ addressSlug }) => {
-  const walletAddress = useRecoilValue(walletAddressState)
+  const { walletAddress } = useEthereumContext()
   const { timeTrove, createTimeTrove, isValidating } = useTimeTrove(addressSlug)
 
   const handleCreateTimeTrove = useCallback(() => {
