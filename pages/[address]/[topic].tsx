@@ -6,7 +6,7 @@ import { ethers } from 'ethers'
 import { useRecoilValue } from 'recoil'
 import type { TopicData, ProfileData } from '@/lib/arweave'
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
-import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
+import { ResourceTypes, getArweaveData } from '@/lib/arweave'
 import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import MainLayout from '@/components/layouts/MainLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
@@ -35,7 +35,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
     getArweaveData({
       arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
-      resourceType: ArweaveResourceType.PROFILE,
+      resourceType: ResourceTypes.PROFILE,
       resourceOwner: addressSlug
     }).then(data => {
       setProfile(data)
@@ -50,7 +50,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
     getArweaveData({
       arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
-      resourceType: ArweaveResourceType.TOPICS,
+      resourceType: ResourceTypes.TOPICS,
       resourceOwner: addressSlug
     }).then((topicsList: TopicData[]) => {
       const topicItem = topicsList.find(({ id }) => id === topicSlug)

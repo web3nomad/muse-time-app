@@ -4,7 +4,7 @@ import Head from 'next/head'
 import Link from 'next/link'
 import MainLayout from '@/components/layouts/MainLayout'
 import { controllerContract, nftContract } from '@/lib/ethereum/public'
-import type { TimeToken } from '@/lib/ethereum/types'
+import type { TimeTokenData } from '@/lib/ethereum/types'
 
 type PageProps = {
   tokenId: number
@@ -14,7 +14,7 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
   // TODO: call museTimeContract.tokenURI instead of call controllerContract
 
   const fetcher = async (tokenId: string) => {
-    const [tokenURI, timeToken]: [string, TimeToken] = await Promise.all([
+    const [tokenURI, timeToken]: [string, TimeTokenData] = await Promise.all([
       nftContract.tokenURI(+tokenId),
       controllerContract.timeTokenOf(+tokenId),
     ])
@@ -23,7 +23,7 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
       ...timeToken,
     }
   }
-  const { data, error } = useSWR<TimeToken & {tokenURI: string}>(tokenId.toString(), fetcher, {
+  const { data, error } = useSWR<TimeTokenData & {tokenURI: string}>(tokenId.toString(), fetcher, {
     revalidateOnFocus: false,
   })
   const { tokenURI, valueInWei, topicOwner, topicSlug, arId, status } = data ?? {}

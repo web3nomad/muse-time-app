@@ -5,7 +5,7 @@ export type EverpayTx = {
   'paymentId': string,
   'onChainStatus': string
 }
-export type ArweaveDataPayload = {[_key:string]: unknown} | Array<{[_key:string]: unknown}>
+
 export type ArweaveDataTag = {name:string,value:string}
 
 export type ArweaveMetadata = {
@@ -39,7 +39,7 @@ export type ProfileData = {
   'org.telegram': string,
 }
 
-export enum ArweaveResourceType {
+export enum ResourceTypes {
   PROFILE = 'profile',
   // TOPIC = 'topic',
   TOPICS = 'topics',

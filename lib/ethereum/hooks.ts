@@ -4,7 +4,7 @@ import { useCallback, useState, useEffect } from 'react'
 import { useRecoilValue } from 'recoil'
 import { authTokenState } from '@/lib/recoil/wallet'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
-import type { TimeTrove } from '@/lib/ethereum/types'
+import type { TimeTroveData } from '@/lib/ethereum/types'
 
 export const useEthereumSigner = () => {
   if (typeof window === 'undefined' || typeof (window as any).ethereum === 'undefined') {
@@ -20,7 +20,7 @@ export const useEthereumSigner = () => {
 }
 
 export function useTimeTrove(topicOwner: string): {
-  timeTrove: TimeTrove,
+  timeTrove: TimeTroveData,
   createTimeTrove: (() => void),
   isValidating: boolean
 } {
@@ -49,13 +49,13 @@ export function useTimeTrove(topicOwner: string): {
    * get time trove
    */
   const fetcher = async (topicOwner: string) => {
-    const timeTrove: TimeTrove = await controllerContract.timeTroveOf(topicOwner)
+    const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
     return timeTrove
   }
   const {
     data: timeTrove,
     isValidating
-  } = useSWR<TimeTrove>(topicOwner, fetcher, {
+  } = useSWR<TimeTroveData>(topicOwner, fetcher, {
     revalidateOnFocus: false,
   })
 

@@ -3,7 +3,7 @@ import Image from 'next/image'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState } from '@/lib/recoil/wallet'
-import { ArweaveResourceType, getArweaveData } from '@/lib/arweave'
+import { ResourceTypes, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import type { ProfileData } from '@/lib/arweave'
 import ProfileForm from './ProfileForm'
@@ -47,7 +47,7 @@ export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {
     getArweaveData({
       arOwnerAddress: arOwnerAddress,
       resourceId: '',
-      resourceType: ArweaveResourceType.PROFILE,
+      resourceType: ResourceTypes.PROFILE,
       resourceOwner: resourceOwner
     }).then(data => {
       setProfile(data ?? {

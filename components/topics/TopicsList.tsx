@@ -3,7 +3,7 @@ import { useRouter } from 'next/router'
 import { useRecoilValue } from 'recoil'
 import { walletAddressState, authTokenState } from '@/lib/recoil/wallet'
 import type { TopicData } from '@/lib/arweave'
-import { ArweaveResourceType, syncArweaveData, getArweaveData } from '@/lib/arweave'
+import { ResourceTypes, syncArweaveData, getArweaveData } from '@/lib/arweave'
 import TransitionDialog from '@/components/TransitionDialog'
 import { PlusCircleIcon } from '@/components/icons'
 import TopicForm from './TopicForm'
@@ -66,7 +66,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     getArweaveData({
       arOwnerAddress: arOwnerAddress,
       resourceId: '',
-      resourceType: ArweaveResourceType.TOPICS,
+      resourceType: ResourceTypes.TOPICS,
       resourceOwner: resourceOwner
     }).then(topics => {
       setTopics(topics || [])
@@ -80,7 +80,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     setPendingSync(true)
     syncArweaveData({
       resourceId: '',
-      resourceType: ArweaveResourceType.TOPICS,
+      resourceType: ResourceTypes.TOPICS,
       resourceOwner: walletAddress,
       payload: newTopics,
       authToken: authToken,

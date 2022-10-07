@@ -1,11 +1,11 @@
 import { ethers } from 'ethers'
-import { ArweaveResourceType } from './types'
+import { ResourceTypes } from './types'
 import type { EverpayTx, ArweaveMetadata } from './types'
 
 type QueryParams = {
   arOwnerAddress: string,  // arweave owner address
   resourceId: string,
-  resourceType: ArweaveResourceType,
+  resourceType: ResourceTypes,
   resourceOwner: string,  // ethereum address
 }
 

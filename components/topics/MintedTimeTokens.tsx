@@ -5,16 +5,16 @@ import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { useTimeToken } from '@/lib/ethereum/hooks'
 import { controllerContract } from '@/lib/ethereum/public'
-import type { TimeToken } from '@/lib/ethereum/types'
+import type { TimeTokenData } from '@/lib/ethereum/types'
 import type { TopicData } from '@/lib/arweave'
 
 import Clock from '@/assets/images/clock.svg'
 
 function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: number }) {
-  const [token, setToken] = useState<(TimeToken & { topic: TopicData })|null>(null)
+  const [token, setToken] = useState<(TimeTokenData & { topic: TopicData })|null>(null)
 
   useEffect(() => {
-    controllerContract.timeTokenOf(tokenId).then(async (timeToken: TimeToken) => {
+    controllerContract.timeTokenOf(tokenId).then(async (timeToken: TimeTokenData) => {
       const { valueInWei, topicOwner, topicSlug, arId, status } = timeToken
       const topics: TopicData[] = await fetch(`https://arseed.web3infra.dev/${arId}`).then(res => res.json())
       const topic = topics.find(({ id }) => id === topicSlug)

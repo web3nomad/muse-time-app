@@ -1,12 +1,11 @@
 export type {
   EverpayTx,
-  ArweaveDataPayload,
   ArweaveDataTag,
   TopicData,
   ProfileData,
 } from './types'
 
-export { ArweaveResourceType } from './types'
+export { ResourceTypes } from './types'
 
 export { syncArweaveData } from './sync'
 
