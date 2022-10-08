@@ -9,8 +9,7 @@ import { MuseTimeLogoIcon, MuseTimeTextIcon } from '@/components/icons'
 export default function SiteHeader({ className }: { className: string }) {
   return (
     <header className={clsx(
-      "h-16 px-2 sm:px-8",
-      "flex items-center justify-start bg-neutral-900 text-white",
+      "h-16 px-2 sm:px-8 w-full flex items-center justify-start",
       className,
     )}>
       <Link href='/'>

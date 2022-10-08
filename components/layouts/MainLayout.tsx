@@ -20,7 +20,7 @@ export default function MainLayout({ children }: Props) {
         <meta name="description" content="MuseTime is a time x space trading tool built on Arweave and Ethereum. In this high-dimensional world, time and space can be freely transformed." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <SiteHeader />
+      <SiteHeader className="bg-neutral-900 text-white" />
       <div className="flex flex-col items-end justify-center w-[18rem] sm:w-[32rem] my-8 mx-auto">
         <div className="relative w-full h-20 sm:h-32">
           <Image src={TimeIsMoney.src} layout="fill" alt="Time is money" />

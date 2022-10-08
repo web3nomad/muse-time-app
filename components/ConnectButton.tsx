@@ -128,7 +128,7 @@ export default function ConnectButton() {
       <>
         <button className={clsx(
           "border border-current hover:opacity-75 transition-opacity",
-          "rounded-full text-xs sm:text-sm px-4 py-1 mx-4",
+          "rounded text-xs sm:text-sm px-4 py-1 mx-4",
         )} onClick={() => setConnectDialogOpen(true)}>Login</button>
         <TransitionDialog open={connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
           {!signer ? (
