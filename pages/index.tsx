@@ -43,7 +43,7 @@ const Home: NextPage = () => {
           <p className="my-8 font-din-pro">MuseTime is a time x space trading instrument, in which, time and space can be freely transformed in this high-dimensional world, with the transformation fully supported by a decentralized platform.</p>
           {walletAddress ? (
             <button className={clsx(
-                "bg-blue-cadet text-neutral-900 transition-colors",
+                "bg-blue-cadet text-neutral-900",
                 "rounded sm:text-sm px-16 py-3 mb-6 flex items-center justify-center",
               )} onClick={() => router.push(`/${walletAddress}`)}
             >MY TIME TROVE <ArrowUpRightIcon className="w-6 h-6 ml-1" /></button>

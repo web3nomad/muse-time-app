@@ -53,5 +53,5 @@ a {
 }
 
 button {
-  @apply font-din-alternate;
+  @apply font-din-alternate transition-colors duration-500;
 }
