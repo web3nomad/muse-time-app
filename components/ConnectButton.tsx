@@ -82,10 +82,11 @@ export default function ConnectButton() {
   const loadSignerAndAuthFromClient = useCallback(() => {
     // load auth and signer
     let authToken: string|null = null
+    let payload: AuthTokenPayload|null = null
     try {
-      authToken = window.localStorage.getItem('auth-token')
-      const payload = JSON.parse(atob(authToken as string))
-      if (payload.value.expire <= new Date().valueOf()) {
+      authToken = window.localStorage.getItem('auth-token') ?? null
+      payload = JSON.parse(atob(authToken as string))
+      if (payload!.value.expire <= new Date().valueOf()) {
         throw new Error('token expired')
       }
     } catch(err) {
@@ -93,10 +94,14 @@ export default function ConnectButton() {
       window.localStorage.removeItem('auth-token')
     }
     const web3Modal = WEB3.getModal()
-    if (authToken && web3Modal.cachedProvider) {
+    if (authToken && payload && web3Modal.cachedProvider) {
       web3Modal.connect().then(async (instance: any) => {
         const provider = new ethers.providers.Web3Provider(instance)
-        setSignerAndAuth(provider.getSigner(), authToken!)
+        const signer = provider.getSigner()
+        const walletAddress = ethers.utils.getAddress(await signer.getAddress())
+        if (payload!.value.wallet === walletAddress) {
+          setSignerAndAuth(signer, authToken!)
+        }
       }).catch((err: any) => {
         console.log(err)
       })

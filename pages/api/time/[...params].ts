@@ -55,7 +55,7 @@ function generateTokenImage(profile: ProfileData, topic: TopicData, timeToken: T
 
 type AttributeData = {
   trait_type: string,
-  value: string
+  value: string|number
 }
 
 type TimeTokenMetadata = {
@@ -106,7 +106,9 @@ const handler = async function(
     return
   }
   const [tokenId, topicSlug, arId] = params
-  const [tokenOwner, topic, timeToken]: [string, TopicData|null, TimeTokenData] = await Promise.all([
+  const [tokenOwner, topic, timeToken]: [
+    string, TopicData|null, TimeTokenData
+  ] = await Promise.all([
     nftContract.ownerOf(+tokenId),
     findTopic(topicSlug, arId),
     findTimeToken(+tokenId),

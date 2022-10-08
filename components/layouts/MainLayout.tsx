@@ -33,7 +33,7 @@ export default function MainLayout({ children }: Props) {
         "relative mb-32 mx-auto",
         "px-5 py-5 sm:px-8 sm:py-8 lg:px-20 lg:py-16",
         "w-full lg:w-[1000px] min-h-[1000px]",
-        "bg-white text-neutral-900 border-black border-[3px] lg:border-[7px] rounded-[40px]"
+        "bg-white text-neutral-900 border-black border-[0] lg:border-[7px] rounded-[40px]"
       )}>
         {children}
         <div className="absolute top-20 -left-3 w-3">

@@ -34,7 +34,7 @@ type PageProps = {
 }
 
 const Page: NextPage<PageProps> = ({ tokenId }) => {
-  const { walletAddress } = useEthereumContext()
+  const { walletAddress, signer, sendTransaction } = useEthereumContext()
 
   const fetcher = (method: string, tokenId: number) => nftContract[method](tokenId)
   const { data: tokenURI } = useSWR<string>(['tokenURI', tokenId], fetcher, { revalidateOnFocus: false })
@@ -55,31 +55,36 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
     return map
   }, [tokenMetadata])
 
+  const [inAction, setInAction] = useState<boolean>(false)
+  const action = useCallback((methodName: string) => {
+    setInAction(true)
+    const method = controllerContract.connect(signer)[methodName](tokenId)
+    sendTransaction(method)
+    setInAction(false)
+  }, [signer, sendTransaction, setInAction, tokenId])
+
   const TokenActions = ({ tokenMetadata }: { tokenMetadata: TimeTokenMetadata }) => (
     <div className={clsx(
       "flex items-center justify-between mx-auto mt-4",
       "fixed left-0 bottom-0 w-full sm:relative sm:left-auto sm:bottom-auto sm:w-[450px]"
     )}>
-      {topicOwner === walletAddress && +status === TimeTokenStatus.CONFIRMED && (
+      {tokenOwner === walletAddress && +status === TimeTokenStatus.CONFIRMED && (
         <button className={clsx(
-            "text-sm rounded text-white bg-neutral-900 hover:bg-neutral-900/90",
-            "p-2 flex-1 m-4"
-          )} onClick={() => {}}
-        >Fulfill</button>
+          "text-sm rounded text-white bg-neutral-900 hover:bg-neutral-900/90",
+          "p-2 flex-1 m-4"
+        )} disabled={inAction} onClick={() => action('setFulfilled')}>Fulfill</button>
       )}
       {topicOwner === walletAddress && +status === TimeTokenStatus.PENDING && (
         <button className={clsx(
-            "text-sm rounded text-neutral-900 bg-white hover:text-neutral-900/80",
-            "p-2 flex-1 m-4"
-          )} onClick={() => {}}
-        >Reject</button>
+          "text-sm rounded text-neutral-900 bg-white hover:text-neutral-900/80",
+          "p-2 flex-1 m-4"
+        )} disabled={inAction} onClick={() => action('setRejected')}>Reject</button>
       )}
       {topicOwner === walletAddress && +status === TimeTokenStatus.PENDING && (
         <button className={clsx(
-            "text-sm rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90",
-            "p-2 flex-1 m-4"
-          )} onClick={() => {}}
-        >Accept</button>
+          "text-sm rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90",
+          "p-2 flex-1 m-4"
+        )} disabled={inAction} onClick={() => action('setConfirmed')}>Accept</button>
       )}
     </div>
   )
