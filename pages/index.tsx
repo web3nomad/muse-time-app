@@ -2,7 +2,7 @@ import type { NextPage } from 'next'
 import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
-// import SiteHeader from '@/components/layouts/SiteHeader'
+import SiteHeader from '@/components/layouts/SiteHeader'
 // import PendingTx from '@/components/PendingTx'
 import MainLayout from '@/components/layouts/MainLayout'
 
@@ -20,7 +20,7 @@ const Home: NextPage = () => {
         <meta name="description" content="MuseTime is a time x space trading tool built on Arweave and Ethereum. In this high-dimensional world, time and space can be freely transformed." />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      {/*<SiteHeader />*/}
+      <SiteHeader className="bg-transparent text-neutral-900" />
       <main className="min-h-screen py-12 md:py-24 flex flex-col items-center justify-start">
         <div className="flex items-center justify-center">
           <span className="relative w-10 h-6 sm:w-16 sm:h-10 md:w-24 md:h-14">

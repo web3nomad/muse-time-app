@@ -118,7 +118,7 @@ export default function ConnectButton() {
           </a>
         </Link>
         <button className={clsx(
-          "border border-white hover:border-white/75 hover:text-white/75",
+          "border border-current hover:opacity-75 transition-opacity",
           "rounded text-xs sm:text-sm px-4 py-1 mx-2",
         )} onClick={() => disconnect()}>Logout</button>
       </>
@@ -127,7 +127,7 @@ export default function ConnectButton() {
     return (
       <>
         <button className={clsx(
-          "border border-white hover:border-white/75 hover:text-white/75",
+          "border border-current hover:opacity-75 transition-opacity",
           "rounded-full text-xs sm:text-sm px-4 py-1 mx-4",
         )} onClick={() => setConnectDialogOpen(true)}>Login</button>
         <TransitionDialog open={connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>

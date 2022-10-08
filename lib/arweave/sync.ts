@@ -10,6 +10,7 @@ async function submitOrder(
   tags: ArweaveDataTag[],
   authToken: string,
 ) {
+  // TODO: 优化下, 从 authToken 获得 publickey
   const provider = new ethers.providers.Web3Provider((window as any).ethereum)
   await provider._ready()
   const currencyConfig: any = getCurrency('ethereum', provider)
