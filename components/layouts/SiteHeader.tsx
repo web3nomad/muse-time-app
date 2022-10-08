@@ -1,12 +1,28 @@
 import clsx from 'clsx'
+import { ethers } from 'ethers'
 import Image from 'next/image'
 import Link from 'next/link'
-// import { useEffect, useState } from 'react'
+import { useEffect, useState, useMemo } from 'react'
+import { useEthereumContext } from '@/lib/ethereum/context'
+import { useTimeTrove } from '@/lib/ethereum/hooks'
 import ConnectButton from '@/components/ConnectButton'
 import { MuseTimeLogoIcon, MuseTimeTextIcon } from '@/components/icons'
 
+const Balance = ({ topicOwner }: { topicOwner: string }) => {
+  const { timeTrove, isFetching } = useTimeTrove(topicOwner)
+  const balance = useMemo(() => {
+    return ethers.utils.formatEther(timeTrove.balance)
+  }, [timeTrove])
+  return (
+    <div className="font-din-alternate text-sm">
+      <span>Trove Balance: </span>
+      <span>{balance} ETH</span>
+    </div>
+  )
+}
 
 export default function SiteHeader({ className }: { className: string }) {
+  const { walletAddress } = useEthereumContext()
   return (
     <header className={clsx(
       "h-16 px-2 sm:px-8 w-full flex items-center justify-start",
@@ -19,6 +35,7 @@ export default function SiteHeader({ className }: { className: string }) {
         </a>
       </Link>
       <div className="ml-auto"></div>
+      {walletAddress && <Balance topicOwner={walletAddress} />}
       <ConnectButton />
     </header>
   )
