@@ -4,7 +4,7 @@ export type TimeTokenData = {
   valueInWei: ethers.BigNumberish
   topicOwner: string
   topicSlug: string
-  arId: string
+  topicsArId: string
   status: number
 }
 

@@ -69,18 +69,18 @@ type TimeTokenMetadata = {
 const findProfile = async (topicOwner: string): Promise<ProfileData> => {
   const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
   const { arOwnerAddress } = timeTrove
-  const arId = await queryOnChainItemId({
+  const topicsArId = await queryOnChainItemId({
     arOwnerAddress: arOwnerAddress,
     resourceId: '',
     resourceType: ResourceTypes.PROFILE,
     resourceOwner: topicOwner,
   })
-  const profile: ProfileData = await fetch(`https://arseed.web3infra.dev/${arId}`).then(res => res.json())
+  const profile: ProfileData = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
   return profile
 }
 
-async function findTopic(topicSlug: string, arId: string): Promise<TopicData|null> {
-  const url = `https://arseed.web3infra.dev/${arId}`
+async function findTopic(topicSlug: string, topicsArId: string): Promise<TopicData|null> {
+  const url = `https://arseed.web3infra.dev/${topicsArId}`
   try {
     const topics: TopicData[] = await fetch(url).then(res => res.json())
     const topic = topics.find(({ id }) => id === topicSlug)
@@ -105,12 +105,12 @@ const handler = async function(
     res.status(404).end()
     return
   }
-  const [tokenId, topicSlug, arId] = params
+  const [tokenId, topicSlug, topicsArId] = params
   const [tokenOwner, topic, timeToken]: [
     string, TopicData|null, TimeTokenData
   ] = await Promise.all([
     nftContract.ownerOf(+tokenId),
-    findTopic(topicSlug, arId),
+    findTopic(topicSlug, topicsArId),
     findTimeToken(+tokenId),
   ])
   if (!topic) {
@@ -126,7 +126,7 @@ const handler = async function(
     { trait_type: 'valueInWei', value: timeToken['valueInWei'].toString() },
     { trait_type: 'topicOwner', value: timeToken['topicOwner'] },
     { trait_type: 'topicSlug', value: timeToken['topicSlug'] },
-    { trait_type: 'arId', value: timeToken['arId'] },
+    { trait_type: 'topicsArId', value: timeToken['topicsArId'] },
     { trait_type: 'status', value: timeToken['status'] },
   ]
   const metadata: TimeTokenMetadata = {

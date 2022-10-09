@@ -9,28 +9,28 @@ import type { TopicData } from '@/lib/arweave'
 import { _signControllerParams } from './createTimeTroveParams'
 
 const findTopic = async (topicOwner: string, topicSlug: string): Promise<{
-  arId: string,
+  topicsArId: string,
   topic: TopicData|null,
 }> => {
   const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
   const { arOwnerAddress } = timeTrove
-  const arId = await queryOnChainItemId({
+  const topicsArId = await queryOnChainItemId({
     arOwnerAddress: arOwnerAddress,
     resourceId: '',
     resourceType: ResourceTypes.TOPICS,
     resourceOwner: topicOwner,
   })
-  // if (!arId) {}
-  const topicsList: TopicData[] = await fetch(`https://arseed.web3infra.dev/${arId}`).then(res => res.json())
+  // if (!topicsArId) {}
+  const topicsList: TopicData[] = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
   const topic = topicsList.find(({ id }) => id === topicSlug) ?? null
-  return { arId, topic }
+  return { topicsArId, topic }
 }
 
 const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
   const { walletAddress } = req.user
   const { topicOwner, topicSlug } = req.body
 
-  const { arId, topic } = await findTopic(topicOwner, topicSlug)
+  const { topicsArId, topic } = await findTopic(topicOwner, topicSlug)
   if (!topic) {
     res.status(400).json({ 'detail': 'invalid topic' })
     return
@@ -42,14 +42,14 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
 
   const signature = await _signControllerParams(
     ['address', 'uint256', 'address', 'string', 'string', 'address'],
-    [walletAddress, valueInWei, topicOwner, topicSlug, arId, controllerContract.address],
+    [walletAddress, valueInWei, topicOwner, topicSlug, topicsArId, controllerContract.address],
   )
 
   res.status(200).json({
     valueInWei,
     topicOwner,
     topicSlug,
-    arId,
+    topicsArId,
     signature,
   })
 }

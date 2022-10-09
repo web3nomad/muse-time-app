@@ -116,16 +116,16 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
         'Authorization': `Token ${authToken}`,
       },
     }).then(async (res) => {
-      const { valueInWei, topicOwner, topicSlug, arId, signature } = (await res.json()) as {
+      const { valueInWei, topicOwner, topicSlug, topicsArId, signature } = (await res.json()) as {
         valueInWei: string,
         topicOwner: string,
         topicSlug: string,
-        arId: string,
+        topicsArId: string,
         signature: string,
       }
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const method = controllerContract.connect(signer).mintTimeToken(
-        valueInWei, topicOwner, topicSlug, arId, signature,
+        valueInWei, topicOwner, topicSlug, topicsArId, signature,
         { value: valueInWei }
       )
       sendTransaction(method)
