@@ -4,6 +4,7 @@ import { useCallback, useState, useEffect } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
+import type { MintParamsResult } from '@/pages/api/ethereum/mintParams'
 
 export function useTimeTrove(topicOwner: string): {
   timeTrove: TimeTroveData,
@@ -116,16 +117,18 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
         'Authorization': `Token ${authToken}`,
       },
     }).then(async (res) => {
-      const { valueInWei, topicOwner, topicSlug, topicsArId, signature } = (await res.json()) as {
-        valueInWei: string,
-        topicOwner: string,
-        topicSlug: string,
-        topicsArId: string,
-        signature: string,
-      }
+      const {
+        mintKey,
+        valueInWei,
+        topicOwner,
+        topicSlug,
+        profileArId,
+        topicsArId,
+        signature,
+      } = (await res.json()) as MintParamsResult
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const method = controllerContract.connect(signer).mintTimeToken(
-        valueInWei, topicOwner, topicSlug, topicsArId, signature,
+        mintKey, valueInWei, topicOwner, topicSlug, profileArId, topicsArId, signature,
         { value: valueInWei }
       )
       sendTransaction(method)

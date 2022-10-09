@@ -66,16 +66,9 @@ type TimeTokenMetadata = {
   attributes: AttributeData[],
 }
 
-const findProfile = async (topicOwner: string): Promise<ProfileData> => {
-  const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
-  const { arOwnerAddress } = timeTrove
-  const topicsArId = await queryOnChainItemId({
-    arOwnerAddress: arOwnerAddress,
-    resourceId: '',
-    resourceType: ResourceTypes.PROFILE,
-    resourceOwner: topicOwner,
-  })
-  const profile: ProfileData = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
+async function findProfile(profileArId: string): Promise<ProfileData> {
+  const url = `https://arseed.web3infra.dev/${profileArId}`
+  const profile: ProfileData = await fetch(url).then(res => res.json())
   return profile
 }
 
@@ -91,11 +84,6 @@ async function findTopic(topicSlug: string, topicsArId: string): Promise<TopicDa
   }
 }
 
-async function findTimeToken(tokenId: number): Promise<TimeTokenData> {
-  const timeToken: TimeTokenData = await controllerContract.timeTokenOf(tokenId)
-  return timeToken
-}
-
 const handler = async function(
   req: NextApiRequest,
   res: NextApiResponse
@@ -106,18 +94,18 @@ const handler = async function(
     return
   }
   const [tokenId, topicSlug, topicsArId] = params
-  const [tokenOwner, topic, timeToken]: [
-    string, TopicData|null, TimeTokenData
+  const [topic, timeToken, tokenOwner]: [
+    TopicData|null, TimeTokenData, string
   ] = await Promise.all([
-    nftContract.ownerOf(+tokenId),
     findTopic(topicSlug, topicsArId),
-    findTimeToken(+tokenId),
+    controllerContract.timeTokenOf(+tokenId),
+    nftContract.ownerOf(+tokenId),
   ])
   if (!topic) {
     res.status(404).end()
     return
   }
-  const profile = await findProfile(timeToken['topicOwner'])
+  const profile = await findProfile(timeToken['profileArId'])
   const attributes = [
     { trait_type: 'category', value: topic['category'] },
     { trait_type: 'value', value: topic['value'] },

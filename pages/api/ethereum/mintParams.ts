@@ -5,15 +5,23 @@ import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } f
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 import { queryOnChainItemId, ResourceTypes } from '@/lib/arweave'
-import type { TopicData } from '@/lib/arweave'
+import type { TopicData, ProfileData } from '@/lib/arweave'
 import { _signControllerParams } from './createTimeTroveParams'
 
-const findTopic = async (topicOwner: string, topicSlug: string): Promise<{
+export type MintParamsResult = {
+  mintKey: string
+  valueInWei: string
+  topicOwner: string
+  topicSlug: string
+  profileArId: string
+  topicsArId: string
+  signature: string
+}
+
+const findTopic = async (arOwnerAddress: string, topicOwner: string, topicSlug: string): Promise<{
   topicsArId: string,
   topic: TopicData|null,
 }> => {
-  const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
-  const { arOwnerAddress } = timeTrove
   const topicsArId = await queryOnChainItemId({
     arOwnerAddress: arOwnerAddress,
     resourceId: '',
@@ -26,32 +34,63 @@ const findTopic = async (topicOwner: string, topicSlug: string): Promise<{
   return { topicsArId, topic }
 }
 
+const findProfile = async (arOwnerAddress: string, topicOwner: string): Promise<{
+  profileArId: string,
+  profile: ProfileData|null,
+}> => {
+  const profileArId = await queryOnChainItemId({
+    arOwnerAddress: arOwnerAddress,
+    resourceId: '',
+    resourceType: ResourceTypes.PROFILE,
+    resourceOwner: topicOwner,
+  })
+  // const profile: ProfileData = await fetch(`https://arseed.web3infra.dev/${profileArId}`).then(res => res.json())
+  return { profileArId, profile: null }
+}
+
 const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
   const { walletAddress } = req.user
   const { topicOwner, topicSlug } = req.body
 
-  const { topicsArId, topic } = await findTopic(topicOwner, topicSlug)
+  const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
+  const { arOwnerAddress } = timeTrove
+
+  const [
+    { topicsArId, topic },
+    { profileArId },
+  ] = await Promise.all([
+    findTopic(arOwnerAddress, topicOwner, topicSlug),
+    findProfile(arOwnerAddress, topicOwner),
+  ])
+
   if (!topic) {
     res.status(400).json({ 'detail': 'invalid topic' })
     return
   }
 
+  const mintKey = ethers.BigNumber.from(Date.now())
+    .mul(1000000).add(Math.floor(Math.random() * 1000))
+    .toString()
   const [val, unit] = topic['value'].split(' ')
   const valueInWei = ethers.utils.parseUnits(val, unit).toString()
   // toString is necessary, _signControllerParams won't do this automatically
 
   const signature = await _signControllerParams(
-    ['address', 'uint256', 'address', 'string', 'string', 'address'],
-    [walletAddress, valueInWei, topicOwner, topicSlug, topicsArId, controllerContract.address],
+    ['address', 'uint256', 'uint256', 'address', 'string', 'string', 'string', 'address'],
+    [walletAddress, mintKey, valueInWei, topicOwner, topicSlug, profileArId, topicsArId, controllerContract.address],
   )
 
-  res.status(200).json({
+  const result: MintParamsResult = {
+    mintKey,
     valueInWei,
     topicOwner,
     topicSlug,
+    profileArId,
     topicsArId,
     signature,
-  })
+  }
+
+  res.status(200).json(result)
 }
 
 export default requireAuth(handler)
