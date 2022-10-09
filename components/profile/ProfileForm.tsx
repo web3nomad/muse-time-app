@@ -1,10 +1,13 @@
 import clsx from 'clsx'
-import { useState, useCallback } from 'react'
+import Image from "next/image";
+import { useState, useCallback, useRef } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import { syncArweaveData, ResourceTypes } from '@/lib/arweave'
 import type { ProfileData } from '@/lib/arweave'
-
+import { EFormType } from '@/lib/arweave/types'
+import { storeNFT } from '@/lib/nft/query'
+import Union from "@/assets/images/union.svg";
 
 export default function ProfileForm({ profile, onSubmit, onCancel }: {
   profile: ProfileData,
@@ -12,10 +15,19 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
   onCancel: () => void,
 }) {
   const { walletAddress, authToken } = useEthereumContext()
-
+  const [imgPending,setImgPending] = useState(false)
   const [pending, setPending] = useState(false)
   const [formData, setFormData] = useState<ProfileData>(profile)
+  const [nftImg, setNftImg] = useState<string>(profile.avatar);
+  debugger
+  const fileRef = useRef()
 
+  const submitToNFT = useCallback(async (file:File) =>{
+    const id =  await storeNFT(file);
+    debugger
+    setNftImg(id);
+    return id;
+  },[])
   const onChange = useCallback((field: string, value: string) => {
     setFormData({
       ...formData,
@@ -45,53 +57,107 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
+    debugger
+    console.log(formData)
     signAndSaveProfile({ ...formData })
   }
 
-  const fields: Array<[keyof ProfileData, string]> = [
-    ['name', 'Name'],
-    ['avatar', 'Avatar URL'],
-    ['url', 'Website'],
-    ['email', 'Email'],
-    ['com.twitter', 'Twitter ID'],
-    ['org.telegram', 'Telegram ID'],
-  ]
+  const fields: Array<[keyof ProfileData, string, EFormType]> = [
+    ["name", "Name", EFormType.INPUT],
+    ["avatar", "Avatar URL", EFormType.UPLOAD],
+    ["url", "Website", EFormType.INPUT],
+    ["email", "Email", EFormType.INPUT],
+    ["com.twitter", "Twitter ID", EFormType.INPUT],
+    ["org.telegram", "Telegram ID", EFormType.INPUT],
+  ];
 
   return (
     <form onSubmit={handleSubmit}>
       <div>
-        <h3 className="text-lg font-medium leading-6 text-neutral-900">Profile</h3>
+        <h3 className="text-lg font-medium leading-6 text-neutral-900">
+          Profile
+        </h3>
         <p className="mt-1 max-w-2xl text-sm text-neutral-500">
-          This information will be displayed publicly so be careful what you share.
+          This information will be displayed publicly so be careful what you
+          share.
         </p>
       </div>
       <section className="my-4 py-2 border-y border-neutral-300 text-neutral-700">
-        {fields.map(([fieldName, FieldDesc]) => (
-          <div key={fieldName} className="my-3 flex flex-wrap items-center justify-start">
-            <label htmlFor={fieldName} className="text-sm font-medium w-24">{FieldDesc}</label>
+        {fields.map(([fieldName, FieldDesc, formType]) => (
+          <div
+            key={fieldName}
+            className="my-3 flex flex-wrap items-center justify-start"
+          >
+            <label htmlFor={fieldName} className="text-sm font-medium w-24">
+              {FieldDesc}
+            </label>
             <div className="mt-1 w-full sm:mt-0 sm:w-auto sm:flex-1">
-              <input
-                className="block w-full border-transparent focus:border-neutral-400 focus:ring-neutral-400 rounded-md text-sm"
-                type="text"
-                autoComplete="off"
-                name={fieldName}
-                defaultValue={formData[fieldName]}
-                onChange={(e) => onChange(fieldName, e.target.value)}
-                disabled={pending}
-              />
+              {formType === EFormType.UPLOAD && (
+                <div className="flex ">
+                  <label className="w-24 h-24 flex flex-col justify-center items-center	 bg-white block">
+                    <input
+                      className="hidden"
+                      ref={fileRef}
+                      name={fieldName}
+                      type="file"
+                      accept="image/*"
+                      onChange={async () => {
+                        setImgPending(true)
+                        const file = fileRef.current?.files[0];
+                        if (file) {
+                          const id = await submitToNFT(file).finally(() =>{setImgPending(false);})
+                          onChange(fieldName, id);
+                        }
+                      }}
+                    />
+                    {imgPending ? (
+                      <ArrowPathIcon className="h-4 w-4 animate-spin ml-1" />
+                    ) : (
+                      <>
+                        <Image
+                          src={Union.src}
+                          width="32"
+                          height="32"
+                          alt="clock"
+                        />
+                        <span>upload</span>
+                      </>
+                    )}
+                  </label>
+                  {nftImg && (
+                    <img
+                      className="ml-1 w-24 h-24"
+                      src={`https://cloudflare-ipfs.com/ipfs/${nftImg}`}
+                    ></img>
+                  )}
+                </div>
+              )}
+              {formType === EFormType.INPUT && (
+                <input
+                  className="block w-full border-transparent focus:border-neutral-400 focus:ring-neutral-400 rounded-md text-sm"
+                  type="text"
+                  autoComplete="off"
+                  name={fieldName}
+                  defaultValue={formData[fieldName]}
+                  onChange={(e) => onChange(fieldName, e.target.value)}
+                  disabled={pending}
+                />
+              )}
             </div>
           </div>
         ))}
         <div className="my-3 flex flex-wrap items-center justify-start">
-          <label htmlFor="description" className="text-sm font-medium w-24">Description</label>
+          <label htmlFor="description" className="text-sm font-medium w-24">
+            Description
+          </label>
           <div className="mt-1 w-full sm:mt-0 sm:w-auto sm:flex-1">
             <textarea
               className="block w-full border-transparent focus:border-neutral-400 focus:ring-neutral-400 rounded-md text-sm"
               rows={3}
               autoComplete="off"
               name="description"
-              defaultValue={formData['description']}
-              onChange={(e) => onChange('description', e.target.value)}
+              defaultValue={formData["description"]}
+              onChange={(e) => onChange("description", e.target.value)}
               disabled={pending}
             />
           </div>
@@ -99,7 +165,9 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
       </section>
       <div className="mt-4 flex items-center justify-end">
         <button
-          type="button" disabled={pending} onClick={() => onCancel()}
+          type="button"
+          disabled={pending}
+          onClick={() => onCancel()}
           className={clsx(
             "w-24 rounded-md leading-6 py-1 px-4 text-sm text-neutral-900 shadow-sm",
             "bg-white/90 hover:bg-white/80 mr-4",
@@ -109,7 +177,8 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
           <span>Cancel</span>
         </button>
         <button
-          type="submit" disabled={pending}
+          type="submit"
+          disabled={pending}
           className={clsx(
             "w-24 flex items-center justify-center rounded-md leading-6 py-1 px-4 text-sm text-white shadow-sm",
             "bg-neutral-900 hover:bg-neutral-800",
@@ -121,5 +190,5 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
         </button>
       </div>
     </form>
-  )
+  );
 }

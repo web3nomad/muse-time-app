@@ -22,7 +22,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
   const { mintTimeToken, isMinting } = useTimeToken(addressSlug, topicSlug)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
-
+debugger
   const fetchProfile = useCallback(() => {
     if (!timeTrove.arOwnerAddress) {
       setProfile(null)

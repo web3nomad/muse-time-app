@@ -38,6 +38,10 @@ export type ProfileData = {
   'com.twitter': string
   'org.telegram': string
 }
+export enum EFormType {
+  'INPUT',
+  'UPLOAD'
+}
 
 export enum ResourceTypes {
   PROFILE = 'profile',
