@@ -81,7 +81,8 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
    */
   const listTimeTokenMinted = useCallback(() => {
     const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicSlug ?? null, null)
-    controllerContract.queryFilter(event, 15537393).then(async (logs) => {
+    const startBlock = +(process.env.NEXT_PUBLIC_LOG_START_BLOCK ?? '15537393')
+    controllerContract.queryFilter(event, startBlock).then(async (logs) => {
       const tokens = logs.map((log: any) => ({
         topicOwner: log.args.topicOwner,
         topicSlug: log.args.topicSlug,
