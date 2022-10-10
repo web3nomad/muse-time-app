@@ -21,27 +21,39 @@ const MOCK_PROFILE: ProfileData = {
 
 const Avatar = ({ profile }: { profile: ProfileData }) => {
   return (
-    <div className={clsx(
-      "absolute top-0 -left-48 w-32 hidden lg:flex",
-      "flex-col items-center justify-start"
-    )}>
+    <div
+      className={clsx(
+        "absolute top-0 -left-48 w-32 hidden lg:flex",
+        "flex-col items-center justify-start"
+      )}
+    >
       {profile.avatar ? (
         <div
           className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
-          style={{backgroundImage: `url(${profile.avatar})`}}
+          style={{
+            backgroundImage: `url(${
+              "https://cloudflare-ipfs.com/ipfs/" + profile.avatar
+            })`,
+          }}
         ></div>
       ) : (
         <div className="w-32 h-32 bg-neutral-100 rounded-full"></div>
       )}
       <div className="flex items-center text-sm my-3 font-din-alternate">
         <TwitterIcon className="w-6 h-6" />
-        {profile['com.twitter'] && <a
-          href={`https://twitter.com/${profile['com.twitter']}`}
-          target="_blank" rel="noreferrer" className="ml-2"
-        >{profile['com.twitter']}</a>}
+        {profile["com.twitter"] && (
+          <a
+            href={`https://twitter.com/${profile["com.twitter"]}`}
+            target="_blank"
+            rel="noreferrer"
+            className="ml-2"
+          >
+            {profile["com.twitter"]}
+          </a>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
 export default function ProfileDetail({ resourceOwner, arOwnerAddress }: {

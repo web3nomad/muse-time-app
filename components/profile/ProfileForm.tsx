@@ -19,12 +19,10 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
   const [pending, setPending] = useState(false)
   const [formData, setFormData] = useState<ProfileData>(profile)
   const [nftImg, setNftImg] = useState<string>(profile.avatar);
-  debugger
-  const fileRef = useRef()
+  const fileRef = useRef<HTMLInputElement>(null);
 
   const submitToNFT = useCallback(async (file:File) =>{
     const id =  await storeNFT(file);
-    debugger
     setNftImg(id);
     return id;
   },[])
@@ -47,17 +45,16 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
       payload: payload,
       authToken: authToken,
     }).then((res) => {
-      setPending(false)
       onSubmit(payload)
     }).catch((err) => {
-      setPending(false)
       console.log(err)
+    }).finally(() =>{
+       setPending(false);
     })
   }, [walletAddress, authToken, onSubmit])
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    debugger
     console.log(formData)
     signAndSaveProfile({ ...formData })
   }
@@ -102,12 +99,13 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
                       type="file"
                       accept="image/*"
                       onChange={async () => {
-                        setImgPending(true)
-                        const file = fileRef.current?.files[0];
-                        if (file) {
-                          const id = await submitToNFT(file).finally(() =>{setImgPending(false);})
-                          onChange(fieldName, id);
+                        if (fileRef.current?.files?.length){
+                          setImgPending(true);
+                            const file = fileRef.current?.files[0];
+                            const id = await submitToNFT(file).finally(() =>{setImgPending(false);})
+                            onChange(fieldName, id);
                         }
+
                       }}
                     />
                     {imgPending ? (
