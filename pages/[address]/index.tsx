@@ -78,7 +78,10 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
 
 // export const getServerSideProps = async function ({ query }: GetServerSidePropsContext) {
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  const addressSlug = ethers.utils.getAddress(query.address as string)
+  let addressSlug = '0x0000000000000000000000000000000000000000'
+  try {
+    addressSlug = ethers.utils.getAddress(query.address as string)
+  } catch(err) {}
   return {
     props: {
       addressSlug

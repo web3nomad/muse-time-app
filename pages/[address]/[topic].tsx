@@ -151,7 +151,10 @@ debugger
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  const addressSlug = ethers.utils.getAddress(query.address as string)
+  let addressSlug = '0x0000000000000000000000000000000000000000'
+  try {
+    addressSlug = ethers.utils.getAddress(query.address as string)
+  } catch(err) {}
   const topicSlug = query.topic as string
   return {
     props: {
