@@ -123,7 +123,9 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
                     )}
                   </label>
                   {nftImg && (
-                    <img className="ml-1 w-24 h-24" src={nftImg}></img>
+                    <picture>
+                      <img className="ml-1 w-24 h-24" src={nftImg} alt=""></img>
+                    </picture>
                   )}
                 </div>
               )}

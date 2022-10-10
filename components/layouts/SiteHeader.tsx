@@ -13,6 +13,12 @@ const Balance = ({ topicOwner }: { topicOwner: string }) => {
   const balance = useMemo(() => {
     return ethers.utils.formatEther(timeTrove.balance)
   }, [timeTrove])
+
+  const withdraw = useCallback(() => {
+    const method = controllerContract.connect(signer).withdrawFromTimeTrove()
+    sendTransaction(method)
+  }, [sendTransaction, signer])
+
   return (
     <div className="font-din-alternate text-sm">
       <span>Trove Balance: </span>
