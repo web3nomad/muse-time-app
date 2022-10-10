@@ -1,26 +1,51 @@
+import clsx from 'clsx'
 import { ethers } from 'ethers'
+import Web3Modal from 'web3modal'
 import type { TransactionResponse } from '@ethersproject/abstract-provider'
 import React, {
   createContext,
   useCallback,
   useContext,
   useState,
+  useEffect,
   ReactChild,
 } from 'react'
+import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
 import { chainId } from '@/lib/ethereum/public'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import TransitionDialog from '@/components/TransitionDialog'
 
 const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
 
+const WEB3: {
+  getModal: () => Web3Modal,
+  providerOptions: any,
+  _modal: Web3Modal | null
+} = {
+  providerOptions: {},
+  getModal: function() {
+    if (!this._modal) {
+      this._modal = new Web3Modal({
+        network: 'mainnet',
+        cacheProvider: true,
+        providerOptions: this.providerOptions,
+      })
+    }
+    return this._modal
+  },
+  _modal: null,
+}
+
 type EthereumProviderState = {
   signerErrorMessage: string|null
-  signer: ethers.Signer
+  signer: ethers.providers.JsonRpcSigner|ethers.VoidSigner
   walletAddress: string|null
   authToken: string|null
-  setSignerAndAuth: (signer: ethers.Signer, authToken: string) => void
+  setSignerAndAuth: (signer: ethers.providers.JsonRpcSigner, authToken: string) => void
   clearSignerAndAuth: () => void
   sendTransaction: (method: Promise<TransactionResponse>) => void
+  login: () => void
+  logout: () => void
 }
 
 const EthereumContext = createContext<EthereumProviderState>({
@@ -31,6 +56,8 @@ const EthereumContext = createContext<EthereumProviderState>({
   setSignerAndAuth: () => {},
   clearSignerAndAuth: () => {},
   sendTransaction: () => {},
+  login: () => {},
+  logout: () => {},
 })
 
 interface Props {
@@ -54,11 +81,12 @@ const TxError = ({ error }: { error: any }) => (
 
 export const EthereumContextProvider = ({ children }: Props) => {
   const [signerErrorMessage, setSignerErrorMessage] = useState<string|null>(null)
-  const [signer, setSigner] = useState<ethers.Signer>(VOID_SIGNER)
+  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner|ethers.VoidSigner>(VOID_SIGNER)
   const [walletAddress, setWalletAddress] = useState<string|null>(null)
   const [authToken, setAuthToken] = useState<string|null>(null)
 
   const [dialogOpen, setDialogOpen] = useState<{message:any,canClose:boolean}|null>(null)
+  const [connectDialogOpen, setConnectDialogOpen] = useState(false)
 
   const sendTransaction = useCallback((method: Promise<TransactionResponse>) => {
     setDialogOpen({ message: 'Confirm tx in your wallet', canClose: false })
@@ -73,7 +101,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
     })
   }, [setDialogOpen])
 
-  const setSignerAndAuth = useCallback((signer: ethers.Signer, authToken: string) => {
+  const setSignerAndAuth = useCallback((signer: ethers.providers.JsonRpcSigner, authToken: string) => {
     Promise.all([
       signer.getAddress(),
       signer.getChainId(),
@@ -99,6 +127,93 @@ export const EthereumContextProvider = ({ children }: Props) => {
     setSignerErrorMessage(null)
   }, [setWalletAddress, setAuthToken, setSignerErrorMessage])
 
+  /* connect begin */
+
+  const connect = useCallback(() => {
+    const web3Modal = WEB3.getModal()
+    web3Modal.connect().then(async (instance: any) => {
+      const provider = new ethers.providers.Web3Provider(instance)
+      setSigner(provider.getSigner())
+    }).catch((err: any) => {
+      console.log(err)
+    })
+  }, [setSigner])
+
+  const disconnect = useCallback(() => {
+    const web3Modal = WEB3.getModal()
+    web3Modal.clearCachedProvider()
+    window.localStorage.removeItem('auth-token')
+    clearSignerAndAuth()
+  }, [clearSignerAndAuth])
+
+  const signMessage = useCallback(() => {
+    if (signer === VOID_SIGNER) {
+      throw new Error('signer should not be null')
+    }
+    const dispatch = async (signer: ethers.providers.JsonRpcSigner) => {
+      const address = ethers.utils.getAddress(await signer.getAddress())
+      const value: SignatureMessageData = {
+        intent: 'Verify ownership of the address',
+        wallet: address,
+        expire: new Date().valueOf() + 86400 * 1000 * 7  // 7 days
+      }
+      const signature = await signer._signTypedData(EIP_712_AUTH.domain, EIP_712_AUTH.types, value)
+      // ethers.utils.verifyTypedData(IP_712_AUTH.domain, EIP_712_AUTH.types, value, signature)
+      const authTokenPayload: AuthTokenPayload = { value, signature }
+      const authToken = btoa(JSON.stringify(authTokenPayload))
+      // save context
+      window.localStorage.setItem('auth-token', authToken)
+      setSignerAndAuth(signer, authToken)
+      setConnectDialogOpen(false)
+    }
+    dispatch(signer as ethers.providers.JsonRpcSigner).catch(err => {
+      console.log(err)
+    })
+  }, [signer, setSignerAndAuth])
+
+  const loadSignerAndAuthFromClient = useCallback(() => {
+    // load auth and signer
+    let authToken: string|null = null
+    let payload: AuthTokenPayload|null = null
+    try {
+      authToken = window.localStorage.getItem('auth-token') ?? null
+      payload = JSON.parse(atob(authToken as string))
+      if (payload!.value.expire <= new Date().valueOf()) {
+        throw new Error('token expired')
+      }
+    } catch(err) {
+      authToken = null
+      window.localStorage.removeItem('auth-token')
+    }
+    const web3Modal = WEB3.getModal()
+    if (authToken && payload && web3Modal.cachedProvider) {
+      web3Modal.connect().then(async (instance: any) => {
+        const provider = new ethers.providers.Web3Provider(instance)
+        const signer = provider.getSigner()
+        const walletAddress = ethers.utils.getAddress(await signer.getAddress())
+        if (payload!.value.wallet === walletAddress) {
+          setSignerAndAuth(signer, authToken!)
+        }
+      }).catch((err: any) => {
+        console.log(err)
+      })
+    }
+  }, [setSignerAndAuth])
+
+  const login = useCallback(() => {
+    setConnectDialogOpen(true)
+  }, [setConnectDialogOpen])
+
+  const logout = useCallback(() => {
+    disconnect()
+  }, [disconnect])
+
+  useEffect(() => {
+    loadSignerAndAuthFromClient()
+  }, [loadSignerAndAuthFromClient])
+
+  /* connect end */
+
   const value = {
     signerErrorMessage,
     signer,
@@ -107,16 +222,40 @@ export const EthereumContextProvider = ({ children }: Props) => {
     setSignerAndAuth,
     clearSignerAndAuth,
     sendTransaction,
+    login,
+    logout,
   }
 
   return (
     <EthereumContext.Provider value={value}>
       {children}
       {!!dialogOpen && (
-        <TransitionDialog
-          open={!!dialogOpen}
-          onClose={() => dialogOpen.canClose && setDialogOpen(null) }
-        ><div className="my-12 flex items-center justify-center w-full">{dialogOpen.message}</div></TransitionDialog>
+        <TransitionDialog open={!!dialogOpen} onClose={() => dialogOpen.canClose && setDialogOpen(null) }>
+          <div className="my-12 flex items-center justify-center w-full">{dialogOpen.message}</div>
+        </TransitionDialog>
+      )}
+      {!!connectDialogOpen && (
+        <TransitionDialog open={!!connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
+          {signer === VOID_SIGNER ? (
+            <div className="flex flex-col items-center">
+              <div className="text-2xl font-medium">Step 1</div>
+              <div className="text-center my-8 text-neutral-500">Connect your wallet</div>
+              <button className={clsx(
+                "rounded-md py-2 px-8 text-sm text-white",
+                "bg-neutral-900 hover:bg-neutral-800",
+              )} onClick={() => connect()}>Connect</button>
+            </div>
+          ) : (
+            <div className="flex flex-col items-center">
+              <div className="text-2xl font-medium">Step 2</div>
+              <div className="text-center my-8 text-neutral-500">Sign a message with your wallet</div>
+              <button className={clsx(
+                "rounded-md py-2 px-8 text-sm text-white",
+                "bg-neutral-900 hover:bg-neutral-800",
+              )} onClick={() => signMessage()}>Sign Message</button>
+            </div>
+          )}
+        </TransitionDialog>
       )}
     </EthereumContext.Provider>
   )
