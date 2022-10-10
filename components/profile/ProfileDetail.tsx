@@ -29,7 +29,7 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
     >
       {profile.avatar ? (
         <div
-          className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
+          className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-cover rounded-full"
           style={{backgroundImage: `url(${profile.avatar})`}}
         ></div>
       ) : (

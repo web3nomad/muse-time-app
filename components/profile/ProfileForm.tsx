@@ -14,7 +14,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
   onSubmit: (profile: ProfileData) => void,
   onCancel: () => void,
 }) {
-  const { walletAddress, authToken } = useEthereumContext()
+  const { walletAddress, authToken, signer } = useEthereumContext()
   const [imgPending,setImgPending] = useState(false)
   const [pending, setPending] = useState(false)
   const [formData, setFormData] = useState<ProfileData>(profile)
@@ -46,6 +46,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
       resourceOwner: walletAddress,
       payload: payload,
       authToken: authToken,
+      web3Signer: signer,
     }).then((res) => {
       onSubmit(payload)
     }).catch((err) => {
@@ -53,7 +54,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
     }).finally(() =>{
        setPending(false);
     })
-  }, [walletAddress, authToken, onSubmit])
+  }, [walletAddress, authToken, signer, onSubmit])
 
   const handleSubmit = (event: any) => {
     event.preventDefault()

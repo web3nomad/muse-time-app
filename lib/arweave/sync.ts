@@ -4,27 +4,34 @@ import { createAndSubmitItem } from 'arseeding-js/cjs/submitOrder'
 import { ResourceTypes } from './types'
 import type { ArweaveDataTag } from './types'
 import { publicProvider } from '@/lib/ethereum/public'
+import { AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
 
 async function submitOrder(
   payload: {[_key:string]: unknown} | Array<{[_key:string]: unknown}>,
   tags: ArweaveDataTag[],
   authToken: string,
+  web3Signer: ethers.Signer,
 ) {
-  // TODO: 优化下, 从 authToken 获得 publickey
-  const provider = new ethers.providers.Web3Provider((window as any).ethereum)
-  await provider._ready()
-  const currencyConfig: any = getCurrency('ethereum', provider)
+  const { value, signature }: AuthTokenPayload = JSON.parse(atob(authToken??''))
+  const currencyConfig: any = getCurrency('ethereum', web3Signer.provider)
   // the default provider url is offline
   currencyConfig.providerUrl = publicProvider.connection.url
-  await currencyConfig.ready()
-  // {
-  //   // window.currencyConfig = currencyConfig
-  //   currencyConfig.w3signer = await currencyConfig.wallet.getSigner();
-  //   currencyConfig._address = await (await provider.getSigner()).getAddress()
-  //   currencyConfig.providerInstance = new ethers.providers.JsonRpcProvider(currencyConfig.providerUrl);
-  //   console.log(currencyConfig)
-  // }
   const signer = await currencyConfig.getSigner()
+  {
+    /**
+     * See
+     * https://github.com/Bundlr-Network/arbundles/blob/a116829c1392aabeacda24c2e451226b15173a45/src/signing/chains/injectedEthereumSigner.ts
+     * https://github.com/Bundlr-Network/js-sdk/blob/2e9782c967738aac3de60b31a8ba61469ab2eb99/src/web/currencies/ethereum.ts#L101
+     */
+    signer.setPublicKey = function() {
+      const hash = ethers.utils._TypedDataEncoder.hash(EIP_712_AUTH.domain, EIP_712_AUTH.types, value)
+      const recoveredKey = ethers.utils.recoverPublicKey(ethers.utils.arrayify(hash), signature)
+      const publicKeyBuffer: Buffer = Buffer.from(ethers.utils.arrayify(recoveredKey))
+      // this.publicKey = publicKeyBuffer
+      signer.publicKey = publicKeyBuffer
+    }.bind(signer)
+  }
+  await currencyConfig.ready()
   const arseedUrl = 'https://arseed.web3infra.dev'
   const dataRaw = Buffer.from(JSON.stringify(payload))
   const currency = 'AR'
@@ -56,12 +63,14 @@ export async function syncArweaveData({
   resourceOwner,
   payload,
   authToken,
+  web3Signer,
 }: {
   resourceId: string,
   resourceType: ResourceTypes,
   resourceOwner: string,
   payload: {[_key:string]: unknown} | Array<{[_key:string]: unknown}>,
   authToken: string,
+  web3Signer: ethers.Signer,
 }) {
   const tags = [
     {name: 'Content-Type', value: 'application/json'},
@@ -75,6 +84,6 @@ export async function syncArweaveData({
     previous list if no topic is edited, the same ItemId(tx) will be generated (by Web3Infra in ANS-104 bundle).
     As a result, the 3-topics data's block is always lower than 4-topics data's block. */
   ]
-  const result = await submitOrder(payload, tags, authToken)
+  const result = await submitOrder(payload, tags, authToken, web3Signer)
   return result
 }

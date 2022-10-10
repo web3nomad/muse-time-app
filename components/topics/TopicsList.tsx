@@ -52,7 +52,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
   arOwnerAddress: string,
 }) {
   const router = useRouter()
-  const { walletAddress, authToken } = useEthereumContext()
+  const { walletAddress, authToken, signer } = useEthereumContext()
 
   const [topics, setTopics] = useState<TopicData[]>([])
   const [editingTopic, setEditingTopic] = useState<TopicData|null>(null)
@@ -84,6 +84,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
       resourceOwner: walletAddress,
       payload: newTopics,
       authToken: authToken,
+      web3Signer: signer,
     }).then((res) => {
       // update local state
       setTopics(newTopics)
@@ -92,7 +93,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
       console.log(err)
       setPendingSync(false)
     })
-  }, [walletAddress, authToken, setPendingSync, setTopics])
+  }, [walletAddress, authToken, signer, setPendingSync, setTopics])
 
   const handleSyncTopic = useCallback((topic: TopicData) => {
     // TODO: validate data
