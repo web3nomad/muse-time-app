@@ -30,11 +30,7 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
       {profile.avatar ? (
         <div
           className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
-          style={{
-            backgroundImage: `url(${
-              "https://cloudflare-ipfs.com/ipfs/" + profile.avatar
-            })`,
-          }}
+          style={{backgroundImage: `url(${profile.avatar})`}}
         ></div>
       ) : (
         <div className="w-32 h-32 bg-neutral-100 rounded-full"></div>

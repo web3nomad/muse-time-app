@@ -23,9 +23,11 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
 
   const submitToNFT = useCallback(async (file:File) =>{
     const id =  await storeNFT(file);
-    setNftImg(id);
-    return id;
+    const avatar = 'https://cloudflare-ipfs.com/ipfs/' + id
+    setNftImg(avatar);
+    return avatar;
   },[])
+
   const onChange = useCallback((field: string, value: string) => {
     setFormData({
       ...formData,
@@ -55,7 +57,6 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
 
   const handleSubmit = (event: any) => {
     event.preventDefault()
-    console.log(formData)
     signAndSaveProfile({ ...formData })
   }
 
@@ -102,10 +103,9 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
                         if (fileRef.current?.files?.length){
                           setImgPending(true);
                             const file = fileRef.current?.files[0];
-                            const id = await submitToNFT(file).finally(() =>{setImgPending(false);})
-                            onChange(fieldName, id);
+                            const avatar = await submitToNFT(file).finally(() =>{setImgPending(false);})
+                            onChange(fieldName, avatar);
                         }
-
                       }}
                     />
                     {imgPending ? (
@@ -123,10 +123,7 @@ export default function ProfileForm({ profile, onSubmit, onCancel }: {
                     )}
                   </label>
                   {nftImg && (
-                    <img
-                      className="ml-1 w-24 h-24"
-                      src={`https://cloudflare-ipfs.com/ipfs/${nftImg}`}
-                    ></img>
+                    <img className="ml-1 w-24 h-24" src={nftImg}></img>
                   )}
                 </div>
               )}

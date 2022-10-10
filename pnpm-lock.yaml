@@ -1,4 +1,4 @@
-lockfileVersion: 5.3
+lockfileVersion: 5.4
 
 specifiers:
   '@ethersproject/abstract-provider': ^5.7.0
@@ -32,15 +32,15 @@ specifiers:
   web3modal: ^1.9.9
 
 dependencies:
-  '@headlessui/react': 1.7.2_react-dom@18.2.0+react@18.2.0
+  '@headlessui/react': 1.7.2_biqbaboplfbrettd7655fr4n2y
   '@heroicons/react': 2.0.11_react@18.2.0
-  arseeding-js: 0.0.16_bb4502437753a0769bffb5fa0ea0f29e
+  arseeding-js: 0.0.16_xncqeq3xkoqhng77wx5a5ihsty
   autoprefixer: 10.4.12_postcss@8.4.16
-  bundlr-arseeding-client: 0.7.14_bb4502437753a0769bffb5fa0ea0f29e
+  bundlr-arseeding-client: 0.7.14_xncqeq3xkoqhng77wx5a5ihsty
   clsx: 1.2.1
   ethers: 5.7.1
   mime: 3.0.0
-  next: 12.3.1_react-dom@18.2.0+react@18.2.0
+  next: 12.3.1_biqbaboplfbrettd7655fr4n2y
   nft.storage: 7.0.0
   nprogress: 0.2.0
   postcss: 8.4.16
@@ -48,7 +48,7 @@ dependencies:
   react-dom: 18.2.0_react@18.2.0
   react-is: 16.13.1
   swr: 1.3.0_react@18.2.0
-  tailwindcss: 3.1.8
+  tailwindcss: 3.1.8_postcss@8.4.16
   web3modal: 1.9.9_react-is@16.13.1
 
 devDependencies:
@@ -61,10 +61,15 @@ devDependencies:
   '@types/react-dom': 18.0.6
   base64url: 3.0.1
   eslint: 8.24.0
-  eslint-config-next: 12.3.1_eslint@8.24.0+typescript@4.8.3
+  eslint-config-next: 12.3.1_7ilbxdl5iguzcjriqqcg2m5cku
   typescript: 4.8.3
 
 packages:
+
+  /@achingbrain/node-fetch/2.6.7:
+    resolution: {integrity: sha512-iTASGs+HTFK5E4ZqcMsHmeJ4zodyq8L38lZV33jwqcBJYoUt3HjN4+ot+O9/0b+ke8ddE7UgOtVuZN/OkV19/g==}
+    engines: {node: 4.x || >=6.0.0}
+    dev: false
 
   /@assemblyscript/loader/0.9.4:
     resolution: {integrity: sha1-pIPFTBJTZWuzO6vUZOMVShc+FXc=}
@@ -546,7 +551,7 @@ packages:
       '@ethersproject/strings': 5.7.0
     dev: false
 
-  /@headlessui/react/1.7.2_react-dom@18.2.0+react@18.2.0:
+  /@headlessui/react/1.7.2_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-snLv2lxwsf2HNTOBNgHYdvoYZ3ChJE8QszPi1d/hl9js8KrFrUulTaQBfSyPbJP5BybVreWh9DxCgz9S0Z6hKQ==}
     engines: {node: '>=10'}
     peerDependencies:
@@ -943,7 +948,7 @@ packages:
       tailwindcss: '>=3.0.0 || >= 3.0.0-alpha.1'
     dependencies:
       mini-svg-data-uri: 1.4.4
-      tailwindcss: 3.1.8
+      tailwindcss: 3.1.8_postcss@8.4.16
     dev: true
 
   /@tailwindcss/line-clamp/0.4.2_tailwindcss@3.1.8:
@@ -951,7 +956,7 @@ packages:
     peerDependencies:
       tailwindcss: '>=2.0.0 || >=3.0.0 || >=3.0.0-alpha.1'
     dependencies:
-      tailwindcss: 3.1.8
+      tailwindcss: 3.1.8_postcss@8.4.16
     dev: true
 
   /@tsconfig/node10/1.0.9:
@@ -1047,7 +1052,7 @@ packages:
       '@types/node': 18.7.20
     dev: false
 
-  /@typescript-eslint/parser/5.38.0_eslint@8.24.0+typescript@4.8.3:
+  /@typescript-eslint/parser/5.38.0_7ilbxdl5iguzcjriqqcg2m5cku:
     resolution: {integrity: sha512-/F63giJGLDr0ms1Cr8utDAxP2SPiglaD6V+pCOcG35P2jCqdfR7uuEhz1GIC3oy4hkUF8xA1XSXmd9hOh/a5EA==}
     engines: {node: ^12.22.0 || ^14.17.0 || >=16.0.0}
     peerDependencies:
@@ -1149,7 +1154,7 @@ packages:
     dev: false
 
   /@zxing/text-encoding/0.9.0:
-    resolution: {integrity: sha1-+1D/q8bHxmoMlrTAPj2b50hktws=}
+    resolution: {integrity: sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==}
     requiresBuild: true
     dev: false
     optional: true
@@ -1350,40 +1355,7 @@ packages:
     engines: {node: '>=0.10.0'}
     dev: false
 
-  /arseeding-arbundles/0.6.19_bb4502437753a0769bffb5fa0ea0f29e:
-    resolution: {integrity: sha512-MfscIxXYT73ZaIr4xj8MeGSBpdeaiMqmevhB92eT1mD12f42BUsAptcw8IWUycfFVNiC0sgpJYUr9l+yIi/Qkw==}
-    dependencies:
-      '@randlabs/myalgo-connect': 1.3.1
-      '@solana/wallet-adapter-base': 0.9.17
-      algosdk: 1.21.0
-      arweave: 1.11.6
-      arweave-stream-tx: 1.1.0_arweave@1.11.6
-      avsc: github.com/Bundlr-Network/avsc/a730cc8018b79e114b6a3381bbb57760a24c6cef
-      axios: 0.21.4
-      base64url: 3.0.1
-      bs58: 4.0.1
-      ethers: 5.7.1
-      keccak: 3.0.2
-      multistream: 4.1.0
-      noble-ed25519: 1.2.6
-      process: 0.11.10
-      secp256k1: 4.0.3
-      tmp-promise: 3.0.3
-      ts-node: 10.9.1_bb4502437753a0769bffb5fa0ea0f29e
-      tslib: 2.4.0
-    transitivePeerDependencies:
-      - '@solana/web3.js'
-      - '@swc/core'
-      - '@swc/wasm'
-      - '@types/node'
-      - bufferutil
-      - debug
-      - supports-color
-      - typescript
-      - utf-8-validate
-    dev: false
-
-  /arseeding-arbundles/0.6.19_e168b3b120b4f4ed6624990c6216ed44:
+  /arseeding-arbundles/0.6.19_4fulhmjawt2o2zreteggefxniq:
     resolution: {integrity: sha512-MfscIxXYT73ZaIr4xj8MeGSBpdeaiMqmevhB92eT1mD12f42BUsAptcw8IWUycfFVNiC0sgpJYUr9l+yIi/Qkw==}
     dependencies:
       '@randlabs/myalgo-connect': 1.3.1
@@ -1402,7 +1374,7 @@ packages:
       process: 0.11.10
       secp256k1: 4.0.3
       tmp-promise: 3.0.3
-      ts-node: 10.9.1_bb4502437753a0769bffb5fa0ea0f29e
+      ts-node: 10.9.1_xncqeq3xkoqhng77wx5a5ihsty
       tslib: 2.4.0
     transitivePeerDependencies:
       - '@solana/web3.js'
@@ -1416,13 +1388,46 @@ packages:
       - utf-8-validate
     dev: false
 
-  /arseeding-js/0.0.16_bb4502437753a0769bffb5fa0ea0f29e:
+  /arseeding-arbundles/0.6.19_xncqeq3xkoqhng77wx5a5ihsty:
+    resolution: {integrity: sha512-MfscIxXYT73ZaIr4xj8MeGSBpdeaiMqmevhB92eT1mD12f42BUsAptcw8IWUycfFVNiC0sgpJYUr9l+yIi/Qkw==}
+    dependencies:
+      '@randlabs/myalgo-connect': 1.3.1
+      '@solana/wallet-adapter-base': 0.9.17
+      algosdk: 1.21.0
+      arweave: 1.11.6
+      arweave-stream-tx: 1.1.0_arweave@1.11.6
+      avsc: github.com/Bundlr-Network/avsc/a730cc8018b79e114b6a3381bbb57760a24c6cef
+      axios: 0.21.4
+      base64url: 3.0.1
+      bs58: 4.0.1
+      ethers: 5.7.1
+      keccak: 3.0.2
+      multistream: 4.1.0
+      noble-ed25519: 1.2.6
+      process: 0.11.10
+      secp256k1: 4.0.3
+      tmp-promise: 3.0.3
+      ts-node: 10.9.1_xncqeq3xkoqhng77wx5a5ihsty
+      tslib: 2.4.0
+    transitivePeerDependencies:
+      - '@solana/web3.js'
+      - '@swc/core'
+      - '@swc/wasm'
+      - '@types/node'
+      - bufferutil
+      - debug
+      - supports-color
+      - typescript
+      - utf-8-validate
+    dev: false
+
+  /arseeding-js/0.0.16_xncqeq3xkoqhng77wx5a5ihsty:
     resolution: {integrity: sha512-T9zTgPGOh7heCq0tkz5ND++PKXuLbnUx2Ao8I4gKMAH1p/L5DEqPPkC3jx2uPQa3dbxXJfjZXuorzp5P4G/fMQ==}
     dependencies:
-      arseeding-arbundles: 0.6.19_bb4502437753a0769bffb5fa0ea0f29e
+      arseeding-arbundles: 0.6.19_xncqeq3xkoqhng77wx5a5ihsty
       axios: 0.21.4
       bignumber.js: 9.1.0
-      bundlr-arseeding-client: 0.7.14_bb4502437753a0769bffb5fa0ea0f29e
+      bundlr-arseeding-client: 0.7.14_xncqeq3xkoqhng77wx5a5ihsty
       ethers: 5.7.1
       everpay: 0.5.2
       lodash: 4.17.21
@@ -1552,7 +1557,7 @@ packages:
       babel-plugin-syntax-jsx: 6.18.0
       lodash: 4.17.21
       picomatch: 2.3.1
-      styled-components: 5.3.5_60f3b602325395587bfce1ce81a371e8
+      styled-components: 5.3.5_mdz3marskokvq6744hhidi3r5a
     dev: false
 
   /babel-plugin-syntax-jsx/6.18.0:
@@ -1744,7 +1749,7 @@ packages:
       node-gyp-build: 4.5.0
     dev: false
 
-  /bundlr-arseeding-client/0.7.14_bb4502437753a0769bffb5fa0ea0f29e:
+  /bundlr-arseeding-client/0.7.14_xncqeq3xkoqhng77wx5a5ihsty:
     resolution: {integrity: sha512-nvAMmkllXuBgKHd2ocMEnGaLdOyk7YlgVNfyVYlrj4ohbuH541uHUh7kC/9YiZNAEkLimr6+RkqVqtXzvhUgAA==}
     hasBin: true
     dependencies:
@@ -1752,7 +1757,7 @@ packages:
       '@solana/web3.js': 1.63.1
       '@supercharge/promise-pool': 2.3.2
       algosdk: 1.21.0
-      arseeding-arbundles: 0.6.19_e168b3b120b4f4ed6624990c6216ed44
+      arseeding-arbundles: 0.6.19_4fulhmjawt2o2zreteggefxniq
       arweave: 1.11.6
       async-retry: 1.3.3
       axios: 0.25.0
@@ -2326,7 +2331,7 @@ packages:
     engines: {node: '>=10'}
     dev: true
 
-  /eslint-config-next/12.3.1_eslint@8.24.0+typescript@4.8.3:
+  /eslint-config-next/12.3.1_7ilbxdl5iguzcjriqqcg2m5cku:
     resolution: {integrity: sha512-EN/xwKPU6jz1G0Qi6Bd/BqMnHLyRAL0VsaQaWA7F3KkjAgZHi4f1uL1JKGWNxdQpHTW/sdGONBd0bzxUka/DJg==}
     peerDependencies:
       eslint: ^7.23.0 || ^8.0.0
@@ -2337,11 +2342,11 @@ packages:
     dependencies:
       '@next/eslint-plugin-next': 12.3.1
       '@rushstack/eslint-patch': 1.2.0
-      '@typescript-eslint/parser': 5.38.0_eslint@8.24.0+typescript@4.8.3
+      '@typescript-eslint/parser': 5.38.0_7ilbxdl5iguzcjriqqcg2m5cku
       eslint: 8.24.0
       eslint-import-resolver-node: 0.3.6
-      eslint-import-resolver-typescript: 2.7.1_19b4f2795054463b84ba2d1a1feb6aa1
-      eslint-plugin-import: 2.26.0_21bf05020b80995b61bf1d39b3c11c3a
+      eslint-import-resolver-typescript: 2.7.1_dg2pe6kqkrddxbf2funb723kue
+      eslint-plugin-import: 2.26.0_eg7qkaqlqcmvwyn7du43hqi4hi
       eslint-plugin-jsx-a11y: 6.6.1_eslint@8.24.0
       eslint-plugin-react: 7.31.8_eslint@8.24.0
       eslint-plugin-react-hooks: 4.6.0_eslint@8.24.0
@@ -2360,7 +2365,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-import-resolver-typescript/2.7.1_19b4f2795054463b84ba2d1a1feb6aa1:
+  /eslint-import-resolver-typescript/2.7.1_dg2pe6kqkrddxbf2funb723kue:
     resolution: {integrity: sha512-00UbgGwV8bSgUv34igBDbTOtKhqoRMy9bFjNehT40bXg6585PNIct8HhXZ0SybqB9rWtXj9crcku8ndDn/gIqQ==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -2369,7 +2374,7 @@ packages:
     dependencies:
       debug: 4.3.4
       eslint: 8.24.0
-      eslint-plugin-import: 2.26.0_21bf05020b80995b61bf1d39b3c11c3a
+      eslint-plugin-import: 2.26.0_eg7qkaqlqcmvwyn7du43hqi4hi
       glob: 7.2.3
       is-glob: 4.0.3
       resolve: 1.22.1
@@ -2378,7 +2383,7 @@ packages:
       - supports-color
     dev: true
 
-  /eslint-module-utils/2.7.4_ba598c1b6fa580e5f160093fe509e318:
+  /eslint-module-utils/2.7.4_xjmyyg3puwaol4labe76kcpdda:
     resolution: {integrity: sha512-j4GT+rqzCoRKHwURX7pddtIPGySnX9Si/cgMI5ztrcqOPtk5dDEeZ34CQVPphnqkJytlc97Vuk05Um2mJ3gEQA==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -2399,16 +2404,16 @@ packages:
       eslint-import-resolver-webpack:
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.38.0_eslint@8.24.0+typescript@4.8.3
+      '@typescript-eslint/parser': 5.38.0_7ilbxdl5iguzcjriqqcg2m5cku
       debug: 3.2.7
       eslint: 8.24.0
       eslint-import-resolver-node: 0.3.6
-      eslint-import-resolver-typescript: 2.7.1_19b4f2795054463b84ba2d1a1feb6aa1
+      eslint-import-resolver-typescript: 2.7.1_dg2pe6kqkrddxbf2funb723kue
     transitivePeerDependencies:
       - supports-color
     dev: true
 
-  /eslint-plugin-import/2.26.0_21bf05020b80995b61bf1d39b3c11c3a:
+  /eslint-plugin-import/2.26.0_eg7qkaqlqcmvwyn7du43hqi4hi:
     resolution: {integrity: sha512-hYfi3FXaM8WPLf4S1cikh/r4IxnO6zrhZbEGz2b660EJRbuxgpDS5gkCuYgGWg2xxh2rBuIr4Pvhve/7c31koA==}
     engines: {node: '>=4'}
     peerDependencies:
@@ -2418,14 +2423,14 @@ packages:
       '@typescript-eslint/parser':
         optional: true
     dependencies:
-      '@typescript-eslint/parser': 5.38.0_eslint@8.24.0+typescript@4.8.3
+      '@typescript-eslint/parser': 5.38.0_7ilbxdl5iguzcjriqqcg2m5cku
       array-includes: 3.1.5
       array.prototype.flat: 1.3.0
       debug: 2.6.9
       doctrine: 2.1.0
       eslint: 8.24.0
       eslint-import-resolver-node: 0.3.6
-      eslint-module-utils: 2.7.4_ba598c1b6fa580e5f160093fe509e318
+      eslint-module-utils: 2.7.4_xjmyyg3puwaol4labe76kcpdda
       has: 1.0.3
       is-core-module: 2.10.0
       is-glob: 4.0.3
@@ -2828,7 +2833,7 @@ packages:
     resolution: {integrity: sha512-OO0pH2lK6a0hZnAdau5ItzHPI6pUlvI7jMVnxUQRtw4owF2wk8lOSabtGDCTP4Ggrg2MbGnWO9X8K1t4+fGMDw==}
 
   /fsevents/2.1.2:
-    resolution: {integrity: sha1-TAofs0vGjlQ7S4Kp7Dkr+9qECAU=}
+    resolution: {integrity: sha512-R4wDiBwZ0KzpgOWetKDug1FZcYhqYnUYKtfZYt4mD5SBz76q0KR4Q9o7GIPamsVPGmW3EYPPJ0dOOjvx32ldZA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     deprecated: '"Please update to latest v2.3 or v2.2"'
@@ -2837,7 +2842,7 @@ packages:
     optional: true
 
   /fsevents/2.3.2:
-    resolution: {integrity: sha1-ilJveLj99GI7cJ4Ll1xSwkwC/Ro=}
+    resolution: {integrity: sha512-xiqMQR4xAeHTuB9uWm+fFRcIOgKBMiOBP+eXiyT7jsgVCq1bkVygt00oASowB7EdtpOHaaPgKt812P9ab+DDKA==}
     engines: {node: ^8.16.0 || ^10.6.0 || >=11.0.0}
     os: [darwin]
     requiresBuild: true
@@ -3277,8 +3282,8 @@ packages:
       it-to-stream: 1.0.0
       merge-options: 3.0.4
       nanoid: 3.3.4
-      native-fetch: 3.0.0_@achingbrain+node-fetch@2.6.7
-      node-fetch: '@registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz'
+      native-fetch: 3.0.0_hmwa7nplpltavckpkeobtw6pv4
+      node-fetch: /@achingbrain/node-fetch/2.6.7
       react-native-fetch-api: 2.0.0
       stream-to-it: 0.2.4
     dev: false
@@ -3528,13 +3533,13 @@ packages:
       '@types/connect': 3.4.35
       '@types/node': 12.20.55
       '@types/ws': 7.4.7
+      JSONStream: 1.3.5
       commander: 2.20.3
       delay: 5.0.0
       es6-promisify: 5.0.0
       eyes: 0.1.8
       isomorphic-ws: 4.0.1_ws@7.4.6
       json-stringify-safe: 5.0.1
-      JSONStream: 1.3.5
       lodash: 4.17.21
       uuid: 8.3.2
       ws: 7.4.6
@@ -3912,12 +3917,12 @@ packages:
       node-fetch: '*'
     dev: false
 
-  /native-fetch/3.0.0_@achingbrain+node-fetch@2.6.7:
+  /native-fetch/3.0.0_hmwa7nplpltavckpkeobtw6pv4:
     resolution: {integrity: sha512-G3Z7vx0IFb/FQ4JxvtqGABsOTIqRWvgQz6e+erkB+JJD6LrszQtMozEHI4EkmgZQvnGHrpLVzUWk7t4sJCIkVw==}
     peerDependencies:
       node-fetch: '*'
     dependencies:
-      node-fetch: '@registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz'
+      node-fetch: /@achingbrain/node-fetch/2.6.7
     dev: false
 
   /natural-compare/1.4.0:
@@ -3959,7 +3964,7 @@ packages:
       tweetnacl: 1.0.3
     dev: false
 
-  /next/12.3.1_react-dom@18.2.0+react@18.2.0:
+  /next/12.3.1_biqbaboplfbrettd7655fr4n2y:
     resolution: {integrity: sha512-l7bvmSeIwX5lp07WtIiP9u2ytZMv7jIeB8iacR28PuUEFG5j0HGAPnMqyG5kbZNBG2H7tRsrQ4HCjuMOPnANZw==}
     engines: {node: '>=12.22.0'}
     hasBin: true
@@ -4671,7 +4676,7 @@ packages:
       '@babel/runtime': 7.19.0
       eventemitter3: 4.0.7
       uuid: 8.3.2
-      ws: 8.9.0_d6955b83f926115bf12ffeabab6deaae
+      ws: 8.9.0_22kvxa7zeyivx4jp72v2w3pkvy
     optionalDependencies:
       bufferutil: 4.0.6
       utf-8-validate: 5.0.9
@@ -4941,7 +4946,7 @@ packages:
     engines: {node: '>=8'}
     dev: true
 
-  /styled-components/5.3.5_60f3b602325395587bfce1ce81a371e8:
+  /styled-components/5.3.5_mdz3marskokvq6744hhidi3r5a:
     resolution: {integrity: sha512-ndETJ9RKaaL6q41B69WudeqLzOpY1A/ET/glXkNZ2T7dPjPqpPCXXQjDFYZWwNnE5co0wX+gTCqx9mfxTmSIPg==}
     engines: {node: '>=10'}
     requiresBuild: true
@@ -5030,10 +5035,12 @@ packages:
       react: 18.2.0
     dev: false
 
-  /tailwindcss/3.1.8:
+  /tailwindcss/3.1.8_postcss@8.4.16:
     resolution: {integrity: sha512-YSneUCZSFDYMwk+TGq8qYFdCA3yfBRdBlS7txSq0LUmzyeqRe3a8fBQzbz9M3WS/iFT4BNf/nmw9mEzrnSaC0g==}
     engines: {node: '>=12.13.0'}
     hasBin: true
+    peerDependencies:
+      postcss: ^8.0.9
     dependencies:
       arg: 5.0.2
       chokidar: 3.5.3
@@ -5135,7 +5142,7 @@ packages:
     engines: {node: '>=8'}
     dev: false
 
-  /ts-node/10.9.1_bb4502437753a0769bffb5fa0ea0f29e:
+  /ts-node/10.9.1_xncqeq3xkoqhng77wx5a5ihsty:
     resolution: {integrity: sha512-NtVysVPkxxrwFGUUxGYhfux8k78pQB3JqYBXlLRZgdGUqTO5wU/UyHop5p70iEbGhB7q5KmiZiU0Y3KlJrScEw==}
     hasBin: true
     peerDependencies:
@@ -5348,7 +5355,7 @@ packages:
       prop-types: 15.8.1
       react: 16.14.0
       react-dom: 16.14.0_react@16.14.0
-      styled-components: 5.3.5_60f3b602325395587bfce1ce81a371e8
+      styled-components: 5.3.5_mdz3marskokvq6744hhidi3r5a
       tslib: 1.14.1
     transitivePeerDependencies:
       - react-is
@@ -5424,7 +5431,7 @@ packages:
         optional: true
     dev: false
 
-  /ws/8.9.0_d6955b83f926115bf12ffeabab6deaae:
+  /ws/8.9.0_22kvxa7zeyivx4jp72v2w3pkvy:
     resolution: {integrity: sha512-Ja7nszREasGaYUYCI2k4lCKIRTt+y7XuqVoHR44YpI49TtryyqbqvDMn5eqfW7e6HzTukDRIsXqzVHScqRcafg==}
     engines: {node: '>=10.0.0'}
     peerDependencies:
@@ -5465,13 +5472,6 @@ packages:
     resolution: {integrity: sha512-rVksvsnNCdJ/ohGc6xgPwyN8eheCxsiLM8mxuE/t/mOVqJewPuO1miLpTHQiRgTKCLexL4MeAFVagts7HmNZ2Q==}
     engines: {node: '>=10'}
     dev: true
-
-  '@registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz':
-    resolution: {tarball: https://registry.npmjs.org/@achingbrain/node-fetch/-/node-fetch-2.6.7.tgz}
-    name: '@achingbrain/node-fetch'
-    version: 2.6.7
-    engines: {node: 4.x || >=6.0.0}
-    dev: false
 
   github.com/Bundlr-Network/avsc/a730cc8018b79e114b6a3381bbb57760a24c6cef:
     resolution: {tarball: https://codeload.github.com/Bundlr-Network/avsc/tar.gz/a730cc8018b79e114b6a3381bbb57760a24c6cef}
