@@ -1,5 +1,6 @@
 import clsx from 'clsx'
 import Image from 'next/image'
+import Head from 'next/head'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { ResourceTypes, getArweaveData } from '@/lib/arweave'
@@ -20,6 +21,8 @@ const MOCK_PROFILE: ProfileData = {
 }
 
 const Avatar = ({ profile }: { profile: ProfileData }) => {
+  const title = 'Mint a time NFT from ' + profile.name + ' | MuseTime'
+  const description = profile.description
   return (
     <div
       className={clsx(
@@ -27,6 +30,14 @@ const Avatar = ({ profile }: { profile: ProfileData }) => {
         "flex-col items-center justify-start"
       )}
     >
+      <Head>
+        <title>{title}</title>
+        <meta property="og:title" content={title} />
+        <meta name="twitter:title" content={title} />
+        <meta property="og:description" content={description} />
+        <meta name="twitter:description" content={description} />
+        <meta name="description" content={description} />
+      </Head>
       {profile.avatar ? (
         <div
           className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-cover rounded-full"
