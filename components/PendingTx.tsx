@@ -1,11 +1,12 @@
 import clsx from 'clsx'
 import Link from 'next/link'
 // import useSWR from 'swr'
+import Image from 'next/image'
 import { useState, useEffect, useCallback } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import type { EverpayTx } from '@/lib/arweave'
-
+import ClockImage from '@/assets/images/clock.svg'
 
 export default function PendingTx() {
   const { walletAddress, authToken } = useEthereumContext()
@@ -35,12 +36,16 @@ export default function PendingTx() {
       { "hidden": !pendingTx }
     )}>
       {pendingTx && (
-        <div className="flex items-center justify-center p-4 bg-amber-300">
+        <div className="flex items-center justify-center font-din-pro p-4 bg-blue-cadet">
+          <div className="relative w-8 h-8 mr-3">
+            <Image src={ClockImage.src} layout="fill" alt="clock" />
+          </div>
+          <div>Your data is being synced to Arweave</div>
           <a
-            href={`https://arseed.web3infra.dev/bundle/tx/${pendingTx.itemId}`}
-            target="_blank"
-            rel="noreferrer"
-          > Pending Tx </a>
+            href={`https://arseed.web3infra.dev/${pendingTx.itemId}`}
+            target="_blank" rel="noreferrer"
+            className="font-din-alternate ml-2"
+          >{pendingTx.itemId.replace(/^(.{4}).+(.{4})$/, '$1...$2')}</a>
           <ArrowPathIcon className="h-5 w-5 animate-spin ml-2" />
         </div>
       )}

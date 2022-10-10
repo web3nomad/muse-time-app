@@ -16,6 +16,7 @@ import { chainId } from '@/lib/ethereum/public'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import TransitionDialog from '@/components/TransitionDialog'
 import WalletETHImage from '@/assets/images/wallet-eth.svg'
+import ClockImage from '@/assets/images/clock.svg'
 
 const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
 
@@ -66,20 +67,20 @@ interface Props {
   children: ReactChild
 }
 
-const TxPending = ({ tx }: { tx: TransactionResponse }) => (
-  <div className="flex items-center">
-    <span>Your transaction is being processed:</span>
-    <a
-      href={`https://etherscan.io/tx/${tx.hash}`} target="_blank" rel="noreferrer"
-      className="font-din-alternate ml-2"
-    >{tx.hash.replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}</a>
-    <ArrowPathIcon className="h-4 w-4 animate-spin ml-2" />
-  </div>
-)
+// const TxPending = ({ tx }: { tx: TransactionResponse }) => (
+//   <div className="flex items-center">
+//     <span>Your transaction is being processed:</span>
+//     <a
+//       href={`https://etherscan.io/tx/${tx.hash}`} target="_blank" rel="noreferrer"
+//       className="font-din-alternate ml-2"
+//     >{tx.hash.replace(/^0x(\w{4})\w+(\w{4})$/, '0x$1...$2')}</a>
+//     <ArrowPathIcon className="h-4 w-4 animate-spin ml-2" />
+//   </div>
+// )
 
-const TxError = ({ error }: { error: any }) => (
-  <div className="break-all">{error.toString()}</div>
-)
+// const TxError = ({ error }: { error: any }) => (
+//   <div className="break-all">{error.toString()}</div>
+// )
 
 export const EthereumContextProvider = ({ children }: Props) => {
   const [signerErrorMessage, setSignerErrorMessage] = useState<string|null>(null)
@@ -87,21 +88,24 @@ export const EthereumContextProvider = ({ children }: Props) => {
   const [walletAddress, setWalletAddress] = useState<string|null>(null)
   const [authToken, setAuthToken] = useState<string|null>(null)
 
-  const [dialogOpen, setDialogOpen] = useState<{message:any,canClose:boolean}|null>(null)
+  // const [dialogOpen, setDialogOpen] = useState<{message:any,canClose:boolean}|null>(null)
+  const [pendingTx, setPendingTx] = useState<TransactionResponse|null>(null)
   const [connectDialogOpen, setConnectDialogOpen] = useState(false)
 
   const sendTransaction = useCallback((method: Promise<TransactionResponse>) => {
-    setDialogOpen({ message: 'Confirm tx in your wallet', canClose: false })
+    // setDialogOpen({ message: 'Confirm tx in your wallet', canClose: false })
     method.then(async (tx: TransactionResponse) => {
-      setDialogOpen({ message: <TxPending tx={tx} />, canClose: false })
+      // setDialogOpen({ message: <TxPending tx={tx} />, canClose: false })
+      setPendingTx(tx)
       await tx.wait()
-      setDialogOpen(null)
+      setPendingTx(null)
+      // setDialogOpen(null)
       window.location.reload()
     }).catch(error => {
       console.log(error)
-      setDialogOpen({ message: <TxError error={error} />, canClose: true })
+      // setDialogOpen({ message: <TxError error={error} />, canClose: true })
     })
-  }, [setDialogOpen])
+  }, [setPendingTx])
 
   const setSignerAndAuth = useCallback((signer: ethers.providers.JsonRpcSigner, authToken: string) => {
     Promise.all([
@@ -232,10 +236,26 @@ export const EthereumContextProvider = ({ children }: Props) => {
   return (
     <EthereumContext.Provider value={value}>
       {children}
-      {!!dialogOpen && (
+      {/*!!dialogOpen && (
         <TransitionDialog open={!!dialogOpen} onClose={() => dialogOpen.canClose && setDialogOpen(null) }>
           <div className="my-12 flex items-center justify-center w-full">{dialogOpen.message}</div>
         </TransitionDialog>
+      )*/}
+      {pendingTx && (
+        <div className={clsx(
+          "fixed left-0 bottom-0 w-full p-4 font-din-pro",
+          "flex items-center justify-center bg-blue-cadet"
+        )}>
+          <div className="relative w-8 h-8 mr-3">
+            <Image src={ClockImage.src} layout="fill" alt="clock" />
+          </div>
+          <div>Your transaction is being processed:</div>
+          <a
+            href={`https://etherscan.io/tx/${pendingTx.hash}`} target="_blank" rel="noreferrer"
+            className="font-din-alternate ml-2"
+          >{pendingTx.hash.replace(/^0x(\w{4})\w+(\w{4})$/, '0x$1...$2')}</a>
+          <ArrowPathIcon className="h-4 w-4 animate-spin ml-2" />
+        </div>
       )}
       {!!connectDialogOpen && (
         <TransitionDialog open={!!connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
