@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { ethers } from 'ethers'
 import Web3Modal from 'web3modal'
+import Image from 'next/image'
 import type { TransactionResponse } from '@ethersproject/abstract-provider'
 import React, {
   createContext,
@@ -14,6 +15,7 @@ import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth
 import { chainId } from '@/lib/ethereum/public'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import TransitionDialog from '@/components/TransitionDialog'
+import WalletETHImage from '@/assets/images/wallet-eth.svg'
 
 const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
 
@@ -202,7 +204,8 @@ export const EthereumContextProvider = ({ children }: Props) => {
 
   const login = useCallback(() => {
     setConnectDialogOpen(true)
-  }, [setConnectDialogOpen])
+    connect()  // auto trigger wallet popup
+  }, [setConnectDialogOpen, connect])
 
   const logout = useCallback(() => {
     disconnect()
@@ -237,22 +240,32 @@ export const EthereumContextProvider = ({ children }: Props) => {
       {!!connectDialogOpen && (
         <TransitionDialog open={!!connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
           {signer === VOID_SIGNER ? (
-            <div className="flex flex-col items-center">
-              <div className="text-2xl font-medium">Step 1</div>
-              <div className="text-center my-8 text-neutral-500">Connect your wallet</div>
-              <button className={clsx(
-                "rounded-md py-2 px-8 text-sm text-white",
-                "bg-neutral-900 hover:bg-neutral-800",
-              )} onClick={() => connect()}>Connect</button>
+            <div className="">
+              <div className="text-lg font-bold text-left">Step 1</div>
+              <div className="relative w-16 h-16 mx-auto mt-8 mb-4">
+                <Image src={WalletETHImage.src} layout="fill" alt="" />
+              </div>
+              <div className="text-center mb-10 font-din-pro">Connect your wallet</div>
+              <div className="text-right">
+                <button className={clsx(
+                  "rounded-md py-2 px-8 text-sm text-white",
+                  "bg-neutral-900 hover:bg-neutral-800",
+                )} onClick={() => connect()}>Connect</button>
+              </div>
             </div>
           ) : (
-            <div className="flex flex-col items-center">
-              <div className="text-2xl font-medium">Step 2</div>
-              <div className="text-center my-8 text-neutral-500">Sign a message with your wallet</div>
-              <button className={clsx(
-                "rounded-md py-2 px-8 text-sm text-white",
-                "bg-neutral-900 hover:bg-neutral-800",
-              )} onClick={() => signMessage()}>Sign Message</button>
+            <div className="">
+              <div className="text-lg font-bold text-left">Step 2</div>
+              <div className="relative w-16 h-16 mx-auto mt-8 mb-4">
+                <Image src={WalletETHImage.src} layout="fill" alt="" />
+              </div>
+              <div className="text-center mb-10 font-din-pro">Sign a message with your wallet</div>
+              <div className="text-right">
+                <button className={clsx(
+                  "rounded-md py-2 px-8 text-sm text-white",
+                  "bg-neutral-900 hover:bg-neutral-800",
+                )} onClick={() => signMessage()}>Sign Message</button>
+              </div>
             </div>
           )}
         </TransitionDialog>
