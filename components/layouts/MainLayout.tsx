@@ -1,10 +1,9 @@
 import React, { ReactNode } from 'react'
 import clsx from 'clsx'
-import Head from 'next/head'
 import Image from 'next/image'
 import SiteHeader from './SiteHeader'
 import PendingTx from '@/components/PendingTx'
-
+import HeadMeta from '@/components/layouts/HeadMeta'
 import TimeIsMoney from '@/assets/images/time-is-money.svg'
 import BenjaminFranklin from '@/assets/images/time-is-money-benjamin-franklin.svg'
 
@@ -15,11 +14,7 @@ type Props = {
 export default function MainLayout({ children }: Props) {
   return (
     <div className="bg-white-coffee min-h-screen overflow-hidden">
-      <Head>
-        <title>MuseTime</title>
-        <meta name="description" content="MuseTime is a time x space trading tool built on Arweave and Ethereum. In this high-dimensional world, time and space can be freely transformed." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <HeadMeta />
       <SiteHeader className="bg-neutral-900 text-white" />
       <div className="flex flex-col items-end justify-center w-[18rem] sm:w-[32rem] my-8 mx-auto">
         <div className="relative w-full h-20 sm:h-32">

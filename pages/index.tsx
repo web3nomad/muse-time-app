@@ -1,6 +1,5 @@
 import clsx from 'clsx'
 import type { NextPage } from 'next'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { useState, useCallback, useEffect } from 'react'
@@ -8,6 +7,7 @@ import { useRouter } from 'next/router'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import SiteHeader from '@/components/layouts/SiteHeader'
 import SiteFooter from '@/components/layouts/SiteFooter'
+import HeadMeta from '@/components/layouts/HeadMeta'
 // import PendingTx from '@/components/PendingTx'
 import ConnectButton from '@/components/ConnectButton'
 import MainLayout from '@/components/layouts/MainLayout'
@@ -40,11 +40,7 @@ const Home: NextPage = () => {
 
   return (
     <div className="bg-white-coffee min-h-screen overflow-hidden flex flex-col items-center justify-between">
-      <Head>
-        <title>MuseTime</title>
-        <meta name="description" content="MuseTime is a time x space trading tool built on Arweave and Ethereum. In this high-dimensional world, time and space can be freely transformed." />
-        <link rel="icon" href="/favicon.ico" />
-      </Head>
+      <HeadMeta />
       <SiteHeader className="bg-transparent text-neutral-900" />
       <main className="py-12 lg:py-18 px-6 lg:px-12 w-full flex flex-wrap items-center justify-start">
         <div className="w-full md:w-1/2 px-6 lg:px-12">
