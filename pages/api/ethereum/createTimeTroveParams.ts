@@ -6,15 +6,15 @@ import { publicProvider, controllerContract } from '@/lib/ethereum/public'
 
 export async function _signControllerParams(types: string[], fields: any[]) {
   // TODO: chainId must be included in signature !!!
-  const privateKey = process.env.VERIFICATION_ADDRESS_PRIVATE_KEY
+  const privateKey = process.env.PARAMS_SIGNER_PRIVATE_KEY
   if (!privateKey) {
-    throw new Error('VERIFICATION_ADDRESS_PRIVATE_KEY not set')
+    throw new Error('PARAMS_SIGNER_PRIVATE_KEY not set')
   }
-  const adminSigner = new ethers.Wallet(privateKey, publicProvider)
+  const paramsSigner = new ethers.Wallet(privateKey, publicProvider)
   const messageHash = ethers.utils.solidityKeccak256(types, fields)
   // 如果不 arrayify, signMessage 里面的 hashMessage 会把 '0x' 开头的 hash 也当成字符串先 toUtf8Bytes 一下
   const messageBytes = ethers.utils.arrayify(messageHash)
-  const signature = await adminSigner.signMessage(messageBytes)
+  const signature = await paramsSigner.signMessage(messageBytes)
   // const signerAddress = await ethers.utils.verifyMessage(messageBytes, signature);
   return signature
 }
