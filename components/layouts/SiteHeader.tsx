@@ -2,13 +2,15 @@ import clsx from 'clsx'
 import { ethers } from 'ethers'
 import Image from 'next/image'
 import Link from 'next/link'
-import { useEffect, useState, useMemo } from 'react'
+import { useCallback, useEffect, useState, useMemo } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
+import { controllerContract } from '@/lib/ethereum/public'
 import { useTimeTrove } from '@/lib/ethereum/hooks'
 import ConnectButton from '@/components/ConnectButton'
 import { MuseTimeLogoIcon, MuseTimeTextIcon } from '@/components/icons'
 
 const Balance = ({ topicOwner }: { topicOwner: string }) => {
+  const { sendTransaction, signer } = useEthereumContext()
   const { timeTrove, isFetching } = useTimeTrove(topicOwner)
   const balance = useMemo(() => {
     return ethers.utils.formatEther(timeTrove.balance)
