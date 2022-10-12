@@ -56,10 +56,10 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
   }, [tokenMetadata])
 
   const [inAction, setInAction] = useState<boolean>(false)
-  const action = useCallback((methodName: string) => {
+  const action = useCallback(async (methodName: string) => {
     setInAction(true)
     const method = controllerContract.connect(signer)[methodName](tokenId)
-    sendTransaction(method)
+    await sendTransaction(method)
     setInAction(false)
   }, [signer, sendTransaction, setInAction, tokenId])
 

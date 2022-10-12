@@ -2,15 +2,19 @@ import clsx from 'clsx'
 import type { GetServerSideProps, NextPage } from 'next'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import Head from 'next/head'
+import Image from 'next/image'
+import Link from 'next/link'
 import { ethers } from 'ethers'
 import type { TopicData, ProfileData } from '@/lib/arweave'
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
 import { ResourceTypes, getArweaveData } from '@/lib/arweave'
 import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import MainLayout from '@/components/layouts/MainLayout'
+import SimpleLayout from '@/components/layouts/SimpleLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
+import ClockImage from '@/assets/images/clock.svg'
 
 type PageProps = {
   addressSlug: string,
@@ -58,6 +62,18 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
     fetchTopic()
     fetchProfile()
   }, [fetchTopic, fetchProfile])
+
+
+  const Loading = () => (
+    <SimpleLayout>
+      <main className="flex-1 w-full flex flex-col items-center justify-center pt-2 pb-16">
+        <div className="relative w-16 h-16 mb-4">
+          <Image layout="fill" src={ClockImage.src} alt="" />
+        </div>
+        <div className="font-din-pro">Loading...</div>
+      </main>
+    </SimpleLayout>
+  )
 
   const Avatar = ({ profile }: { profile: ProfileData }) => {
     return (
@@ -134,20 +150,19 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
     </main>
   )
 
-  return (
-    <MainLayout>
-      <Head>
-        <title>{'Topic | ' + topicSlug}</title>
-      </Head>
-      {(topic && profile) ? (
+  if (topic && profile) {
+    return (
+      <MainLayout>
+        <Head>
+          <title>{'Topic | ' + topicSlug}</title>
+        </Head>
         <TopicDetail profile={profile} topic={topic} />
-      ) : (
-        <main className="flex justify-center">
-          <ArrowPathIcon className="h-8 w-8 animate-spin duration-1000" />
-        </main>
-      )}
-    </MainLayout>
-  )
+      </MainLayout>
+    )
+  } else {
+    return <Loading />
+  }
+
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {

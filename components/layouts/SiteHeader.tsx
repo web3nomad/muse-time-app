@@ -16,9 +16,9 @@ const Balance = ({ topicOwner }: { topicOwner: string }) => {
     return ethers.utils.formatEther(timeTrove.balance)
   }, [timeTrove])
 
-  const withdraw = useCallback(() => {
+  const withdraw = useCallback(async () => {
     const method = controllerContract.connect(signer).withdrawFromTimeTrove()
-    sendTransaction(method)
+    await sendTransaction(method)
   }, [sendTransaction, signer])
 
   return (

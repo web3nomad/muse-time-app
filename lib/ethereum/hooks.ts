@@ -15,6 +15,26 @@ export function useTimeTrove(topicOwner: string): {
   const { authToken, signer, sendTransaction } = useEthereumContext()
 
   /**
+   * get time trove
+   */
+  const [isFetching, setIsFetching] = useState(false)
+  const [timeTrove, setTimeTrove] = useState<TimeTroveData|null>(null)
+  const fetchTimeTrove = useCallback(async () => {
+    setIsFetching(true)
+    try {
+      const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
+      setTimeTrove(timeTrove)
+    } catch(err) {
+      setTimeTrove(null)
+      console.log(err)
+    }
+    setIsFetching(false)
+  }, [setIsFetching, setTimeTrove, topicOwner])
+  useEffect(() => {
+    fetchTimeTrove()
+  }, [fetchTimeTrove])
+
+  /**
    * create time trove
    */
   const [isCreating, setIsCreating] = useState<boolean>(false)
@@ -28,29 +48,14 @@ export function useTimeTrove(topicOwner: string): {
     }).then(async (res) => {
       const { arOwnerAddress, signature } = (await res.json()) as { arOwnerAddress: string, signature: string }
       const method = controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
-      sendTransaction(method)
-      setIsCreating(false)  // !!! should set after transaction is confirmed
-      // const tx = await controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
-      // await tx.wait()
+      await sendTransaction(method)
+      setIsCreating(false)
+      fetchTimeTrove()
     }).catch((err) => {
       console.log(err)
       setIsCreating(false)
     })
-  }, [authToken, signer, sendTransaction, setIsCreating])
-
-  /**
-   * get time trove
-   */
-  const fetcher = async (topicOwner: string) => {
-    const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
-    return timeTrove
-  }
-  const {
-    data: timeTrove,
-    isValidating: isFetching,
-  } = useSWR<TimeTroveData>(topicOwner, fetcher, {
-    revalidateOnFocus: false,
-  })
+  }, [authToken, signer, sendTransaction, setIsCreating, fetchTimeTrove])
 
   return {
     timeTrove: timeTrove ?? { arOwnerAddress: '', balance: 0 },
@@ -132,7 +137,7 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
         mintKey, valueInWei, topicOwner, topicSlug, profileArId, topicsArId, signature,
         { value: valueInWei }
       )
-      sendTransaction(method)
+      await sendTransaction(method)
       setIsMinting(false)
     }).catch((err) => {
       console.log(err)

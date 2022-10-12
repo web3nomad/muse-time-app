@@ -10,23 +10,24 @@ import { AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
  * not usefull for the moment
  * const [ownerAddress, ownerKey] = useArOwner()
  */
-export function useArOwner(): [string?, string?] {
-  function getValueFromAuthToken(authToken: string|null): AuthTokenPayload {
+export function useArOwner(): [string|null, string|null] {
+  function getValueFromAuthToken(authToken: string|null): AuthTokenPayload|null {
     try {
       const { value, signature }: AuthTokenPayload = JSON.parse(atob(authToken??''))
       return { value, signature }
     } catch(err) {
-      return {}
+      return null
     }
   }
 
   const { authToken } = useEthereumContext()
 
-  const [ownerAddress, ownerKey] = useMemo(() => {
-    const { value, signature } = getValueFromAuthToken(authToken)
-    if (!value || !signature) {
-      return []
+  const [ownerAddress, ownerKey] = useMemo<[string|null, string|null]>(() => {
+    const result = getValueFromAuthToken(authToken)
+    if (!result) {
+      return [null, null]
     }
+    const { value, signature } = result
     /**
      * - get Ethereum publicKey
      * https://github.com/Bundlr-Network/arbundles/blob/a116829c1392aabeacda24c2e451226b15173a45/src/signing/chains/injectedEthereumSigner.ts#L21

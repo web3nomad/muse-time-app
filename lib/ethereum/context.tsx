@@ -92,19 +92,19 @@ export const EthereumContextProvider = ({ children }: Props) => {
   const [pendingTx, setPendingTx] = useState<TransactionResponse|null>(null)
   const [connectDialogOpen, setConnectDialogOpen] = useState(false)
 
-  const sendTransaction = useCallback((method: Promise<TransactionResponse>) => {
+  const sendTransaction = useCallback(async (method: Promise<TransactionResponse>) => {
     // setDialogOpen({ message: 'Confirm tx in your wallet', canClose: false })
-    method.then(async (tx: TransactionResponse) => {
+    try {
+      const tx: TransactionResponse = await method
       // setDialogOpen({ message: <TxPending tx={tx} />, canClose: false })
       setPendingTx(tx)
       await tx.wait()
       setPendingTx(null)
       // setDialogOpen(null)
-      window.location.reload()
-    }).catch(error => {
+    } catch(error) {
       console.log(error)
       // setDialogOpen({ message: <TxError error={error} />, canClose: true })
-    })
+    }
   }, [setPendingTx])
 
   const setSignerAndAuth = useCallback((signer: ethers.providers.JsonRpcSigner, authToken: string) => {
