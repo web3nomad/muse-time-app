@@ -9,6 +9,7 @@ import React, {
   useContext,
   useState,
   useEffect,
+  useMemo,
   ReactChild,
 } from 'react'
 import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
@@ -17,6 +18,9 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import TransitionDialog from '@/components/TransitionDialog'
 import WalletETHImage from '@/assets/images/wallet-eth.svg'
 import ClockImage from '@/assets/images/clock.svg'
+
+type JsonRpcSigner = ethers.providers.JsonRpcSigner
+type VoidSigner = ethers.VoidSigner
 
 const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
 const AuthStorage = {
@@ -32,14 +36,30 @@ const AuthStorage = {
   clearToken(address: string) {
     localStorage.removeItem(this.authStorageKey(address))
   },
+  clearTokens() {
+    try {
+      const keys = Object.keys(localStorage).filter((key) => /^auth\/musetime\//.test(key))
+      keys.forEach(key => localStorage.removeItem(key))
+    } catch(err) {}
+  }
 }
 
 const WEB3: {
+  listenToWallet: (web3Connection: any, callback: (addresses: string[]) => void) => void,
   getModal: () => Web3Modal,
   providerOptions: any,
-  _modal: Web3Modal | null
+  _web3Connection?: any,
+  _web3ConnectionCallback?: any,
+  _modal?: Web3Modal
 } = {
-  providerOptions: {},
+  listenToWallet: function(web3Connection, callback) {
+    if (this._web3Connection?.removeListener && this._web3ConnectionCallback) {
+      this._web3Connection.removeListener('accountsChanged', this._web3ConnectionCallback)
+    }
+    this._web3Connection = web3Connection
+    this._web3ConnectionCallback = callback
+    this._web3Connection.on('accountsChanged', this._web3ConnectionCallback)
+  },
   getModal: function() {
     if (!this._modal) {
       this._modal = new Web3Modal({
@@ -50,16 +70,14 @@ const WEB3: {
     }
     return this._modal
   },
-  _modal: null,
+  providerOptions: {},
 }
 
 type EthereumProviderState = {
   signerErrorMessage: string|null
-  signer: ethers.providers.JsonRpcSigner|ethers.VoidSigner
+  signer: JsonRpcSigner|VoidSigner
   walletAddress: string|null
   authToken: string|null
-  setSignerAndAuth: (signer: ethers.providers.JsonRpcSigner, authToken: string) => void
-  clearSignerAndAuth: () => void
   sendTransaction: (method: Promise<TransactionResponse>) => void
   login: () => void
   logout: () => void
@@ -70,8 +88,6 @@ const EthereumContext = createContext<EthereumProviderState>({
   signer: VOID_SIGNER,
   walletAddress: null,
   authToken: null,
-  setSignerAndAuth: () => {},
-  clearSignerAndAuth: () => {},
   sendTransaction: () => {},
   login: () => {},
   logout: () => {},
@@ -81,50 +97,47 @@ interface Props {
   children: ReactChild
 }
 
-// const TxPending = ({ tx }: { tx: TransactionResponse }) => (
-//   <div className="flex items-center">
-//     <span>Your transaction is being processed:</span>
-//     <a
-//       href={`https://etherscan.io/tx/${tx.hash}`} target="_blank" rel="noreferrer"
-//       className="font-din-alternate ml-2"
-//     >{tx.hash.replace(/^0x(\w{4})\w+(\w{4})$/, '0x$1...$2')}</a>
-//     <ArrowPathIcon className="h-4 w-4 animate-spin ml-2" />
-//   </div>
-// )
-
-// const TxError = ({ error }: { error: any }) => (
-//   <div className="break-all">{error.toString()}</div>
-// )
-
 export const EthereumContextProvider = ({ children }: Props) => {
   const [signerErrorMessage, setSignerErrorMessage] = useState<string|null>(null)
-  const [signer, setSigner] = useState<ethers.providers.JsonRpcSigner|ethers.VoidSigner>(VOID_SIGNER)
+  const [web3Connection, setWeb3Connection] = useState<any>(null)
   const [walletAddress, setWalletAddress] = useState<string|null>(null)
   const [authToken, setAuthToken] = useState<string|null>(null)
 
-  // const [dialogOpen, setDialogOpen] = useState<{message:any,canClose:boolean}|null>(null)
   const [pendingTx, setPendingTx] = useState<TransactionResponse|null>(null)
   const [connectDialogOpen, setConnectDialogOpen] = useState(false)
 
+  const signer: JsonRpcSigner|VoidSigner = useMemo(() => {
+    if (web3Connection) {
+      const provider = new ethers.providers.Web3Provider(web3Connection)
+      return provider.getSigner()
+    } else {
+      return VOID_SIGNER
+    }
+  }, [web3Connection])
+
   const sendTransaction = useCallback(async (method: Promise<TransactionResponse>) => {
-    // setDialogOpen({ message: 'Confirm tx in your wallet', canClose: false })
     try {
       const tx: TransactionResponse = await method
-      // setDialogOpen({ message: <TxPending tx={tx} />, canClose: false })
       setPendingTx(tx)
       await tx.wait()
       setPendingTx(null)
-      // setDialogOpen(null)
     } catch(error) {
       console.log(error)
-      // setDialogOpen({ message: <TxError error={error} />, canClose: true })
     }
   }, [setPendingTx])
 
-  const setSignerAndAuth = useCallback((signer: ethers.providers.JsonRpcSigner, authToken: string) => {
+  const clearWeb3Auth = useCallback(() => {
+    setWalletAddress(null)
+    setAuthToken(null)
+    setSignerErrorMessage(null)
+  }, [setWalletAddress, setAuthToken, setSignerErrorMessage])
+
+  const setWeb3Auth = useCallback((web3Connection: any, authToken: string) => {
+    const provider = new ethers.providers.Web3Provider(web3Connection)
+    const web3Signer = provider.getSigner()
     Promise.all([
-      signer.getAddress(),
-      signer.getChainId(),
+      web3Signer.getAddress(),
+      web3Signer.getChainId(),
     ]).then(([address, signerChainId]) => {
       if (+chainId !== +signerChainId) {
         setSignerErrorMessage('Wrong chainId')
@@ -133,90 +146,85 @@ export const EthereumContextProvider = ({ children }: Props) => {
       /* after this, Web3Modal will take care of wrong networks.
       if network is changed in MetaMask, an error will be thrown by Web3Modal */
       const walletAddress = ethers.utils.getAddress(address)
-      setSigner(signer)
       setWalletAddress(walletAddress)
       setAuthToken(authToken)
       setSignerErrorMessage(null)
     })
-  }, [setSigner, setWalletAddress, setAuthToken])
-
-  const clearSignerAndAuth = useCallback(() => {
-    setSigner(VOID_SIGNER)
-    setWalletAddress(null)
-    setAuthToken(null)
-    setSignerErrorMessage(null)
   }, [setWalletAddress, setAuthToken, setSignerErrorMessage])
 
   /* connect begin */
 
-  const connect = useCallback(() => {
-    const web3Modal = WEB3.getModal()
-    web3Modal.connect().then(async (instance: any) => {
-      const provider = new ethers.providers.Web3Provider(instance)
-      setSigner(provider.getSigner())
-    }).catch((err: any) => {
-      console.log(err)
-    })
-  }, [setSigner])
-
   const disconnect = useCallback(() => {
     const web3Modal = WEB3.getModal()
     web3Modal.clearCachedProvider()
-    window.localStorage.removeItem('auth-token')
-    clearSignerAndAuth()
-  }, [clearSignerAndAuth])
+    setWeb3Connection(null)
+    clearWeb3Auth()
+    AuthStorage.clearTokens()
+  }, [clearWeb3Auth])
 
-  const signMessage = useCallback(() => {
-    if (signer === VOID_SIGNER) {
-      throw new Error('signer should not be null')
-    }
-    const dispatch = async (signer: ethers.providers.JsonRpcSigner) => {
-      const address = ethers.utils.getAddress(await signer.getAddress())
-      const value: SignatureMessageData = {
-        intent: 'Verify ownership of the address',
-        wallet: address,
-        expire: new Date().valueOf() + 86400 * 1000 * 7  // 7 days
-      }
-      const signature = await signer._signTypedData(EIP_712_AUTH.domain, EIP_712_AUTH.types, value)
-      // ethers.utils.verifyTypedData(IP_712_AUTH.domain, EIP_712_AUTH.types, value, signature)
-      const authTokenPayload: AuthTokenPayload = { value, signature }
-      const authToken = btoa(JSON.stringify(authTokenPayload))
-      // save context
-      AuthStorage.setToken(address, authToken)
-      setSignerAndAuth(signer, authToken)
-      setConnectDialogOpen(false)
-    }
-    dispatch(signer as ethers.providers.JsonRpcSigner).catch(err => {
+  const connect = useCallback(async () => {
+    const web3Modal = WEB3.getModal()
+    try {
+      const web3Connection = await web3Modal.connect()
+      setWeb3Connection(web3Connection)
+    } catch(err) {
       console.log(err)
-    })
-  }, [signer, setSignerAndAuth])
+    }
+  }, [setWeb3Connection])
 
-  const loadSignerAndAuthFromClient = useCallback(async () => {
+  const signMessage = useCallback(async () => {
+    const provider = new ethers.providers.Web3Provider(web3Connection)
+    const web3Signer = provider.getSigner()
+    const address = ethers.utils.getAddress(await web3Signer.getAddress())
+    const value: SignatureMessageData = {
+      intent: 'Verify ownership of the address',
+      wallet: address,
+      expire: new Date().valueOf() + 86400 * 1000 * 7  // 7 days
+    }
+    const signature = await web3Signer._signTypedData(EIP_712_AUTH.domain, EIP_712_AUTH.types, value)
+    // ethers.utils.verifyTypedData(IP_712_AUTH.domain, EIP_712_AUTH.types, value, signature)
+    const authTokenPayload: AuthTokenPayload = { value, signature }
+    const authToken = btoa(JSON.stringify(authTokenPayload))
+    // save context
+    AuthStorage.setToken(address, authToken)
+    setWeb3Auth(web3Connection, authToken)
+    setConnectDialogOpen(false)
+  }, [web3Connection, setWeb3Auth, setConnectDialogOpen])
+
+  var loadSignerAndAuthFromClient = useCallback(async () => {
     const web3Modal = WEB3.getModal()
     if (!web3Modal.cachedProvider) {
       return
     }
+    let web3Connection: any
     let walletAddress: string
-    let signer: ethers.providers.JsonRpcSigner
+    let authToken: string|null
     try {
-      const instance = await web3Modal.connect()
-      const provider = new ethers.providers.Web3Provider(instance)
-      signer = provider.getSigner()
-      walletAddress = ethers.utils.getAddress(await signer.getAddress())
+      web3Connection = await web3Modal.connect()
+      const provider = new ethers.providers.Web3Provider(web3Connection)
+      const web3Signer: JsonRpcSigner = provider.getSigner()
+      walletAddress = ethers.utils.getAddress(await web3Signer.getAddress())
+      authToken = AuthStorage.getToken(walletAddress)
     } catch(err) {
+      console.log(err)
+      return
+    }
+    if (!authToken) {
       return
     }
     try {
-      const authToken: string|null = AuthStorage.getToken(walletAddress)
-      const payload: AuthTokenPayload = JSON.parse(atob(authToken??''))
+      const payload: AuthTokenPayload = JSON.parse(atob(authToken))
       if (payload.value.expire <= new Date().valueOf()) {
-        AuthStorage.clearToken(walletAddress)
+        throw new Error('token expired')
       }
-      setSignerAndAuth(signer, authToken!)
     } catch(err) {
+      console.log(err)
+      AuthStorage.clearToken(walletAddress)
       return
     }
-  }, [setSignerAndAuth])
+    setWeb3Connection(web3Connection)
+    setWeb3Auth(web3Connection, authToken)
+  }, [setWeb3Auth])
 
   const login = useCallback(() => {
     setConnectDialogOpen(true)
@@ -231,6 +239,17 @@ export const EthereumContextProvider = ({ children }: Props) => {
     loadSignerAndAuthFromClient()
   }, [loadSignerAndAuthFromClient])
 
+  useEffect(() => {
+    if (!web3Connection) {
+      return
+    }
+    WEB3.listenToWallet(web3Connection, async ([ walletAddress ]: string[]) => {
+      console.log(`Wallet changed to ${walletAddress}`)
+      clearWeb3Auth()
+      loadSignerAndAuthFromClient()
+    })
+  }, [web3Connection, clearWeb3Auth, loadSignerAndAuthFromClient])
+
   /* connect end */
 
   const value = {
@@ -238,8 +257,6 @@ export const EthereumContextProvider = ({ children }: Props) => {
     signer,
     walletAddress,
     authToken,
-    setSignerAndAuth,
-    clearSignerAndAuth,
     sendTransaction,
     login,
     logout,
@@ -248,11 +265,6 @@ export const EthereumContextProvider = ({ children }: Props) => {
   return (
     <EthereumContext.Provider value={value}>
       {children}
-      {/*!!dialogOpen && (
-        <TransitionDialog open={!!dialogOpen} onClose={() => dialogOpen.canClose && setDialogOpen(null) }>
-          <div className="my-12 flex items-center justify-center w-full">{dialogOpen.message}</div>
-        </TransitionDialog>
-      )*/}
       {pendingTx && (
         <div className={clsx(
           "fixed left-0 bottom-0 w-full p-4 font-din-pro",
@@ -271,7 +283,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
       )}
       {!!connectDialogOpen && (
         <TransitionDialog open={!!connectDialogOpen} onClose={() => setConnectDialogOpen(false)}>
-          {signer === VOID_SIGNER ? (
+          {!web3Connection ? (
             <div className="">
               <div className="text-lg font-bold text-left">Step 1</div>
               <div className="relative w-16 h-16 mx-auto mt-8 mb-4">
