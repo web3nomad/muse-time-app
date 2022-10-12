@@ -19,6 +19,20 @@ import WalletETHImage from '@/assets/images/wallet-eth.svg'
 import ClockImage from '@/assets/images/clock.svg'
 
 const VOID_SIGNER = new ethers.VoidSigner('0x0000000000000000000000000000000000000000')
+const AuthStorage = {
+  authStorageKey(address: string) {
+    return `auth/musetime/${address}`
+  },
+  setToken(address: string, token: string) {
+    localStorage.setItem(this.authStorageKey(address), token)
+  },
+  getToken(address: string): string|null {
+    return localStorage.getItem(this.authStorageKey(address))
+  },
+  clearToken(address: string) {
+    localStorage.removeItem(this.authStorageKey(address))
+  },
+}
 
 const WEB3: {
   getModal: () => Web3Modal,
@@ -168,7 +182,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
       const authTokenPayload: AuthTokenPayload = { value, signature }
       const authToken = btoa(JSON.stringify(authTokenPayload))
       // save context
-      window.localStorage.setItem('auth-token', authToken)
+      AuthStorage.setToken(address, authToken)
       setSignerAndAuth(signer, authToken)
       setConnectDialogOpen(false)
     }
@@ -177,32 +191,30 @@ export const EthereumContextProvider = ({ children }: Props) => {
     })
   }, [signer, setSignerAndAuth])
 
-  const loadSignerAndAuthFromClient = useCallback(() => {
-    // load auth and signer
-    let authToken: string|null = null
-    let payload: AuthTokenPayload|null = null
-    try {
-      authToken = window.localStorage.getItem('auth-token') ?? null
-      payload = JSON.parse(atob(authToken as string))
-      if (payload!.value.expire <= new Date().valueOf()) {
-        throw new Error('token expired')
-      }
-    } catch(err) {
-      authToken = null
-      window.localStorage.removeItem('auth-token')
-    }
+  const loadSignerAndAuthFromClient = useCallback(async () => {
     const web3Modal = WEB3.getModal()
-    if (authToken && payload && web3Modal.cachedProvider) {
-      web3Modal.connect().then(async (instance: any) => {
-        const provider = new ethers.providers.Web3Provider(instance)
-        const signer = provider.getSigner()
-        const walletAddress = ethers.utils.getAddress(await signer.getAddress())
-        if (payload!.value.wallet === walletAddress) {
-          setSignerAndAuth(signer, authToken!)
-        }
-      }).catch((err: any) => {
-        console.log(err)
-      })
+    if (!web3Modal.cachedProvider) {
+      return
+    }
+    let walletAddress: string
+    let signer: ethers.providers.JsonRpcSigner
+    try {
+      const instance = await web3Modal.connect()
+      const provider = new ethers.providers.Web3Provider(instance)
+      signer = provider.getSigner()
+      walletAddress = ethers.utils.getAddress(await signer.getAddress())
+    } catch(err) {
+      return
+    }
+    try {
+      const authToken: string|null = AuthStorage.getToken(walletAddress)
+      const payload: AuthTokenPayload = JSON.parse(atob(authToken??''))
+      if (payload.value.expire <= new Date().valueOf()) {
+        AuthStorage.clearToken(walletAddress)
+      }
+      setSignerAndAuth(signer, authToken!)
+    } catch(err) {
+      return
     }
   }, [setSignerAndAuth])
 
