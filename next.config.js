@@ -5,7 +5,7 @@ const nextConfig = {
   async rewrites() {
     return [{
       source: '/~/:tokenId/:topicSlug/:topicsArId',
-      destination: '/api/time/:tokenId/:topicSlug/:topicsArId',
+      destination: '/api/timetoken/:tokenId/:topicSlug/:topicsArId',
     }]
   }
 }
