@@ -3,6 +3,7 @@ import base64url from 'base64url'
 import type { NextApiRequest, NextApiResponse } from 'next'
 import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } from '@/lib/auth'
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
+import { base64UrlToBytes32 } from '@/lib/utils'
 
 export async function _signControllerParams(types: string[], fields: any[]) {
   // TODO: chainId must be included in signature !!!
@@ -25,13 +26,15 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const recoveredKey = ethers.utils.recoverPublicKey(ethers.utils.arrayify(hash), auth.signature)
   const publicKeyBuffer = Buffer.from(ethers.utils.arrayify(recoveredKey))
   const publicKeyHash = Buffer.from(ethers.utils.arrayify(ethers.utils.sha256(publicKeyBuffer)))
-  const arOwnerAddress = base64url.encode(publicKeyHash)
+  const arOwnerAddressBase64Url = base64url.encode(publicKeyHash)
+  const arOwnerAddress = base64UrlToBytes32(arOwnerAddressBase64Url)
   const signature = await _signControllerParams(
-    ['address', 'address', 'string'],
+    ['address', 'address', 'bytes32'],
     [controllerContract.address, walletAddress, arOwnerAddress],
   )
   res.status(200).json({
     // user: req.user,
+    arOwnerAddressBase64Url: arOwnerAddressBase64Url,
     arOwnerAddress: arOwnerAddress,
     signature: signature,
   })

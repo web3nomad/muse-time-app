@@ -22,7 +22,7 @@ const Balance = ({ topicOwner }: { topicOwner: string }) => {
   }, [sendTransaction, signer])
 
   return (
-    <div className="font-din-alternate text-sm">
+    <div className="font-din-alternate text-sm cursor-pointer" onClick={() => withdraw()}>
       <span>Trove Balance: </span>
       <span>{balance} ETH</span>
     </div>

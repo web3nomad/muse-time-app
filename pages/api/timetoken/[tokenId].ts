@@ -4,6 +4,7 @@ import { queryOnChainItemId, ResourceTypes } from '@/lib/arweave'
 import type { TopicData, ProfileData } from '@/lib/arweave'
 import { controllerContract, nftContract } from '@/lib/ethereum/public'
 import type { TimeTokenData, TimeTroveData } from '@/lib/ethereum/types'
+import { bytes32ToBase64Url } from '@/lib/utils'
 
 // const generateSVG = (topic: TopicData, timeToken: TimeTokenData) => `
 // <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 800">
@@ -72,7 +73,7 @@ async function findProfile(profileArId: string): Promise<ProfileData> {
   return profile
 }
 
-async function findTopic(topicId: string, topicsArId: string): Promise<TopicData|null> {
+async function findTopic(topicsArId: string, topicId: string): Promise<TopicData|null> {
   const url = `https://arseed.web3infra.dev/${topicsArId}`
   try {
     const topics: TopicData[] = await fetch(url).then(res => res.json())
@@ -88,24 +89,25 @@ const handler = async function(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
-  const params = req.query.params as string[]
-  if (params.length !== 3) {
-    res.status(404).end()
-    return
-  }
-  const [tokenId, topicId, topicsArId] = params
-  const [topic, timeToken, tokenOwner]: [
-    TopicData|null, TimeTokenData, string
-  ] = await Promise.all([
-    findTopic(topicId, topicsArId),
-    controllerContract.timeTokenOf(+tokenId),
-    nftContract.ownerOf(+tokenId),
+  const tokenId = +(req.query.tokenId as string)
+  const [timeToken, tokenOwner]: [TimeTokenData, string] = await Promise.all([
+    controllerContract.timeTokenOf(tokenId),
+    nftContract.ownerOf(tokenId),
+  ])
+
+  const profileArId = bytes32ToBase64Url(timeToken.profileArId)
+  const topicsArId = bytes32ToBase64Url(timeToken.topicsArId)
+  const topicId = bytes32ToBase64Url(timeToken.topicId)
+
+  const [topic, profile] = await Promise.all([
+    findTopic(topicsArId, topicId),
+    findProfile(profileArId),
   ])
   if (!topic) {
     res.status(404).end()
     return
   }
-  const profile = await findProfile(timeToken['profileArId'])
+
   const attributes = [
     { trait_type: 'category', value: topic['category'] },
     { trait_type: 'value', value: topic['value'] },

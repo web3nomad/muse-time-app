@@ -23,7 +23,7 @@ type PageProps = {
 
 const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
   const { timeTrove } = useTimeTrove(topicOwner)
-  const { mintTimeToken, isMinting } = useTimeToken(topicOwner, topicId)
+  const { mintTimeToken, isMinting, timeTokenMintedLogs } = useTimeToken(topicOwner, topicId)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
 
@@ -146,7 +146,7 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
         <div className="font-din-pro">{profile.description}</div>
       </section>
       {/* MintedTimeTokens */}
-      <MintedTimeTokens topicOwner={topicOwner} topicId={topicId} />
+      <MintedTimeTokens timeTokenMintedLogs={timeTokenMintedLogs} />
     </main>
   )
 

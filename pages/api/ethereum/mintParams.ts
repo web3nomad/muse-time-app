@@ -6,6 +6,7 @@ import { publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 import { queryOnChainItemId, ResourceTypes } from '@/lib/arweave'
 import type { TopicData, ProfileData } from '@/lib/arweave'
+import { base64UrlToBytes32, bytes32ToBase64Url } from '@/lib/utils'
 import { _signControllerParams } from './createTimeTroveParams'
 
 export type MintParamsResult = {
@@ -53,7 +54,7 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const { topicOwner, topicId } = req.body
 
   const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
-  const { arOwnerAddress } = timeTrove
+  const arOwnerAddress = bytes32ToBase64Url(timeTrove.arOwnerAddress)
 
   const [
     { topicsArId, topic },
@@ -75,18 +76,23 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const valueInWei = ethers.utils.parseUnits(val, unit).toString()
   // toString is necessary, _signControllerParams won't do this automatically
 
+  const profileArIdBytes32 = base64UrlToBytes32(profileArId)
+  const topicsArIdBytes32 = base64UrlToBytes32(topicsArId)
+  const topicIdBytes32 = base64UrlToBytes32(topicId)
+
   const signature = await _signControllerParams(
     ['address', 'address', 'uint256', 'address', 'uint256', 'bytes32', 'bytes32', 'bytes32'],
-    [controllerContract.address, walletAddress, mintKey, topicOwner, valueInWei, profileArId, topicsArId, topicId],
+    [controllerContract.address, walletAddress, mintKey, topicOwner, valueInWei,
+      profileArIdBytes32, topicsArIdBytes32, topicIdBytes32],
   )
 
   const result: MintParamsResult = {
     mintKey,
-    valueInWei,
     topicOwner,
-    topicId,
-    profileArId,
-    topicsArId,
+    valueInWei,
+    profileArId: profileArIdBytes32,
+    topicsArId: topicsArIdBytes32,
+    topicId: topicIdBytes32,
     signature,
   }
 

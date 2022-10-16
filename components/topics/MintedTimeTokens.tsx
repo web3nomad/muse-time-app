@@ -3,10 +3,11 @@ import { ethers } from 'ethers'
 import { useRouter } from 'next/router'
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
-import { useTimeToken } from '@/lib/ethereum/hooks'
+import { TimeTokenMintedLog } from '@/lib/ethereum/hooks'
 import { controllerContract } from '@/lib/ethereum/public'
 import type { TimeTokenData } from '@/lib/ethereum/types'
 import type { TopicData } from '@/lib/arweave'
+import { bytes32ToBase64Url } from '@/lib/utils'
 import ClockImage from '@/assets/images/clock.svg'
 
 function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: number }) {
@@ -14,16 +15,19 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
 
   useEffect(() => {
     controllerContract.timeTokenOf(tokenId).then(async (timeToken: TimeTokenData) => {
-      const { valueInWei, topicOwner, topicId, profileArId, topicsArId, status } = timeToken
+      const { topicOwner, valueInWei, status } = timeToken
+      const profileArId = bytes32ToBase64Url(timeToken.profileArId)
+      const topicsArId = bytes32ToBase64Url(timeToken.topicsArId)
+      const topicId = bytes32ToBase64Url(timeToken.topicId)
       const topics: TopicData[] = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
       const topic = topics.find(({ id }) => id === topicId)
       setToken({
         topic: topic!,
-        valueInWei,
         topicOwner,
-        topicId,
+        valueInWei,
         profileArId,
         topicsArId,
+        topicId,
         status,
       })
     })
@@ -41,12 +45,10 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
   ) : (<>Loading</>)
 }
 
-export default function MintedTimeTokens({ topicOwner, topicId }: {
-  topicOwner: string,
-  topicId?: string,
+export default function MintedTimeTokens({ timeTokenMintedLogs }: {
+  timeTokenMintedLogs: TimeTokenMintedLog[]
 }) {
   const router = useRouter()
-  const { timeTokenMintedLogs } = useTimeToken(topicOwner, topicId)
 
   const goToTokenDetail = useCallback((tokenId: number) => {
     router.push(`/time/${tokenId}`)

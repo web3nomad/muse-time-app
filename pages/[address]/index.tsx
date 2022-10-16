@@ -10,7 +10,7 @@ import SimpleLayout from '@/components/layouts/SimpleLayout'
 import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
 import { useEthereumContext } from '@/lib/ethereum/context'
-import { useTimeTrove } from '@/lib/ethereum/hooks'
+import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 import { ArrowUpRightIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 
@@ -30,6 +30,8 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
     createTimeTrove,
     isCreating,
   } = useTimeTrove(topicOwner)
+
+  const { timeTokenMintedLogs } = useTimeToken(topicOwner)
 
   const Loading = () => (
     <SimpleLayout>
@@ -86,7 +88,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
       <main className="overflow-hidden lg:pl-48">
         <ProfileDetail resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
         <TopicsList resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
-        <MintedTimeTokens topicOwner={topicOwner} />
+        <MintedTimeTokens timeTokenMintedLogs={timeTokenMintedLogs} />
       </main>
     </MainLayout>
   )

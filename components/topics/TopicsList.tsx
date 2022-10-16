@@ -15,7 +15,7 @@ import CoffeeImage from '@/assets/images/coffee.svg'
 
 const makeRandomId = () => {
   const rand = ethers.BigNumber.from(Date.now()).mul(1000000).add(Math.floor(Math.random() * 1000))
-  const bytes32 = ethers.utils.sha256(rand)
+  const bytes32 = ethers.utils.sha256(ethers.utils.arrayify(rand))
   const id = base64url.encode(Buffer.from(ethers.utils.arrayify(bytes32)))
   // console.log(3, '0x' + base64url.toBuffer(id).toString('hex'))  // should be equal to bytes32
   return id
@@ -127,7 +127,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
 
   const goToTopicDetail = useCallback((topic: TopicData) => {
     router.push(`/${resourceOwner}/${topic.id}`)
-  }, [topics, router, resourceOwner])
+  }, [router, resourceOwner])
 
   useEffect(() => fetchTopics(), [fetchTopics])
 

@@ -5,6 +5,7 @@ import { useEthereumContext } from '@/lib/ethereum/context'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 import type { MintParamsResult } from '@/pages/api/ethereum/mintParams'
+import { bytes32ToBase64Url, base64UrlToBytes32 } from '@/lib/utils'
 
 export function useTimeTrove(topicOwner: string): {
   timeTrove: TimeTroveData,
@@ -23,7 +24,11 @@ export function useTimeTrove(topicOwner: string): {
     setIsFetching(true)
     try {
       const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
-      setTimeTrove(timeTrove)
+      const arOwnerAddress = bytes32ToBase64Url(timeTrove.arOwnerAddress)
+      setTimeTrove({
+        arOwnerAddress: arOwnerAddress,
+        balance: timeTrove.balance,
+      })
     } catch(err) {
       setTimeTrove(null)
       console.log(err)
@@ -85,12 +90,16 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
    *  list time token mint
    */
   const listTimeTokenMinted = useCallback(() => {
-    const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicId ?? null, null)
+    const event = controllerContract.filters.TimeTokenMinted(
+      topicOwner,
+      topicId ? base64UrlToBytes32(topicId) : null,
+      null
+    )
     const startBlock = +(process.env.NEXT_PUBLIC_LOG_START_BLOCK ?? '15537393')
     controllerContract.queryFilter(event, startBlock).then(async (logs) => {
       const tokens = logs.map((log: any) => ({
         topicOwner: log.args.topicOwner,
-        topicId: log.args.topicId,
+        topicId: bytes32ToBase64Url(log.args.topicId),
         tokenId: +log.args.tokenId,
         tokenOwner: log.args.tokenOwner,
       }))
@@ -134,7 +143,7 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
       } = (await res.json()) as MintParamsResult
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const method = controllerContract.connect(signer).mintTimeToken(
-        mintKey, valueInWei, topicOwner, topicId, profileArId, topicsArId, signature,
+        mintKey, topicOwner, valueInWei, profileArId, topicsArId, topicId, signature,
         { value: valueInWei }
       )
       await sendTransaction(method)
