@@ -1,3 +1,5 @@
+import { ethers } from 'ethers'
+import base64url from 'base64url'
 import Image from 'next/image'
 import { useEffect, useState, useCallback, useMemo } from 'react'
 import { useRouter } from 'next/router'
@@ -11,17 +13,17 @@ import TopicItem from './TopicItem'
 import CoffeeImage from '@/assets/images/coffee.svg'
 
 
-const makeRandomId = (n: number) => {
-  let uuidN = btoa(crypto.randomUUID()).replace(/[^a-zA-Z0-9]/g,'').substr(0, n)
-  if (uuidN.length < n) {
-    uuidN += Array(n - uuidN.length + 1).join('0')
-  }
-  return uuidN
+const makeRandomId = () => {
+  const rand = ethers.BigNumber.from(Date.now()).mul(1000000).add(Math.floor(Math.random() * 1000))
+  const bytes32 = ethers.utils.sha256(rand)
+  const id = base64url.encode(Buffer.from(ethers.utils.arrayify(bytes32)))
+  // console.log(3, '0x' + base64url.toBuffer(id).toString('hex'))  // should be equal to bytes32
+  return id
 }
 
-function makeEmptyNewTopic(): TopicData {
+function makeEmptyNewTopic(topics: TopicData[]): TopicData {
   return {
-    'id': makeRandomId(40),
+    'id': makeRandomId(),
     'name': '',
     'description': '',
     'category': '',
@@ -107,7 +109,7 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
     if (topics.length >= 4) {
       return
     }
-    const newTopic = makeEmptyNewTopic()
+    const newTopic = makeEmptyNewTopic(topics)
     setEditingTopic(newTopic)
   }, [topics, setEditingTopic])
 
@@ -116,13 +118,16 @@ export default function TopicsList({ resourceOwner, arOwnerAddress }: {
   }, [setEditingTopic])
 
   const handleDeleteTopic = useCallback((topic: TopicData) => {
-    const newTopics = topics.filter(({ id }) => id !== topic.id)
+    const newTopics = topics.filter(({ id }) => id !== topic.id).slice(0,2).map((topic) => ({
+      ...topic,
+      id: makeRandomId()
+    }))
     syncTopics(newTopics)
   }, [topics, syncTopics])
 
   const goToTopicDetail = useCallback((topic: TopicData) => {
     router.push(`/${resourceOwner}/${topic.id}`)
-  }, [router, resourceOwner])
+  }, [topics, router, resourceOwner])
 
   useEffect(() => fetchTopics(), [fetchTopics])
 

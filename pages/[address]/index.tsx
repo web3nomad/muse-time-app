@@ -19,17 +19,17 @@ import Profile404Image from '@/assets/images/profile-404.svg'
 import ClockImage from '@/assets/images/clock.svg'
 
 type PageProps = {
-  addressSlug: string
+  topicOwner: string
 }
 
-const Page: NextPage<PageProps> = ({ addressSlug }) => {
+const Page: NextPage<PageProps> = ({ topicOwner }) => {
   const { walletAddress } = useEthereumContext()
   const {
     timeTrove,
     isFetching,
     createTimeTrove,
     isCreating,
-  } = useTimeTrove(addressSlug)
+  } = useTimeTrove(topicOwner)
 
   const Loading = () => (
     <SimpleLayout>
@@ -81,21 +81,21 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
   const FullDetail = () => (
     <MainLayout>
       <Head>
-        <title>{'MuseTime | ' + addressSlug}</title>
+        <title>{'MuseTime | ' + topicOwner}</title>
       </Head>
       <main className="overflow-hidden lg:pl-48">
-        <ProfileDetail resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
-        <TopicsList resourceOwner={addressSlug} arOwnerAddress={timeTrove.arOwnerAddress} />
-        <MintedTimeTokens addressSlug={addressSlug} />
+        <ProfileDetail resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
+        <TopicsList resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
+        <MintedTimeTokens topicOwner={topicOwner} />
       </main>
     </MainLayout>
   )
 
   if (isFetching) {
     return <Loading />
-  } else if (!timeTrove.arOwnerAddress && addressSlug !== walletAddress) {
+  } else if (!timeTrove.arOwnerAddress && topicOwner !== walletAddress) {
     return <NotFound />
-  } else if (!timeTrove.arOwnerAddress && addressSlug === walletAddress) {
+  } else if (!timeTrove.arOwnerAddress && topicOwner === walletAddress) {
     return <CallToCreateTimeTrove />
   } else {
     return <FullDetail />
@@ -104,13 +104,13 @@ const Page: NextPage<PageProps> = ({ addressSlug }) => {
 
 // export const getServerSideProps = async function ({ query }: GetServerSidePropsContext) {
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  let addressSlug = '0x0000000000000000000000000000000000000000'
+  let topicOwner = '0x0000000000000000000000000000000000000000'
   try {
-    addressSlug = ethers.utils.getAddress(query.address as string)
+    topicOwner = ethers.utils.getAddress(query.address as string)
   } catch(err) {}
   return {
     props: {
-      addressSlug
+      topicOwner
     }
   }
 }

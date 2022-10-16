@@ -27,8 +27,8 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const publicKeyHash = Buffer.from(ethers.utils.arrayify(ethers.utils.sha256(publicKeyBuffer)))
   const arOwnerAddress = base64url.encode(publicKeyHash)
   const signature = await _signControllerParams(
-    ['address', 'string', 'address'],
-    [walletAddress, arOwnerAddress, controllerContract.address],
+    ['address', 'address', 'string'],
+    [controllerContract.address, walletAddress, arOwnerAddress],
   )
   res.status(200).json({
     // user: req.user,

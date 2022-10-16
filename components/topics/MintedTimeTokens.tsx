@@ -14,14 +14,14 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
 
   useEffect(() => {
     controllerContract.timeTokenOf(tokenId).then(async (timeToken: TimeTokenData) => {
-      const { valueInWei, topicOwner, topicSlug, profileArId, topicsArId, status } = timeToken
+      const { valueInWei, topicOwner, topicId, profileArId, topicsArId, status } = timeToken
       const topics: TopicData[] = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
-      const topic = topics.find(({ id }) => id === topicSlug)
+      const topic = topics.find(({ id }) => id === topicId)
       setToken({
         topic: topic!,
         valueInWei,
         topicOwner,
-        topicSlug,
+        topicId,
         profileArId,
         topicsArId,
         status,
@@ -41,12 +41,12 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
   ) : (<>Loading</>)
 }
 
-export default function MintedTimeTokens({ addressSlug, topicSlug }: {
-  addressSlug: string,
-  topicSlug?: string,
+export default function MintedTimeTokens({ topicOwner, topicId }: {
+  topicOwner: string,
+  topicId?: string,
 }) {
   const router = useRouter()
-  const { timeTokenMintedLogs } = useTimeToken(addressSlug, topicSlug)
+  const { timeTokenMintedLogs } = useTimeToken(topicOwner, topicId)
 
   const goToTokenDetail = useCallback((tokenId: number) => {
     router.push(`/time/${tokenId}`)

@@ -72,11 +72,11 @@ async function findProfile(profileArId: string): Promise<ProfileData> {
   return profile
 }
 
-async function findTopic(topicSlug: string, topicsArId: string): Promise<TopicData|null> {
+async function findTopic(topicId: string, topicsArId: string): Promise<TopicData|null> {
   const url = `https://arseed.web3infra.dev/${topicsArId}`
   try {
     const topics: TopicData[] = await fetch(url).then(res => res.json())
-    const topic = topics.find(({ id }) => id === topicSlug)
+    const topic = topics.find(({ id }) => id === topicId)
     return topic ?? null
   } catch(err) {
     console.log(err)
@@ -93,11 +93,11 @@ const handler = async function(
     res.status(404).end()
     return
   }
-  const [tokenId, topicSlug, topicsArId] = params
+  const [tokenId, topicId, topicsArId] = params
   const [topic, timeToken, tokenOwner]: [
     TopicData|null, TimeTokenData, string
   ] = await Promise.all([
-    findTopic(topicSlug, topicsArId),
+    findTopic(topicId, topicsArId),
     controllerContract.timeTokenOf(+tokenId),
     nftContract.ownerOf(+tokenId),
   ])
@@ -113,8 +113,8 @@ const handler = async function(
     { trait_type: 'method', value: topic['method'] },
     { trait_type: 'valueInWei', value: timeToken['valueInWei'].toString() },
     { trait_type: 'topicOwner', value: timeToken['topicOwner'] },
-    { trait_type: 'topicSlug', value: timeToken['topicSlug'] },
-    { trait_type: 'topicsArId', value: timeToken['topicsArId'] },
+    // { trait_type: 'topicId', value: timeToken['topicId'] },
+    // { trait_type: 'topicsArId', value: timeToken['topicsArId'] },
     { trait_type: 'status', value: timeToken['status'] },
   ]
   const metadata: TimeTokenMetadata = {

@@ -4,8 +4,8 @@ const nextConfig = {
   swcMinify: true,
   async rewrites() {
     return [{
-      source: '/~/:tokenId/:topicSlug/:topicsArId',
-      destination: '/api/timetoken/:tokenId/:topicSlug/:topicsArId',
+      source: '/~/:tokenId',
+      destination: '/api/timetoken/:tokenId',
     }]
   }
 }

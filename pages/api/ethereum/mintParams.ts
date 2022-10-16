@@ -12,13 +12,13 @@ export type MintParamsResult = {
   mintKey: string
   valueInWei: string
   topicOwner: string
-  topicSlug: string
+  topicId: string
   profileArId: string
   topicsArId: string
   signature: string
 }
 
-const findTopic = async (arOwnerAddress: string, topicOwner: string, topicSlug: string): Promise<{
+const findTopic = async (arOwnerAddress: string, topicOwner: string, topicId: string): Promise<{
   topicsArId: string,
   topic: TopicData|null,
 }> => {
@@ -29,8 +29,8 @@ const findTopic = async (arOwnerAddress: string, topicOwner: string, topicSlug: 
     resourceOwner: topicOwner,
   })
   // if (!topicsArId) {}
-  const topicsList: TopicData[] = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
-  const topic = topicsList.find(({ id }) => id === topicSlug) ?? null
+  const topics: TopicData[] = await fetch(`https://arseed.web3infra.dev/${topicsArId}`).then(res => res.json())
+  const topic = topics.find(({ id }) => id === topicId) ?? null
   return { topicsArId, topic }
 }
 
@@ -50,7 +50,7 @@ const findProfile = async (arOwnerAddress: string, topicOwner: string): Promise<
 
 const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
   const { walletAddress } = req.user
-  const { topicOwner, topicSlug } = req.body
+  const { topicOwner, topicId } = req.body
 
   const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
   const { arOwnerAddress } = timeTrove
@@ -59,7 +59,7 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
     { topicsArId, topic },
     { profileArId },
   ] = await Promise.all([
-    findTopic(arOwnerAddress, topicOwner, topicSlug),
+    findTopic(arOwnerAddress, topicOwner, topicId),
     findProfile(arOwnerAddress, topicOwner),
   ])
 
@@ -76,15 +76,15 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   // toString is necessary, _signControllerParams won't do this automatically
 
   const signature = await _signControllerParams(
-    ['address', 'uint256', 'uint256', 'address', 'string', 'string', 'string', 'address'],
-    [walletAddress, mintKey, valueInWei, topicOwner, topicSlug, profileArId, topicsArId, controllerContract.address],
+    ['address', 'address', 'uint256', 'address', 'uint256', 'bytes32', 'bytes32', 'bytes32'],
+    [controllerContract.address, walletAddress, mintKey, topicOwner, valueInWei, profileArId, topicsArId, topicId],
   )
 
   const result: MintParamsResult = {
     mintKey,
     valueInWei,
     topicOwner,
-    topicSlug,
+    topicId,
     profileArId,
     topicsArId,
     signature,

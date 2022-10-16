@@ -17,13 +17,13 @@ import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import ClockImage from '@/assets/images/clock.svg'
 
 type PageProps = {
-  addressSlug: string,
-  topicSlug: string,
+  topicOwner: string,
+  topicId: string,
 }
 
-const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
-  const { timeTrove } = useTimeTrove(addressSlug)  // topicOwner === addressSlug
-  const { mintTimeToken, isMinting } = useTimeToken(addressSlug, topicSlug)
+const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
+  const { timeTrove } = useTimeTrove(topicOwner)
+  const { mintTimeToken, isMinting } = useTimeToken(topicOwner, topicId)
   const [topic, setTopic] = useState<TopicData|null>(null)
   const [profile, setProfile] = useState<ProfileData|null>(null)
 
@@ -36,11 +36,11 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
       arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
       resourceType: ResourceTypes.PROFILE,
-      resourceOwner: addressSlug
+      resourceOwner: topicOwner
     }).then(data => {
       setProfile(data)
     })
-  }, [setProfile, addressSlug, timeTrove])
+  }, [setProfile, topicOwner, timeTrove])
 
   const fetchTopic = useCallback(() => {
     if (!timeTrove.arOwnerAddress) {
@@ -51,12 +51,12 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
       arOwnerAddress: timeTrove.arOwnerAddress,
       resourceId: '',
       resourceType: ResourceTypes.TOPICS,
-      resourceOwner: addressSlug
-    }).then((topicsList: TopicData[]) => {
-      const topicItem = topicsList.find(({ id }) => id === topicSlug)
-      setTopic(topicItem ?? null)
+      resourceOwner: topicOwner
+    }).then((topics: TopicData[]) => {
+      const topic = topics.find(({ id }) => id === topicId)
+      setTopic(topic ?? null)
     })
-  }, [setTopic, addressSlug, topicSlug, timeTrove])
+  }, [setTopic, topicOwner, topicId, timeTrove])
 
   useEffect(() => {
     fetchTopic()
@@ -84,7 +84,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
         ></div>
         <div className="text-center font-din-alternate mt-2">{profile.name}</div>
         <div className="text-xs text-neutral-400 font-din-alternate">
-          {addressSlug.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
+          {topicOwner.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
         </div>
         <div className="flex items-center text-sm my-2 font-din-alternate">
           <TwitterIcon className="w-4 h-4" />
@@ -146,7 +146,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
         <div className="font-din-pro">{profile.description}</div>
       </section>
       {/* MintedTimeTokens */}
-      <MintedTimeTokens addressSlug={addressSlug} topicSlug={topicSlug} />
+      <MintedTimeTokens topicOwner={topicOwner} topicId={topicId} />
     </main>
   )
 
@@ -154,7 +154,7 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
     return (
       <MainLayout>
         <Head>
-          <title>{'Topic | ' + topicSlug}</title>
+          <title>{'Topic | ' + topic.name}</title>
         </Head>
         <TopicDetail profile={profile} topic={topic} />
       </MainLayout>
@@ -166,15 +166,15 @@ const Page: NextPage<PageProps> = ({ addressSlug, topicSlug }) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
-  let addressSlug = '0x0000000000000000000000000000000000000000'
+  let topicOwner = '0x0000000000000000000000000000000000000000'
   try {
-    addressSlug = ethers.utils.getAddress(query.address as string)
+    topicOwner = ethers.utils.getAddress(query.address as string)
   } catch(err) {}
-  const topicSlug = query.topic as string
+  const topicId = query.topic as string
   return {
     props: {
-      addressSlug,
-      topicSlug,
+      topicOwner,
+      topicId,
     }
   }
 }

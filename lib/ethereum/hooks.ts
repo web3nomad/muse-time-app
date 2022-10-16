@@ -67,12 +67,12 @@ export function useTimeTrove(topicOwner: string): {
 
 export type TimeTokenMintedLog = {
   topicOwner: string
-  topicSlug: string
+  topicId: string
   tokenId: number
   tokenOwner: string
 }
 
-export function useTimeToken(topicOwner: string, topicSlug?: string): {
+export function useTimeToken(topicOwner: string, topicId?: string): {
   timeTokenMintedLogs: TimeTokenMintedLog[],
   mintTimeToken: (() => void),
   isMinting: boolean,
@@ -85,18 +85,18 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
    *  list time token mint
    */
   const listTimeTokenMinted = useCallback(() => {
-    const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicSlug ?? null, null)
+    const event = controllerContract.filters.TimeTokenMinted(topicOwner, topicId ?? null, null)
     const startBlock = +(process.env.NEXT_PUBLIC_LOG_START_BLOCK ?? '15537393')
     controllerContract.queryFilter(event, startBlock).then(async (logs) => {
       const tokens = logs.map((log: any) => ({
         topicOwner: log.args.topicOwner,
-        topicSlug: log.args.topicSlug,
+        topicId: log.args.topicId,
         tokenId: +log.args.tokenId,
         tokenOwner: log.args.tokenOwner,
       }))
       setTimeTokenMintedLogs(tokens)
     })
-  }, [topicOwner, topicSlug, setTimeTokenMintedLogs])
+  }, [topicOwner, topicId, setTimeTokenMintedLogs])
 
   useEffect(() => {
     listTimeTokenMinted()
@@ -107,8 +107,8 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
    */
   const [isMinting, setIsMinting] = useState<boolean>(false)
   const mintTimeToken = useCallback(() => {
-    if (!topicSlug) {
-      console.log('topicSlug not set')
+    if (!topicId) {
+      console.log('topicId not set')
       return
     }
     setIsMinting(true)
@@ -116,7 +116,7 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
       method: 'POST',
       body: JSON.stringify({
         topicOwner,
-        topicSlug,
+        topicId,
       }),
       headers: {
         'Content-Type': 'application/json',
@@ -127,14 +127,14 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
         mintKey,
         valueInWei,
         topicOwner,
-        topicSlug,
+        topicId,
         profileArId,
         topicsArId,
         signature,
       } = (await res.json()) as MintParamsResult
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const method = controllerContract.connect(signer).mintTimeToken(
-        mintKey, valueInWei, topicOwner, topicSlug, profileArId, topicsArId, signature,
+        mintKey, valueInWei, topicOwner, topicId, profileArId, topicsArId, signature,
         { value: valueInWei }
       )
       await sendTransaction(method)
@@ -143,7 +143,7 @@ export function useTimeToken(topicOwner: string, topicSlug?: string): {
       console.log(err)
       setIsMinting(false)
     })
-  }, [authToken, signer, sendTransaction, topicOwner, topicSlug, setIsMinting])
+  }, [authToken, signer, sendTransaction, topicOwner, topicId, setIsMinting])
 
   return {
     timeTokenMintedLogs: timeTokenMintedLogs,

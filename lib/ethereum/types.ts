@@ -1,11 +1,11 @@
 import { ethers } from 'ethers'
 
 export type TimeTokenData = {
-  valueInWei: ethers.BigNumberish
   topicOwner: string
-  topicSlug: string
+  valueInWei: ethers.BigNumberish
   profileArId: string
   topicsArId: string
+  topicId: string
   status: number
 }
 
