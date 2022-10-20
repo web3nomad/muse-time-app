@@ -12,10 +12,10 @@ import { _signControllerParams } from './createTimeTroveParams'
 export type MintParamsResult = {
   mintKey: string
   valueInWei: string
-  topicOwner: string
-  topicId: string
   profileArId: string
   topicsArId: string
+  topicId: string
+  topicOwner: string
   signature: string
 }
 
@@ -81,18 +81,18 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const topicIdBytes32 = base64UrlToBytes32(topicId)
 
   const signature = await _signControllerParams(
-    ['address', 'address', 'uint256', 'address', 'uint256', 'bytes32', 'bytes32', 'bytes32'],
-    [controllerContract.address, walletAddress, mintKey, topicOwner, valueInWei,
-      profileArIdBytes32, topicsArIdBytes32, topicIdBytes32],
+    ['address', 'address', 'uint256', 'uint256', 'bytes32', 'bytes32', 'bytes32', 'address'],
+    [controllerContract.address, walletAddress, mintKey,
+      valueInWei, profileArIdBytes32, topicsArIdBytes32, topicIdBytes32, topicOwner],
   )
 
   const result: MintParamsResult = {
     mintKey,
-    topicOwner,
     valueInWei,
     profileArId: profileArIdBytes32,
     topicsArId: topicsArIdBytes32,
     topicId: topicIdBytes32,
+    topicOwner,
     signature,
   }
 

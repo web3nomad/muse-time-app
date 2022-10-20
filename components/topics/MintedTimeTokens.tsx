@@ -23,11 +23,11 @@ function TimeTokenItem({ tokenOwner, tokenId }: { tokenOwner: string, tokenId: n
       const topic = topics.find(({ id }) => id === topicId)
       setToken({
         topic: topic!,
-        topicOwner,
         valueInWei,
         profileArId,
         topicsArId,
         topicId,
+        topicOwner,
         status,
       })
     })
