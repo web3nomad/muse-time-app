@@ -3,7 +3,7 @@ import { ethers } from 'ethers'
 import { useCallback, useState, useEffect } from 'react'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { chainId, publicProvider, controllerContract } from '@/lib/ethereum/public'
-import type { TimeTroveData } from '@/lib/ethereum/types'
+import type { TimeTroveData, TimeTokenMintedLog } from '@/lib/ethereum/types'
 import type { MintParamsResult } from '@/pages/api/ethereum/mintParams'
 import { bytes32ToBase64Url, base64UrlToBytes32 } from '@/lib/utils'
 
@@ -70,13 +70,6 @@ export function useTimeTrove(topicOwner: string): {
   }
 }
 
-export type TimeTokenMintedLog = {
-  topicOwner: string
-  topicId: string
-  tokenId: number
-  tokenOwner: string
-}
-
 export function useTimeToken(topicOwner: string, topicId?: string): {
   timeTokenMintedLogs: TimeTokenMintedLog[],
   mintTimeToken: (() => void),
@@ -99,6 +92,8 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
     controllerContract.queryFilter(event, startBlock).then(async (logs) => {
       const tokens = logs.map((log: any) => ({
         topicOwner: log.args.topicOwner,
+        profileArId: bytes32ToBase64Url(log.args.profileArId),
+        topicsArId: bytes32ToBase64Url(log.args.topicsArId),
         topicId: bytes32ToBase64Url(log.args.topicId),
         tokenId: +log.args.tokenId,
         tokenOwner: log.args.tokenOwner,

@@ -2,9 +2,6 @@ import { ethers } from 'ethers'
 
 export type TimeTokenData = {
   valueInWei: ethers.BigNumberish
-  profileArId: string
-  topicsArId: string
-  topicId: string
   topicOwner: string
   status: number
 }
@@ -12,4 +9,13 @@ export type TimeTokenData = {
 export type TimeTroveData = {
   arOwnerAddress: string
   balance: ethers.BigNumberish
+}
+
+export type TimeTokenMintedLog = {
+  topicOwner: string
+  profileArId: string
+  topicsArId: string
+  topicId: string
+  tokenId: number
+  tokenOwner: string
 }

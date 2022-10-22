@@ -85,23 +85,35 @@ async function findTopic(topicsArId: string, topicId: string): Promise<TopicData
   }
 }
 
+async function getTimeTokenMintedLog(tokenId: number): TimeTokenMintedLog {
+  const event = controllerContract.filters.TimeTokenMinted(null, null, tokenId)
+  const startBlock = +(process.env.NEXT_PUBLIC_LOG_START_BLOCK ?? '15537393')
+  const logsData = await controllerContract.queryFilter(event, startBlock)
+  const logs: TimeTokenMintedLog[] = logsData.map((log: any) => ({
+    topicOwner: log.args.topicOwner,
+    profileArId: bytes32ToBase64Url(log.args.profileArId),
+    topicsArId: bytes32ToBase64Url(log.args.topicsArId),
+    topicId: bytes32ToBase64Url(log.args.topicId),
+    tokenId: +log.args.tokenId,
+    tokenOwner: log.args.tokenOwner,
+  }))
+  return logs[0]
+}
+
 const handler = async function(
   req: NextApiRequest,
   res: NextApiResponse
 ) {
   const tokenId = +(req.query.tokenId as string)
-  const [timeToken, tokenOwner]: [TimeTokenData, string] = await Promise.all([
+  const [timeToken, tokenOwner, log]: [TimeTokenData, string, TimeTokenMintedLog] = await Promise.all([
     controllerContract.timeTokenOf(tokenId),
     nftContract.ownerOf(tokenId),
+    getTimeTokenMintedLog(tokenId),
   ])
 
-  const profileArId = bytes32ToBase64Url(timeToken.profileArId)
-  const topicsArId = bytes32ToBase64Url(timeToken.topicsArId)
-  const topicId = bytes32ToBase64Url(timeToken.topicId)
-
   const [topic, profile] = await Promise.all([
-    findTopic(topicsArId, topicId),
-    findProfile(profileArId),
+    findTopic(log.topicsArId, log.topicId),
+    findProfile(log.profileArId),
   ])
   if (!topic) {
     res.status(404).end()
@@ -115,8 +127,8 @@ const handler = async function(
     { trait_type: 'method', value: topic['method'] },
     { trait_type: 'valueInWei', value: timeToken['valueInWei'].toString() },
     { trait_type: 'topicOwner', value: timeToken['topicOwner'] },
-    // { trait_type: 'topicId', value: timeToken['topicId'] },
-    // { trait_type: 'topicsArId', value: timeToken['topicsArId'] },
+    // { trait_type: 'topicId', value: log['topicId'] },
+    // { trait_type: 'topicsArId', value: log['topicsArId'] },
     { trait_type: 'status', value: timeToken['status'] },
   ]
   const metadata: TimeTokenMetadata = {
