@@ -22,6 +22,7 @@ export async function _signControllerParams(types: string[], fields: any[]) {
 
 const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
   const { auth, walletAddress } = req.user
+  const topicOwner = walletAddress;
   const hash = ethers.utils._TypedDataEncoder.hash(EIP_712_AUTH.domain, EIP_712_AUTH.types, auth.value)
   const recoveredKey = ethers.utils.recoverPublicKey(ethers.utils.arrayify(hash), auth.signature)
   const publicKeyBuffer = Buffer.from(ethers.utils.arrayify(recoveredKey))
@@ -30,14 +31,32 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const arOwnerAddress = base64UrlToBytes32(arOwnerAddressBase64Url)
   const signature = await _signControllerParams(
     ['address', 'address', 'bytes32'],
-    [controllerContract.address, walletAddress, arOwnerAddress],
+    [controllerContract.address, topicOwner, arOwnerAddress],
   )
   res.status(200).json({
     // user: req.user,
     arOwnerAddressBase64Url: arOwnerAddressBase64Url,
     arOwnerAddress: arOwnerAddress,
+    topicOwner: topicOwner,
     signature: signature,
   })
 }
 
 export default requireAuth(handler)
+
+/*
+const promises = [
+  ['0x00fcadfb3dd90d5482d30edb0d5f38aefb9bad25', 'qhZXh9eFN1SBHn8op6jxDwGih2NbK7dUuRy73Be738w'],
+  ['0x7fff9ec0a88cef1f9d863e587ab5abaa9367c6ee', 'ITDqkBDN6oyzR7mhOa3CCTCjuS_u2JzGZHStK7wL900'],
+  ['0x4a3e40b76a946495a6255b521240487e71f73d2c', 'oUkd3JZJKT5nDVLMeJeSCCPexEzlz9i3kK86a_yRi5E'],
+].map(async ([topicOwner, arOwnerAddressBase64Url]) => {
+  const arOwnerAddress = base64UrlToBytes32(arOwnerAddressBase64Url)
+  const signature = await _signControllerParams(
+    ['address', 'address', 'bytes32'],
+    [controllerContract.address, topicOwner, arOwnerAddress],
+  )
+  return { topicOwner, arOwnerAddress, signature }
+})
+const results = await Promise.all(promises)
+res.status(200).json(results)
+*/

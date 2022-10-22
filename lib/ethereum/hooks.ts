@@ -51,8 +51,12 @@ export function useTimeTrove(topicOwner: string): {
         'Authorization': `Token ${authToken}`,
       },
     }).then(async (res) => {
-      const { arOwnerAddress, signature } = (await res.json()) as { arOwnerAddress: string, signature: string }
-      const method = controllerContract.connect(signer).createTimeTrove(arOwnerAddress, signature)
+      const {
+        arOwnerAddress, topicOwner, signature
+      } = (await res.json()) as { arOwnerAddress: string, topicOwner: string, signature: string }
+      const params = [{ arOwnerAddress, topicOwner, signature }]
+      // const params = await res.json()
+      const method = controllerContract.connect(signer).createTimeTroves(params)
       await sendTransaction(method)
       setIsCreating(false)
       fetchTimeTrove()
