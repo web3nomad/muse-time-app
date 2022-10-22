@@ -4,7 +4,7 @@ import { useRouter } from 'next/router'
 import { useEffect, useState, useCallback } from 'react'
 import Image from 'next/image'
 import { controllerContract } from '@/lib/ethereum/public'
-import type { TimeTroveData, TimeTokenMintedLog } from '@/lib/ethereum/types'
+import type { TimeTokenData, TimeTokenMintedLog } from '@/lib/ethereum/types'
 import type { TopicData } from '@/lib/arweave'
 import { bytes32ToBase64Url } from '@/lib/utils'
 import ClockImage from '@/assets/images/clock.svg'
@@ -25,7 +25,7 @@ function TimeTokenItem({ timeTokenMintedLog }: { timeTokenMintedLog: TimeTokenMi
         status,
       })
     })
-  }, [tokenId])
+  }, [tokenId, topicId, topicsArId])
 
   return token ? (
     <div className="font-din-alternate">

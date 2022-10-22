@@ -10,7 +10,7 @@ import { base64UrlToBytes32, bytes32ToBase64Url } from '@/lib/utils'
 import { _signControllerParams } from './createTimeTroveParams'
 
 export type MintParamsResult = {
-  mintKey: string
+  expired: number
   valueInWei: string
   profileArId: string
   topicsArId: string
@@ -59,9 +59,11 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const [
     { topicsArId, topic },
     { profileArId },
+    blockNumber,
   ] = await Promise.all([
     findTopic(arOwnerAddress, topicOwner, topicId),
     findProfile(arOwnerAddress, topicOwner),
+    publicProvider.getBlockNumber(),
   ])
 
   if (!topic) {
@@ -69,9 +71,10 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
     return
   }
 
-  const mintKey = ethers.BigNumber.from(Date.now())
-    .mul(1000000).add(Math.floor(Math.random() * 1000))
-    .toString()
+  // const mintKey = ethers.BigNumber.from(Date.now())
+  //   .mul(1000000).add(Math.floor(Math.random() * 1000))
+  //   .toString()
+  const expired = blockNumber + 10000  // ~ 1 day
   const [val, unit] = topic['value'].split(' ')
   const valueInWei = ethers.utils.parseUnits(val, unit).toString()
   // toString is necessary, _signControllerParams won't do this automatically
@@ -81,13 +84,14 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   const topicIdBytes32 = base64UrlToBytes32(topicId)
 
   const signature = await _signControllerParams(
-    ['address', 'address', 'uint256', 'uint256', 'bytes32', 'bytes32', 'bytes32', 'address'],
-    [controllerContract.address, walletAddress, mintKey,
+    ['address', 'address', 'uint256',
+      'uint256', 'bytes32', 'bytes32', 'bytes32', 'address'],
+    [controllerContract.address, walletAddress, expired,
       valueInWei, profileArIdBytes32, topicsArIdBytes32, topicIdBytes32, topicOwner],
   )
 
   const result: MintParamsResult = {
-    mintKey,
+    expired,
     valueInWei,
     profileArId: profileArIdBytes32,
     topicsArId: topicsArIdBytes32,

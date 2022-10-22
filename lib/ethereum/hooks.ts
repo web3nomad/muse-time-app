@@ -128,7 +128,7 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
       },
     }).then(async (res) => {
       const {
-        mintKey,
+        expired,
         valueInWei,
         profileArId,
         topicsArId,
@@ -138,7 +138,7 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
       } = (await res.json()) as MintParamsResult
       // const _valueInWei = ethers.BigNumber.from(valueInWei)
       const method = controllerContract.connect(signer).mintTimeToken(
-        mintKey, valueInWei, profileArId, topicsArId, topicId, topicOwner, signature,
+        expired, valueInWei, profileArId, topicsArId, topicId, topicOwner, signature,
         { value: valueInWei }
       )
       await sendTransaction(method)
