@@ -37,16 +37,22 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
   const { walletAddress, signer, sendTransaction } = useEthereumContext()
 
   const fetcher = (method: string, tokenId: number) => nftContract[method](tokenId)
-  const { data: tokenURI } = useSWR<string>(['tokenURI', tokenId], fetcher, { revalidateOnFocus: false })
   const { data: tokenOwner } = useSWR<string>(['ownerOf', tokenId], fetcher, { revalidateOnFocus: false })
 
-  const metadataFetcher = (tokenURI: string) => {
-    const url = tokenURI.replace(/^https:\/\/musetime\.xyz/, '')
-    return fetch(url).then(res => res.json())
-  }
-  const { data: tokenMetadata } = useSWR<TimeTokenMetadata>(tokenURI, metadataFetcher, {
+  // we know how tokenURI is calculated, it's not necessary to get it from contract
+  const jsonFetcher = (url: string) => fetch(url).then(res => res.json())
+  const { data: tokenMetadata } = useSWR<TimeTokenMetadata>(`/api/timetoken/${tokenId}`, jsonFetcher, {
     revalidateOnFocus: false,
   })
+
+  // const { data: tokenURI } = useSWR<string>(['tokenURI', tokenId], fetcher, { revalidateOnFocus: false })
+  // const metadataFetcher = (tokenURI: string) => {
+  //   const url = tokenURI.replace(/^https:\/\/musetime\.xyz/, '')
+  //   return fetch(url).then(res => res.json())
+  // }
+  // const { data: tokenMetadata } = useSWR<TimeTokenMetadata>(tokenURI, metadataFetcher, {
+  //   revalidateOnFocus: false,
+  // })
 
   const { topicOwner, status } = useMemo(() => {
     const map: any = {}
@@ -126,8 +132,3 @@ export const getServerSideProps: GetServerSideProps = async function ({ query })
 }
 
 export default Page
-
-/*
-<div>tokenURI: {tokenURI}</div>
-{tokenMetadata.attributes.map(({trait_type, value}) => <div key={trait_type}>{trait_type}: {value}</div>)}
-*/

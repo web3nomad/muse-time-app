@@ -3,7 +3,7 @@ import type { NextApiRequest, NextApiResponse } from 'next'
 import { queryOnChainItemId, ResourceTypes } from '@/lib/arweave'
 import type { TopicData, ProfileData } from '@/lib/arweave'
 import { controllerContract, nftContract } from '@/lib/ethereum/public'
-import type { TimeTokenData, TimeTroveData } from '@/lib/ethereum/types'
+import type { TimeTokenData, TimeTokenMintedLog } from '@/lib/ethereum/types'
 import { bytes32ToBase64Url } from '@/lib/utils'
 
 // const generateSVG = (topic: TopicData, timeToken: TimeTokenData) => `
@@ -85,7 +85,7 @@ async function findTopic(topicsArId: string, topicId: string): Promise<TopicData
   }
 }
 
-async function getTimeTokenMintedLog(tokenId: number): TimeTokenMintedLog {
+async function getTimeTokenMintedLog(tokenId: number): Promise<TimeTokenMintedLog> {
   const event = controllerContract.filters.TimeTokenMinted(null, null, tokenId)
   const startBlock = +(process.env.NEXT_PUBLIC_LOG_START_BLOCK ?? '15537393')
   const logsData = await controllerContract.queryFilter(event, startBlock)
