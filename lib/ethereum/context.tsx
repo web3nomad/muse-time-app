@@ -1,6 +1,7 @@
 import clsx from 'clsx'
 import { ethers } from 'ethers'
-import Web3Modal from 'web3modal'
+import WalletConnectProvider from '@walletconnect/web3-provider';
+import Web3Modal, { IProviderOptions } from "web3modal";
 import Image from 'next/image'
 import type { TransactionResponse } from '@ethersproject/abstract-provider'
 import React, {
@@ -13,7 +14,7 @@ import React, {
   ReactChild,
 } from 'react'
 import { SignatureMessageData, AuthTokenPayload, EIP_712_AUTH } from '@/lib/auth'
-import { chainId } from '@/lib/ethereum/public'
+import { chainId, publicProvider } from '@/lib/ethereum/public'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import TransitionDialog from '@/components/TransitionDialog'
 import WalletETHImage from '@/assets/images/wallet-eth.svg'
@@ -45,11 +46,11 @@ const AuthStorage = {
 }
 
 const WEB3: {
-  listenToWallet: (web3Connection: any, callback: (addresses: string[]) => void) => void,
-  getModal: () => Web3Modal,
-  providerOptions: any,
-  _web3Connection?: any,
-  _web3ConnectionCallback?: any,
+  listenToWallet: (web3Connection: any, callback: (addresses: string[]) => void) => void
+  getModal: () => Web3Modal
+  providerOptions: IProviderOptions
+  _web3Connection?: any
+  _web3ConnectionCallback?: any
   _modal?: Web3Modal
 } = {
   listenToWallet: function(web3Connection, callback) {
@@ -70,7 +71,16 @@ const WEB3: {
     }
     return this._modal
   },
-  providerOptions: {},
+  providerOptions: {
+    walletconnect: {
+      package: WalletConnectProvider,
+      options: {
+        rpc: {
+          [chainId]: [publicProvider.connection.url]
+        },
+      },
+    },
+  },
 }
 
 type EthereumProviderState = {
@@ -229,7 +239,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
   const login = useCallback(() => {
     setConnectDialogOpen(true)
     // connect()  // do not auto trigger wallet popup
-  }, [setConnectDialogOpen, connect])
+  }, [setConnectDialogOpen])
 
   const logout = useCallback(() => {
     disconnect()
