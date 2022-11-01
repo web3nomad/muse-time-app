@@ -77,25 +77,28 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
 
   const Avatar = ({ profile }: { profile: ProfileData }) => {
     return (
-      <div className="absolute top-0 -left-48 w-32 hidden lg:flex flex-col items-center justify-start">
+      <div className={clsx(
+        "lg:absolute lg:top-0 lg:-left-48 lg:w-32 mb-12",
+        "flex lg:flex-col justify-start items-center",
+      )}>
         <div
           className="w-32 h-32 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
           style={profile.avatar ? {backgroundImage:`url(${profile.avatar})`} : {}}
         ></div>
-        <div className="text-center font-din-alternate mt-2">{profile.name}</div>
-        <div className="text-xs text-neutral-400 font-din-alternate">
-          {topicOwner.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
-        </div>
-        <div className="flex items-center text-sm my-2 font-din-alternate">
-          <TwitterIcon className="w-4 h-4" />
-          {profile['com.twitter'] && <a
-            href={`https://twitter.com/${profile['com.twitter']}`}
-            target="_blank" rel="noreferrer" className="ml-1"
-          >{profile['com.twitter']}</a>}
-        </div>
-        <div className="w-full my-2">
+        <div className="ml-6 lg:ml-0 flex flex-col justify-start items-start lg:items-center">
+          <div className="font-din-alternate mt-2">{profile.name}</div>
+          <div className="text-xs text-neutral-400 font-din-alternate">
+            {topicOwner.toLowerCase().replace(/0x(\w{4})\w+(\w{4})/, '0x$1...$2')}
+          </div>
+          <div className="flex items-center text-sm my-2 font-din-alternate">
+            <TwitterIcon className="w-4 h-4" />
+            {profile['com.twitter'] && <a
+              href={`https://twitter.com/${profile['com.twitter']}`}
+              target="_blank" rel="noreferrer" className="ml-1"
+            >{profile['com.twitter']}</a>}
+          </div>
           <button
-            className="p-2 text-sm w-full rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90 flex items-center justify-center"
+            className="my-2 py-2 px-8 text-sm w-full rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90 flex items-center justify-center"
             disabled={isMinting} onClick={() => mintTimeToken()}
           >
             <span>Mint Now</span>
@@ -111,10 +114,10 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
       <section className="relative">
         <Avatar profile={profile} />
         <div className="relative mb-2">
-          <div
+          {/*<div
             className="lg:hidden w-32 h-32 my-4 bg-neutral-100 bg-no-repeat bg-center bg-contain rounded-full"
             style={profile.avatar ? {backgroundImage: `url(${profile.avatar})`} : {}}
-          ></div>
+          ></div>*/}
           <div className="text-5xl font-bold mb-6">{topic.name}</div>
           {/*<div className="text-xs sm:text-sm text-neutral-400 my-2">{resourceOwner}</div>*/}
           <div className="flex items-center justify-start my-3 font-din-alternate">
