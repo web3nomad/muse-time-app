@@ -228,7 +228,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
 
   const login = useCallback(() => {
     setConnectDialogOpen(true)
-    connect()  // auto trigger wallet popup
+    // connect()  // do not auto trigger wallet popup
   }, [setConnectDialogOpen, connect])
 
   const logout = useCallback(() => {
