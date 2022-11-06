@@ -1,20 +1,22 @@
 import clsx from 'clsx'
 import type { GetServerSidePropsContext, GetServerSideProps, NextPage } from 'next'
 import { useMemo, useCallback } from 'react'
-import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ethers } from 'ethers'
+
+import HeadMeta from '@/components/layouts/HeadMeta'
 import MainLayout from '@/components/layouts/MainLayout'
 import SimpleLayout from '@/components/layouts/SimpleLayout'
 import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
+import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
+
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
 import type { TimeTroveData } from '@/lib/ethereum/types'
-import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
-import { ArrowUpRightIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 
+import { ArrowUpRightIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 import Profile404CreateImage from '@/assets/images/profile-404-create.svg'
 import Profile404Image from '@/assets/images/profile-404.svg'
 import ClockImage from '@/assets/images/clock.svg'
@@ -36,6 +38,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
 
   const Loading = () => (
     <SimpleLayout>
+      <HeadMeta title={'MuseTime | ' + topicOwner} />
       <main className="flex-1 w-full flex flex-col items-center justify-center pt-2 pb-16">
         <div className="relative w-16 h-16 mb-4">
           <Image layout="fill" src={ClockImage.src} alt="" />
@@ -83,9 +86,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
 
   const FullDetail = ({ timeTrove }: { timeTrove: TimeTroveData }) => (
     <MainLayout>
-      <Head>
-        <title>{'MuseTime | ' + topicOwner}</title>
-      </Head>
+      <HeadMeta title={'MuseTime | ' + topicOwner} />
       <main className="overflow-hidden lg:pl-48">
         <ProfileDetail resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
         <TopicsList resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
