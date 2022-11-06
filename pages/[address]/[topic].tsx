@@ -28,7 +28,7 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
   const [profile, setProfile] = useState<ProfileData|null>(null)
 
   const fetchProfile = useCallback(() => {
-    if (!timeTrove.arOwnerAddress) {
+    if (!timeTrove?.arOwnerAddress) {
       setProfile(null)
       return
     }
@@ -43,7 +43,7 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
   }, [setProfile, topicOwner, timeTrove])
 
   const fetchTopic = useCallback(() => {
-    if (!timeTrove.arOwnerAddress) {
+    if (!timeTrove?.arOwnerAddress) {
       setTopic(null)
       return
     }

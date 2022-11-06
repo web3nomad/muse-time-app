@@ -11,6 +11,7 @@ import ProfileDetail from '@/components/profile/ProfileDetail'
 import TopicsList from '@/components/topics/TopicsList'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
+import type { TimeTroveData } from '@/lib/ethereum/types'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 import { ArrowUpRightIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 
@@ -26,7 +27,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
   const { walletAddress } = useEthereumContext()
   const {
     timeTrove,
-    isFetching,
+    // isFetching,
     createTimeTrove,
     isCreating,
   } = useTimeTrove(topicOwner)
@@ -80,7 +81,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
     </SimpleLayout>
   )
 
-  const FullDetail = () => (
+  const FullDetail = ({ timeTrove }: { timeTrove: TimeTroveData }) => (
     <MainLayout>
       <Head>
         <title>{'MuseTime | ' + topicOwner}</title>
@@ -93,14 +94,14 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
     </MainLayout>
   )
 
-  if (isFetching) {
+  if (!timeTrove) {
     return <Loading />
   } else if (!timeTrove.arOwnerAddress && topicOwner !== walletAddress) {
     return <NotFound />
   } else if (!timeTrove.arOwnerAddress && topicOwner === walletAddress) {
     return <CallToCreateTimeTrove />
   } else {
-    return <FullDetail />
+    return <FullDetail timeTrove={timeTrove} />
   }
 }
 

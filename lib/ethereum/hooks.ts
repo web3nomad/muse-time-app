@@ -8,7 +8,7 @@ import type { MintParamsResult } from '@/pages/api/ethereum/mintParams'
 import { bytes32ToBase64Url, base64UrlToBytes32 } from '@/lib/utils'
 
 export function useTimeTrove(topicOwner: string): {
-  timeTrove: TimeTroveData,
+  timeTrove: TimeTroveData|null,
   isFetching: boolean,
   createTimeTrove: (() => void),
   isCreating: boolean,
@@ -67,7 +67,7 @@ export function useTimeTrove(topicOwner: string): {
   }, [authToken, signer, sendTransaction, setIsCreating, fetchTimeTrove])
 
   return {
-    timeTrove: timeTrove ?? { arOwnerAddress: '', balance: 0 },
+    timeTrove: timeTrove,
     isFetching: isFetching,
     createTimeTrove: createTimeTrove,
     isCreating: isCreating,

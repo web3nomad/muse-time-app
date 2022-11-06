@@ -13,7 +13,7 @@ const Balance = ({ topicOwner }: { topicOwner: string }) => {
   const { sendTransaction, signer } = useEthereumContext()
   const { timeTrove, isFetching } = useTimeTrove(topicOwner)
   const balance = useMemo(() => {
-    return ethers.utils.formatEther(timeTrove.balance)
+    return ethers.utils.formatEther(timeTrove?.balance || 0)
   }, [timeTrove])
 
   const withdraw = useCallback(async () => {
