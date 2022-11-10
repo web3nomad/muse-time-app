@@ -15,6 +15,7 @@ import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
 import { useEthereumContext } from '@/lib/ethereum/context'
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
 import type { TimeTroveData } from '@/lib/ethereum/types'
+import { publicProvider } from '@/lib/ethereum/public'
 
 import { ArrowUpRightIcon, ArrowPathIcon } from '@heroicons/react/20/solid'
 import Profile404CreateImage from '@/assets/images/profile-404-create.svg'
@@ -23,9 +24,10 @@ import ClockImage from '@/assets/images/clock.svg'
 
 type PageProps = {
   topicOwner: string
+  addressSlug: string
 }
 
-const Page: NextPage<PageProps> = ({ topicOwner }) => {
+const Page: NextPage<PageProps> = ({ topicOwner, addressSlug }) => {
   const { walletAddress } = useEthereumContext()
   const {
     timeTrove,
@@ -38,7 +40,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
 
   const Loading = () => (
     <SimpleLayout>
-      <HeadMeta title={'MuseTime | ' + topicOwner} />
+      <HeadMeta title={'MuseTime | ' + addressSlug} />
       <main className="flex-1 w-full flex flex-col items-center justify-center pt-2 pb-16">
         <div className="relative w-16 h-16 mb-4">
           <Image layout="fill" src={ClockImage.src} alt="" />
@@ -86,7 +88,7 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
 
   const FullDetail = ({ timeTrove }: { timeTrove: TimeTroveData }) => (
     <MainLayout>
-      <HeadMeta title={'MuseTime | ' + topicOwner} />
+      <HeadMeta title={'MuseTime | ' + addressSlug} />
       <main className="overflow-hidden lg:pl-48">
         <ProfileDetail resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
         <TopicsList resourceOwner={topicOwner} arOwnerAddress={timeTrove.arOwnerAddress} />
@@ -108,13 +110,19 @@ const Page: NextPage<PageProps> = ({ topicOwner }) => {
 
 // export const getServerSideProps = async function ({ query }: GetServerSidePropsContext) {
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
+  const addressSlug = query.address as string
   let topicOwner = '0x0000000000000000000000000000000000000000'
   try {
-    topicOwner = ethers.utils.getAddress(query.address as string)
+    if (/\.eth$/.test(addressSlug)) {
+      topicOwner = ethers.utils.getAddress(await publicProvider.resolveName(addressSlug) as string)
+    } else {
+      topicOwner = ethers.utils.getAddress(addressSlug)
+    }
   } catch(err) {}
   return {
     props: {
-      topicOwner
+      addressSlug,
+      topicOwner,
     }
   }
 }

@@ -5,23 +5,29 @@ import Head from 'next/head'
 import Image from 'next/image'
 import Link from 'next/link'
 import { ethers } from 'ethers'
-import type { TopicData, ProfileData } from '@/lib/arweave'
+
 import { useTimeToken, useTimeTrove } from '@/lib/ethereum/hooks'
+import { publicProvider } from '@/lib/ethereum/public'
+
+import type { TopicData, ProfileData } from '@/lib/arweave'
 import { ResourceTypes, getArweaveData } from '@/lib/arweave'
-import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
+
 import MainLayout from '@/components/layouts/MainLayout'
 import SimpleLayout from '@/components/layouts/SimpleLayout'
 import { formatEthersValue } from '@/components/topics/TopicItem'
 import MintedTimeTokens from '@/components/topics/MintedTimeTokens'
+
+import { CoffeeIcon, CalendarIcon, TwitterIcon } from '@/components/icons'
 import { ArrowPathIcon } from '@heroicons/react/20/solid'
 import ClockImage from '@/assets/images/clock.svg'
 
 type PageProps = {
-  topicOwner: string,
-  topicId: string,
+  addressSlug: string
+  topicOwner: string
+  topicId: string
 }
 
-const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
+const Page: NextPage<PageProps> = ({ addressSlug, topicOwner, topicId }) => {
   const { timeTrove } = useTimeTrove(topicOwner)
   const { mintTimeToken, isMinting, timeTokenMintedLogs } = useTimeToken(topicOwner, topicId)
   const [topic, setTopic] = useState<TopicData|null>(null)
@@ -169,13 +175,19 @@ const Page: NextPage<PageProps> = ({ topicOwner, topicId }) => {
 }
 
 export const getServerSideProps: GetServerSideProps = async function ({ query }) {
+  const addressSlug = query.address as string
   let topicOwner = '0x0000000000000000000000000000000000000000'
   try {
-    topicOwner = ethers.utils.getAddress(query.address as string)
+    if (/\.eth$/.test(addressSlug)) {
+      topicOwner = ethers.utils.getAddress(await publicProvider.resolveName(addressSlug) as string)
+    } else {
+      topicOwner = ethers.utils.getAddress(addressSlug)
+    }
   } catch(err) {}
   const topicId = query.topic as string
   return {
     props: {
+      addressSlug,
       topicOwner,
       topicId,
     }
