@@ -74,7 +74,12 @@ const Page: NextPage<PageProps> = ({ topicOwner, addressSlug }) => {
           <Image layout="fill" src={Profile404CreateImage.src} alt="" />
         </div>
         <div className="text-3xl mb-4">Hi!</div>
-        <div className="font-din-pro mb-6">Create your Time Trove now!</div>
+        <div className="font-din-pro mb-1">Create your Time Trove now!</div>
+        <div className="font-din-pro mb-6 px-2 text-neutral-500 text-sm text-justify max-w-md">
+          It costs a small amount of gas to create your time trove on Ethereum.
+          After that, you can update your profile and Time NFT topics
+          as many times as you want without any gas (Thanks to Arweave ∞).
+        </div>
         <button
           className="rounded px-6 py-2 text-white bg-orange-tangelo hover:bg-orange-tangelo/90 flex items-center justify-center"
           disabled={isCreating} onClick={() => createTimeTrove()}
@@ -82,6 +87,13 @@ const Page: NextPage<PageProps> = ({ topicOwner, addressSlug }) => {
           <span>Create Time Trove</span>
           {isCreating && <ArrowPathIcon className="h-5 w-5 animate-spin ml-2" />}
         </button>
+        <div className="font-din-pro text-center text-neutral-500 text-sm">
+          <div className="mt-6 mb-3">- or -</div>
+          <div className="my-1">checkout a random example</div>
+          ☞ <Link href="/0x4a3e40B76a946495a6255B521240487e71f73d2C">
+            <a className="underline">musetime.xyz/web3nomad.eth</a>
+          </Link>
+        </div>
       </main>
     </SimpleLayout>
   )
