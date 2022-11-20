@@ -13,7 +13,6 @@ enum TimeTokenStatus {
   PENDING = 0,
   REJECTED = 1,
   CONFIRMED = 2,
-  FULFILLED = 3,
 }
 
 type AttributeData = {
@@ -62,38 +61,56 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
   }, [tokenMetadata])
 
   const [inAction, setInAction] = useState<boolean>(false)
-  const action = useCallback(async (methodName: string) => {
+
+  const setConfirmed = useCallback(async () => {
     setInAction(true)
-    const method = controllerContract.connect(signer)[methodName](tokenId)
+    const method = controllerContract.connect(signer).setConfirmed([tokenId], true)
     await sendTransaction(method)
     setInAction(false)
+    global.location.reload()
   }, [signer, sendTransaction, setInAction, tokenId])
 
-  const TokenActions = ({ tokenMetadata }: { tokenMetadata: TimeTokenMetadata }) => (
-    <div className={clsx(
-      "flex items-center justify-between mx-auto mt-4",
-      "fixed left-0 bottom-0 w-full sm:relative sm:left-auto sm:bottom-auto sm:w-[450px]"
-    )}>
-      {tokenOwner === walletAddress && +status === TimeTokenStatus.CONFIRMED && (
-        <button className={clsx(
-          "text-sm rounded text-white bg-neutral-900 hover:bg-neutral-900/90",
-          "p-2 flex-1 m-4"
-        )} disabled={inAction} onClick={() => action('setFulfilled')}>Fulfill</button>
-      )}
-      {topicOwner === walletAddress && +status === TimeTokenStatus.PENDING && (
-        <button className={clsx(
-          "text-sm rounded text-neutral-900 bg-white hover:text-neutral-900/80",
-          "p-2 flex-1 m-4"
-        )} disabled={inAction} onClick={() => action('setRejected')}>Reject</button>
-      )}
-      {topicOwner === walletAddress && +status === TimeTokenStatus.PENDING && (
-        <button className={clsx(
-          "text-sm rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90",
-          "p-2 flex-1 m-4"
-        )} disabled={inAction} onClick={() => action('setConfirmed')}>Accept</button>
-      )}
-    </div>
-  )
+  const setRejected = useCallback(async () => {
+    setInAction(true)
+    const method = controllerContract.connect(signer).setRejected([tokenId])
+    await sendTransaction(method)
+    setInAction(false)
+    global.location.reload()
+  }, [signer, sendTransaction, setInAction, tokenId])
+
+  const TokenActions = ({ tokenMetadata }: { tokenMetadata: TimeTokenMetadata }) => {
+    // TODO improve UX and text
+    if (+status === TimeTokenStatus.PENDING) {
+      if (topicOwner === walletAddress) {
+        return <>
+          <button className={clsx(
+            "text-sm rounded text-neutral-900 bg-white hover:text-neutral-900/80",
+            "p-2 flex-1 m-4"
+          )} disabled={inAction} onClick={() => setRejected()}>Reject</button>
+          <button className={clsx(
+            "text-sm rounded text-white bg-orange-tangelo hover:bg-orange-tangelo/90",
+            "p-2 flex-1 m-4"
+          )} disabled={inAction} onClick={() => setConfirmed()}>Accept</button>
+        </>
+      } else if (tokenOwner === walletAddress) {
+        return <div>DM the topic owner</div>
+      }
+    } else if (+status === TimeTokenStatus.CONFIRMED) {
+      if (topicOwner === walletAddress) {
+        return <div>You confirmed this Time NFT</div>
+      } else if (tokenOwner === walletAddress) {
+        return <div>Topic owner confirmed this Time NFT</div>
+      }
+    } else if (+status === TimeTokenStatus.REJECTED) {
+      if (topicOwner === walletAddress) {
+        return <div>You rejected this Time NFT</div>
+      } else if (tokenOwner === walletAddress) {
+        return <div>Topic owner rejected this Time NFT</div>
+      }
+    }
+    // fallback
+    return <></>
+  }
 
   return (
     <div className="bg-white-coffee min-h-screen overflow-hidden">
@@ -114,7 +131,12 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
             <div className="max-w-[450px] mx-auto">
               <picture><img src={tokenMetadata.image} alt="" className="block w-full" /></picture>
             </div>
-            <TokenActions tokenMetadata={tokenMetadata} />
+            <div className={clsx(
+              "flex items-center justify-center mx-auto mt-4",
+              "fixed left-0 bottom-0 w-full sm:relative sm:left-auto sm:bottom-auto sm:w-[450px]"
+            )}>
+              <TokenActions tokenMetadata={tokenMetadata} />
+            </div>
           </div>
         )}
       </main>

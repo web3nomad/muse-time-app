@@ -9,6 +9,12 @@ import type { TopicData } from '@/lib/arweave'
 import { bytes32ToBase64Url } from '@/lib/utils'
 import ClockImage from '@/assets/images/clock.svg'
 
+enum TimeTokenStatus {
+  PENDING = 0,
+  REJECTED = 1,
+  CONFIRMED = 2,
+}
+
 function TimeTokenItem({ timeTokenMintedLog }: { timeTokenMintedLog: TimeTokenMintedLog }) {
   const { tokenOwner, tokenId, profileArId, topicsArId, topicId } = timeTokenMintedLog
   const [token, setToken] = useState<(TimeTokenData & { topic: TopicData })|null>(null)
@@ -31,7 +37,18 @@ function TimeTokenItem({ timeTokenMintedLog }: { timeTokenMintedLog: TimeTokenMi
     <div className="font-din-alternate">
       <div className="flex items-center justify-between text-sm mb-2">
         <div className="text-neutral-500">{/*tokenId*/}4h ago</div>
-        <div>{/*token.status*/}To confirm</div>
+        {(() => {
+          switch (token.status) {
+            case TimeTokenStatus.PENDING:
+              return <div>To Confirm</div>
+            case TimeTokenStatus.CONFIRMED:
+              return <div>Confirmed</div>
+            case TimeTokenStatus.REJECTED:
+              return <div>Rejected</div>
+            default:
+              return ''
+          }
+        })()}
       </div>
       <div className="mb-1"># {token.topic.name}</div>
       <div className="text-sm text-neutral-400">{tokenOwner}</div>
