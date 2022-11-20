@@ -21,6 +21,7 @@ export function useTimeTrove(topicOwner: string): {
   const [isFetching, setIsFetching] = useState(false)
   const [timeTrove, setTimeTrove] = useState<TimeTroveData|null>(null)
   const fetchTimeTrove = useCallback(async () => {
+    setTimeTrove(null)
     setIsFetching(true)
     try {
       const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
@@ -30,7 +31,6 @@ export function useTimeTrove(topicOwner: string): {
         balance: timeTrove.balance,
       })
     } catch(err) {
-      setTimeTrove(null)
       console.log(err)
     }
     setIsFetching(false)
