@@ -1,8 +1,9 @@
 import clsx from 'clsx'
 import Link from 'next/link'
-import { useState } from 'react'
+import { useState, useCallback } from 'react'
 import { ethers } from 'ethers'
 import { useEthereumContext } from '@/lib/ethereum/context'
+import { chainId } from '@/lib/ethereum/public'
 import TransitionDialog from '@/components/TransitionDialog'
 
 export default function ConnectButton() {
@@ -14,8 +15,26 @@ export default function ConnectButton() {
     logout,
   } = useEthereumContext()
 
+  const switchChain = useCallback(async () => {
+    // TODO: improve this, for the moment we only handle switch chain for metamask
+    try {
+      await (global as any).ethereum.request({
+        method: 'wallet_switchEthereumChain',
+        params: [{ chainId: '0x' + (chainId).toString(16) }],
+      })
+      global.location.reload()
+    } catch(err) {}
+  }, [])
+
   if (signerErrorMessage) {
-    return <div className="text-amber-400 font-bold">{signerErrorMessage}</div>
+    if (signerErrorMessage === 'Wrong network') {
+      return (
+        <div className="text-red-400 font-bold cursor-pointer"
+          onClick={() => switchChain()}>{signerErrorMessage}</div>
+      )
+    } else {
+      return <div className="text-red-400 font-bold">{signerErrorMessage}</div>
+    }
   } else if (walletAddress && authToken) {
     return (
       <>

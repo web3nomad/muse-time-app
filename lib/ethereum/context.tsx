@@ -150,7 +150,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
       web3Signer.getChainId(),
     ]).then(([address, signerChainId]) => {
       if (+chainId !== +signerChainId) {
-        setSignerErrorMessage('Wrong chainId')
+        setSignerErrorMessage('Wrong network')
         return
       }
       /* after this, Web3Modal will take care of wrong networks.

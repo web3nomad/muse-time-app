@@ -10,6 +10,9 @@ import ConnectButton from '@/components/ConnectButton'
 import { MuseTimeLogoIcon, MuseTimeTextIcon } from '@/components/icons'
 
 const Balance = ({ topicOwner }: { topicOwner: string }) => {
+  // hide balance, it's not usefull
+  return <></>
+
   const { sendTransaction, signer } = useEthereumContext()
   const { timeTrove, isFetching } = useTimeTrove(topicOwner)
   const balance = useMemo(() => {
