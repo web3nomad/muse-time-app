@@ -167,6 +167,7 @@ export const EthereumContextProvider = ({ children }: Props) => {
   const disconnect = useCallback(() => {
     const web3Modal = WEB3.getModal()
     web3Modal.clearCachedProvider()
+    localStorage.removeItem('walletconnect')
     setWeb3Connection(null)
     clearWeb3Auth()
     AuthStorage.clearTokens()
