@@ -1,7 +1,6 @@
 import { ethers } from 'ethers'
 import base64url from 'base64url'
 import type { NextApiRequest, NextApiResponse } from 'next'
-import { AuthTokenPayload, EIP_712_AUTH, requireAuth, NextApiRequestWithAuth } from '@/lib/auth'
 import { publicProvider, controllerContract } from '@/lib/ethereum/public'
 import type { TimeTroveData } from '@/lib/ethereum/types'
 import { queryOnChainItemId, ResourceTypes } from '@/lib/arweave'
@@ -49,9 +48,8 @@ const findProfile = async (arOwnerAddress: string, topicOwner: string): Promise<
   return { profileArId, profile: null }
 }
 
-const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse) {
-  const { walletAddress } = req.user
-  const { topicOwner, topicId } = req.body
+const handler = async function(req: NextApiRequest, res: NextApiResponse) {
+  const { topicOwner, topicId, walletAddress } = req.body
 
   const timeTrove: TimeTroveData = await controllerContract.timeTroveOf(topicOwner)
   const arOwnerAddress = bytes32ToBase64Url(timeTrove.arOwnerAddress)
@@ -103,4 +101,4 @@ const handler = async function(req: NextApiRequestWithAuth, res: NextApiResponse
   res.status(200).json(result)
 }
 
-export default requireAuth(handler)
+export default handler

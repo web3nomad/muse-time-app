@@ -93,7 +93,7 @@ const Page: NextPage<PageProps> = ({ tokenId }) => {
           )} disabled={inAction} onClick={() => setConfirmed()}>Accept</button>
         </>
       } else if (tokenOwner === walletAddress) {
-        return <div>DM the topic owner</div>
+        return <div>DM the topic owner or check opensea</div>
       }
     } else if (+status === TimeTokenStatus.CONFIRMED) {
       if (topicOwner === walletAddress) {

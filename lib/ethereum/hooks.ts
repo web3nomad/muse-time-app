@@ -79,7 +79,7 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
   mintTimeToken: (() => void),
   isMinting: boolean,
 } {
-  const { authToken, signer, sendTransaction } = useEthereumContext()
+  const { walletAddress, signer, sendTransaction } = useEthereumContext()
 
   const [timeTokenMintedLogs, setTimeTokenMintedLogs] = useState<TimeTokenMintedLog[]>([])
 
@@ -125,10 +125,10 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
       body: JSON.stringify({
         topicOwner,
         topicId,
+        walletAddress,
       }),
       headers: {
         'Content-Type': 'application/json',
-        'Authorization': `Token ${authToken}`,
       },
     }).then(async (res) => {
       const {
@@ -151,7 +151,7 @@ export function useTimeToken(topicOwner: string, topicId?: string): {
       console.log(err)
       setIsMinting(false)
     })
-  }, [authToken, signer, sendTransaction, topicOwner, topicId, setIsMinting])
+  }, [walletAddress, signer, sendTransaction, topicOwner, topicId, setIsMinting])
 
   return {
     timeTokenMintedLogs: timeTokenMintedLogs,
